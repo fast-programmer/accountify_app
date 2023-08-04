@@ -23,3 +23,5 @@ gem "activerecord", "~> 7.0"
 gem "outboxer", path: "../outboxer"
 
 # gem 'outboxer', '~> 0.1.0'
+
+gem "sidekiq", "~> 7.1"
