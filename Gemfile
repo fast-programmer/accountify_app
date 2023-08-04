@@ -11,7 +11,7 @@ gem "sprockets-rails"
 gem "puma", "~> 5.0"
 
 group :development, :test do
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  gem "pry-byebug", "~> 3.10"
 end
 
 group :development do
