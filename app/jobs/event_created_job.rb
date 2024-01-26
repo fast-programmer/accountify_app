@@ -1,4 +1,4 @@
-class EventHandlerJob
+class EventCreatedJob
   include Sidekiq::Job
 
   def perform(args)
