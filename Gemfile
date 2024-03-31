@@ -22,6 +22,6 @@ gem "activerecord"
 
 gem "outboxer", path: "../outboxer"
 
-# gem 'outboxer', '~> 0.1.0'
+# gem 'outboxer'
 
 gem "sidekiq"
