@@ -1,27 +1,27 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.2"
+ruby "3.3.0"
 
-gem "rails", "~> 7.0.6"
+gem "rails"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
 
-gem "puma", "~> 5.0"
+gem "puma"
 
 group :development, :test do
-  gem "pry-byebug", "~> 3.10"
+  gem "pry-byebug"
 end
 
 group :development do
 end
 
-gem "pg", "~> 1.5"
-gem "activerecord", "~> 7.0"
+gem "pg"
+gem "activerecord"
 
 gem "outboxer", path: "../outboxer"
 
 # gem 'outboxer', '~> 0.1.0'
 
-gem "sidekiq", "~> 7.1"
+gem "sidekiq"
