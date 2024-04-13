@@ -2,9 +2,9 @@ module Accountify
   module Organisation
     extend self
 
-    class CreatedEvent < Models::Event; end
+    class CreatedEvent < ::Models::Event; end
 
-    def create(user:, tenant:, id:, name:)
+    def create(user:, tenant:, name:)
       organisation = nil
       event = nil
 
@@ -17,9 +17,7 @@ module Accountify
           .where(user_id: user[:id], tenant_id: tenant[:id])
           .create!(
             eventable: organisation,
-            payload: {
-              'id' => id,
-              'name' => name,
+            body: {
               'organisation' => {
                 'id' => organisation.id,
                 'name' => organisation.name } } )
@@ -31,7 +29,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id }
+      { id: organisation.id, event_id: event.id }
     end
 
     def find_by_id(user:, tenant:, id:)
@@ -45,7 +43,7 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < Models::Event; end
+    class UpdatedEvent < ::Models::Event; end
 
     def update(user:, tenant:, id:, name:)
       organisation = nil
@@ -53,7 +51,7 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(tenant_id: tenant.id)
+          .where(tenant_id: tenant[:id])
           .lock
           .find_by!(id: id)
 
@@ -63,7 +61,7 @@ module Accountify
           .where(user_id: user[:id], tenant_id: tenant[:id])
           .create!(
             eventable: organisation,
-            payload: {
+            body: {
               'id' => id,
               'name' => name,
               'organisation' => {
@@ -77,8 +75,10 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id }
+      { id: organisation.id, event_id: event.id }
     end
+
+    class DeletedEvent < ::Models::Event; end
 
     def delete(user:, tenant:, id:)
       organisation = nil
@@ -86,21 +86,21 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(tenant_id: tenant.id)
+          .where(tenant_id: tenant[:id])
           .lock
           .find_by!(id: id)
 
-        organisation.update!(is_deleted: true)
+        organisation.update!(deleted_at: DateTime.now.utc)
 
         event = DeletedEvent
           .where(user_id: user[:id], tenant_id: tenant[:id])
           .create!(
             eventable: organisation,
-            payload: {
+            body: {
               'organisation' => {
                 'id' => organisation.id,
                 'name' => organisation.name,
-                'is_deleted' => organisation.is_deleted } })
+                'deleted_at' => organisation.deleted_at } })
       end
 
       Event::CreatedJob.perform_async({
@@ -109,7 +109,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id }
+      { id: organisation.id, event_id: event.id }
     end
   end
 end

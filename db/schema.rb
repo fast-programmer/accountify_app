@@ -17,13 +17,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_13_100944) do
   create_table "accountify_organisations", force: :cascade do |t|
     t.bigint "tenant_id", null: false
     t.text "name", null: false
+    t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["tenant_id", "deleted_at"], name: "index_accountify_organisations_on_tenant_id_and_deleted_at"
   end
 
   create_table "events", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "tenant_id", null: false
+    t.text "type", null: false
+    t.text "eventable_type", null: false
+    t.bigint "eventable_id", null: false
+    t.jsonb "body"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable_type_and_eventable_id"
   end
 
   create_table "outboxer_exceptions", force: :cascade do |t|
