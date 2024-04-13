@@ -25,13 +25,13 @@ module Accountify
                 'name' => organisation.name } } )
       end
 
-      job_id = Event::CreatedJob.perform_async({
+      Event::CreatedJob.perform_async({
         'user_id' => user[:id],
         'tenant_id' => tenant[:id],
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id, job_id: job_id }
+      { id: id, event_id: event.id }
     end
 
     def find_by_id(user:, tenant:, id:)
@@ -71,13 +71,13 @@ module Accountify
                 'name' => organisation.name } })
       end
 
-      job_id = Event::CreatedJob.perform_async({
+      Event::CreatedJob.perform_async({
         'user_id' => user[:id],
         'tenant_id' => tenant[:id],
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id, job_id: job_id }
+      { id: id, event_id: event.id }
     end
 
     def delete(user:, tenant:, id:)
@@ -103,13 +103,13 @@ module Accountify
                 'is_deleted' => organisation.is_deleted } })
       end
 
-      job_id = Event::CreatedJob.perform_async({
+      Event::CreatedJob.perform_async({
         'user_id' => user[:id],
         'tenant_id' => tenant[:id],
         'id' => event.id,
         'type' => event.type })
 
-      { id: id, event_id: event.id, job_id: job_id }
+      { id: id, event_id: event.id }
     end
   end
 end
