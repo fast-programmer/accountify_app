@@ -1,6 +1,6 @@
 module Accountify
   module Contact
-    class UpdatedEvent < Event
+    class DeletedEvent < Event
     end
   end
 end
