@@ -22,6 +22,8 @@ gem "activerecord"
 
 gem "outboxer", path: "../outboxer"
 
-# gem 'outboxer'
-
 gem "sidekiq"
+
+group :development, :test do
+  gem 'rspec-rails'
+end
