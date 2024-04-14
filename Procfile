@@ -1,4 +1,3 @@
-sidekiq: bundle exec sidekiq -r ./config/sidekiq.rb
-sidekiq_ui: rackup config.ru
+sidekiq: bin/sidekiq -r ./config/sidekiq.rb
+rails: bin/rails s
 # outboxer_message_publisher: bin/outboxer_message_publisher
-p
