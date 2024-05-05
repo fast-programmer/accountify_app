@@ -9,19 +9,17 @@ module Accountify
 
     describe '.create' do
       it 'creates model' do
-        organisation_id, _event_id = Organisation.create(
-          iam_user: iam_user, iam_tenant: iam_tenant, name: name)
+        id, _event_id = Organisation.create(iam_user: iam_user, iam_tenant: iam_tenant, name: name)
 
         organisation = Models::Organisation
           .where(iam_tenant_id: iam_tenant[:id])
-          .find_by!(id: organisation_id)
+          .find_by!(id: id)
 
         expect(organisation.name).to eq(name)
       end
 
       it 'creates created event' do
-        organisation_id, event_id = Organisation.create(
-          iam_user: iam_user, iam_tenant: iam_tenant, name: name)
+        id, event_id = Organisation.create(iam_user: iam_user, iam_tenant: iam_tenant, name: name)
 
         event = Organisation::CreatedEvent
           .where(iam_tenant_id: iam_tenant[:id])
@@ -29,7 +27,7 @@ module Accountify
 
         expect(event.body).to eq ({
           'organisation' => {
-            'id' => organisation_id,
+            'id' => id,
             'name' => name } })
       end
 
