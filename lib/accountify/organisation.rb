@@ -4,8 +4,7 @@ module Accountify
 
     class CreatedEvent < ::Models::Event; end
 
-    def create(iam_user:, iam_tenant:,
-               name:)
+    def create(iam_user:, iam_tenant:, name:)
       organisation = nil
       event = nil
 
@@ -15,9 +14,7 @@ module Accountify
           .create!(name: name)
 
         event = CreatedEvent
-          .where(
-            iam_user_id: iam_user[:id],
-            iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
           .create!(
             eventable: organisation,
             body: {
@@ -32,7 +29,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      [{ id: organisation.id }, { id: event.id, type: event.type }]
+      [organisation.id, event.id]
     end
 
     def find_by_id(iam_user:, iam_tenant:, id:)
@@ -48,23 +45,17 @@ module Accountify
 
     class UpdatedEvent < ::Models::Event; end
 
-    def update(iam_user:, iam_tenant:,
-               id:, name:)
-      organisation = nil
+    def update(iam_user:, iam_tenant:, id:, name:)
       event = nil
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id])
-          .lock
-          .find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
 
         organisation.update!(name: name)
 
         event = UpdatedEvent
-          .where(
-            iam_user_id: iam_user[:id],
-            iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
           .create!(
             eventable: organisation,
             body: {
@@ -79,28 +70,22 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      [{ id: organisation.id }, { id: event.id, type: event.type }]
+      event.id
     end
 
     class DeletedEvent < ::Models::Event; end
 
-    def delete(iam_user:, iam_tenant:,
-               id:)
-      organisation = nil
+    def delete(iam_user:, iam_tenant:, id:)
       event = nil
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id])
-          .lock
-          .find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
 
         organisation.update!(deleted_at: DateTime.now.utc)
 
         event = DeletedEvent
-          .where(
-            iam_user_id: iam_user[:id],
-            iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
           .create!(
             eventable: organisation,
             body: {
@@ -116,7 +101,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      [{ id: organisation.id }, { id: event.id, type: event.type }]
+      event.id
     end
   end
 end
