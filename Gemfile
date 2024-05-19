@@ -5,6 +5,8 @@ ruby "3.3.0"
 
 gem "rails"
 
+gem "sinatra"
+
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 
 gem "puma"
