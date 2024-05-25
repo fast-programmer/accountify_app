@@ -10,9 +10,3 @@ development:
 test:
   <<: *default
   database: outboxer_app_test
-
-# production:
-#   <<: *default
-#   database: outboxer_app_production
-#   username: your_username
-#   password: your_password

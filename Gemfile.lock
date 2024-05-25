@@ -2,9 +2,12 @@ PATH
   remote: ../outboxer
   specs:
     outboxer (0.1.11)
-      activerecord (~> 7.0)
+      activerecord (~> 7.1, >= 7.1.2)
       kaminari (~> 1.2)
       rack-flash3 (~> 1.0, >= 1.0.5)
+      rackup (~> 2.1)
+      sidekiq (~> 7.2)
+      sinatra (~> 4.0)
 
 GEM
   remote: https://rubygems.org/
