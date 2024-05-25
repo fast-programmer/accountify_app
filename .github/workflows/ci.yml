@@ -39,10 +39,18 @@ jobs:
         with:
           ruby-version: 3.3.0
 
+      - name: Cache gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
       - name: Install dependencies
         run: |
           gem install bundler
-          bundle install
+          bundle install --path vendor/bundle
 
       - name: Set up database
         run: |
@@ -50,5 +58,4 @@ jobs:
           bundle exec rails db:schema:load
 
       - name: Run tests
-        run: |
-          bundle exec rspec
+        run: bundle exec rspec
