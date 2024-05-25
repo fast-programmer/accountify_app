@@ -1,5 +1,5 @@
 require 'sidekiq/web'
-require 'outboxer/web'
+# require 'outboxer/web'
 
 if Rails.env.production?
   Sidekiq::Web.use Rack::Auth::Basic do |username, password|
@@ -11,5 +11,5 @@ end
 Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
-  mount Outboxer::Web, at: '/outboxer'
+  # mount Outboxer::Web, at: '/outboxer'
 end
