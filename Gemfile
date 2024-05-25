@@ -21,7 +21,7 @@ end
 gem "pg"
 gem "activerecord"
 
-gem "outboxer", path: "../outboxer"
+gem 'outboxer', '1.0.0.pre.beta'
 
 gem "sidekiq"
 
