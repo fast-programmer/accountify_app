@@ -24,8 +24,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_13_100944) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "iam_tenant_id", null: false
     t.bigint "iam_user_id", null: false
+    t.bigint "iam_tenant_id", null: false
     t.text "type", null: false
     t.text "eventable_type", null: false
     t.bigint "eventable_id", null: false
