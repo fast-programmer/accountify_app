@@ -10,7 +10,7 @@ require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
 
-module OutboxerApp
+module Accountify
   class Application < Rails::Application
     config.load_defaults 7.0
 
