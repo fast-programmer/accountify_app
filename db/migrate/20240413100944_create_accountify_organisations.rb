@@ -1,4 +1,4 @@
-class CreateAccountifyOrganisation < ActiveRecord::Migration[7.1]
+class CreateAccountifyOrganisations < ActiveRecord::Migration[7.1]
   def change
     create_table :accountify_organisations do |t|
       t.bigint :iam_tenant_id, null: false
