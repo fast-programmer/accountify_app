@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_13_100944) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_27_212747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accountify_contacts", force: :cascade do |t|
+    t.bigint "iam_tenant_id", null: false
+    t.bigint "organisation_id", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "email", null: false
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_accountify_contacts_on_deleted_at"
+    t.index ["iam_tenant_id"], name: "index_accountify_contacts_on_iam_tenant_id"
+    t.index ["organisation_id"], name: "index_accountify_contacts_on_organisation_id"
+  end
 
   create_table "accountify_organisations", force: :cascade do |t|
     t.bigint "iam_tenant_id", null: false
@@ -53,5 +67,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_13_100944) do
     t.index ["status", "created_at"], name: "index_outboxer_messages_on_status_and_created_at"
   end
 
+  add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
   add_foreign_key "outboxer_exceptions", "outboxer_messages"
 end

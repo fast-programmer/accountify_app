@@ -39,6 +39,19 @@ module Accountify
       [contact.id, event.id]
     end
 
+    def find_by_id(iam_user:, iam_tenant:, id:)
+      contact = Models::Contact
+        .where(iam_tenant_id: iam_tenant[:id])
+        .find_by!(id: id)
+
+      {
+        id: contact.id,
+        first_name: contact.first_name,
+        last_name: contact.last_name,
+        email: contact.email
+      }
+    end
+
     class UpdatedEvent < ::Models::Event; end
 
     def update(iam_user:, iam_tenant:, id:, first_name:, last_name:, email:)
