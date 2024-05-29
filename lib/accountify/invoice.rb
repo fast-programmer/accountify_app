@@ -2,6 +2,11 @@ module Accountify
   module Invoice
     extend self
 
+    module Status
+      DRAFT = 'draft'
+      AUTHORISED = 'authorised'
+    end
+
     class CreatedEvent < ::Models::Event; end
 
     def create(iam_user:, iam_tenant:,
@@ -15,11 +20,11 @@ module Accountify
           iam_tenant_id: iam_tenant[:id],
           organisation_id: organisation_id,
           contact_id: contact_id,
-          status: status,
+          status: Status::DRAFT,
           currency_code: currency_code,
           due_date: due_date,
-          sub_total_currency: sub_total[:currency_code],
-          sub_total_amount: sub_total[:amount])
+          sub_total_amount: sub_total[:amount],
+          sub_total_currency_code: sub_total[:currency_code])
 
         event = CreatedEvent.create!(
           iam_user_id: iam_user[:id],
@@ -31,7 +36,9 @@ module Accountify
               'status' => invoice.status,
               'currency_code' => invoice.currency_code,
               'due_date' => invoice.due_date,
-              'sub_total_amount' => invoice.sub_total_amount } } )
+              'sub_total' => {
+                'amount' => invoice.sub_total_amount.to_s,
+                'currency_code' => invoice.sub_total_currency_code } } })
       end
 
       Event::CreatedJob.perform_async({
