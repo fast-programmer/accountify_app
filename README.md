@@ -1,3 +1,7 @@
+# Behaviour
+
+https://www.notion.so/how-to-describe-behaviour-1bea4df2eb114f76a659b3aa8b5336d5#164ec8080b9e420a8036d2f964f52fa1
+
 # Model
 
 ```mermaid
