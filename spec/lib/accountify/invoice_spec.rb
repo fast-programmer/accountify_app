@@ -6,12 +6,18 @@ module Accountify
     let(:iam_tenant) { { id: 4 } }
 
     let(:organisation) { create(:accountify_organisation, iam_tenant_id: iam_tenant[:id]) }
-    let(:contact) { create(:accountify_contact, iam_tenant_id: iam_tenant[:id], organisation_id: organisation.id) }
-    let(:currency_code) { 'USD' }
+
+    let(:contact) do
+      create(:accountify_contact,
+        iam_tenant_id: iam_tenant[:id], organisation_id: organisation.id)
+    end
+
+    let(:currency_code) { 'AUD' }
+
     let(:due_date) { Date.today + 30.days }
 
     let(:sub_total_amount) { BigDecimal('1000.00') }
-    let(:sub_total_currency_code) { 'USD' }
+    let(:sub_total_currency_code) { 'AUD' }
     let(:sub_total) do
       {
         amount: sub_total_amount,
@@ -93,13 +99,14 @@ module Accountify
 
     describe '.find_by_id' do
       let(:id) do
-        create(:accountify_invoice, iam_tenant_id: iam_tenant[:id],
+        create(:accountify_invoice, :draft,
+          iam_tenant_id: iam_tenant[:id],
           organisation_id: organisation.id,
           contact_id: contact.id,
-          status: status,
           currency_code: currency_code,
           due_date: due_date,
-          sub_total_amount: sub_total_amount).id
+          sub_total_amount: sub_total_amount
+        ).id
       end
 
       it 'returns attributes' do
@@ -107,11 +114,12 @@ module Accountify
 
         expect(invoice).to have_attributes({
           id: id,
-          status: status,
+          status: Invoice::Status::DRAFT,
           currency_code: currency_code,
           due_date: due_date,
-          sub_total_amount: sub_total_amount
-        })
+          sub_total: {
+            amount: sub_total[:amount],
+            currency_code: sub_total[:currency_code ]} })
       end
     end
 

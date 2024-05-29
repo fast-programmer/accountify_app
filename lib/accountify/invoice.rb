@@ -51,9 +51,7 @@ module Accountify
     end
 
     def find_by_id(iam_user:, iam_tenant:, id:)
-      invoice = Models::Invoice
-        .where(iam_tenant_id: iam_tenant[:id])
-        .find_by!(id: id)
+      invoice = Models::Invoice.where(iam_tenant_id: iam_tenant[:id]).find_by!(id: id)
 
       {
         id: invoice.id,
@@ -64,7 +62,7 @@ module Accountify
         due_date: invoice.due_date,
         sub_total: {
           amount: invoice.sub_total_amount,
-          currency_code: invoice.sub_total_currency }
+          currency_code: invoice.sub_total_currency_code }
       }
     end
 
