@@ -68,7 +68,9 @@ module Accountify
 
     class UpdatedEvent < ::Models::Event; end
 
-    def update(iam_user:, iam_tenant:, id:, status:, currency_code:, due_date:, sub_total_amount:)
+    def update(iam_user:, iam_tenant:, id:,
+               currency_code:, due_date:, sub_total_amount:)
+      invoice = nil
       event = nil
 
       ActiveRecord::Base.transaction do
@@ -76,7 +78,6 @@ module Accountify
           .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
 
         invoice.update!(
-          status: status,
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: sub_total_amount )
@@ -91,10 +92,9 @@ module Accountify
               'status' => invoice.status,
               'currency_code' => invoice.currency_code,
               'due_date' => invoice.due_date,
-              'sub_total_amount' => invoice.sub_total_amount
-            }
-          }
-        )
+              'sub_total' => {
+                'amount' => invoice.sub_total_amount.to_s,
+                'currency_code' => invoice.sub_total_currency_code } } })
       end
 
       Event::CreatedJob.perform_async({
@@ -103,7 +103,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      event.id
+      [invoice, event.id]
     end
 
     class DeletedEvent < ::Models::Event; end

@@ -112,8 +112,10 @@ module Accountify
       it 'returns attributes' do
         invoice = Invoice.find_by_id(iam_user: iam_user, iam_tenant: iam_tenant, id: id)
 
-        expect(invoice).to have_attributes({
+        expect(invoice).to eq({
           id: id,
+          organisation_id: organisation.id,
+          contact_id: contact.id,
           status: Invoice::Status::DRAFT,
           currency_code: currency_code,
           due_date: due_date,
@@ -125,35 +127,44 @@ module Accountify
 
     describe '.update' do
       let(:id) do
-        create(:accountify_invoice, iam_tenant_id: iam_tenant[:id],
+        create(:accountify_invoice, :draft, iam_tenant_id: iam_tenant[:id],
           organisation_id: organisation.id,
           contact_id: contact.id,
-          status: status,
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: sub_total_amount).id
       end
 
-      let(:updated_status) { 'completed' }
       let(:updated_due_date) { due_date + 15.days }
-      let(:updated_sub_total_amount) { 1200.00 }
+
+      let(:updated_sub_total_amount) { BigDecimal('1200.00') }
+      let(:updated_sub_total_currency_code) { 'AUD' }
+      let(:updated_sub_total) do
+        {
+          amount: updated_sub_total_amount,
+          currency_code: updated_sub_total_currency_code
+        }
+      end
 
       it 'updates model' do
-        Invoice.update(iam_user: iam_user, iam_tenant: iam_tenant, id: id,
-          status: updated_status, due_date: updated_due_date,
+        Invoice.update(
+          iam_user: iam_user, iam_tenant: iam_tenant, id: id,
+          currency_code: currency_code,
+          due_date: updated_due_date,
           sub_total_amount: updated_sub_total_amount)
 
         invoice = Models::Invoice.where(iam_tenant_id: iam_tenant[:id]).find_by!(id: id)
 
-        expect(invoice.status).to eq(updated_status)
+        expect(invoice.status).to eq(Invoice::Status::DRAFT)
         expect(invoice.due_date).to eq(updated_due_date)
         expect(invoice.sub_total_amount).to eq(updated_sub_total_amount)
       end
 
       it 'creates updated event' do
-        event_id = Invoice.update(
+        _invoice, event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
-          status: updated_status, due_date: updated_due_date,
+          currency_code: currency_code,
+          due_date: updated_due_date,
           sub_total_amount: updated_sub_total_amount)
 
         event = Invoice::UpdatedEvent
@@ -163,15 +174,19 @@ module Accountify
         expect(event.body).to eq({
           'invoice' => {
             'id' => id,
-            'status' => updated_status,
+            'status' => Invoice::Status::DRAFT,
+            'currency_code' => currency_code,
             'due_date' => updated_due_date.to_s,
-            'sub_total_amount' => updated_sub_total_amount.to_s } })
+            'sub_total' => {
+              'amount' => updated_sub_total[:amount].to_s,
+              'currency_code' => updated_sub_total[:currency_code] } } })
       end
 
       it 'associates event with model' do
-        event_id = Invoice.update(
+        invoice, event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
-          status: updated_status, due_date: updated_due_date,
+          currency_code: currency_code,
+          due_date: updated_due_date,
           sub_total_amount: updated_sub_total_amount)
 
         invoice = Models::Invoice
@@ -182,9 +197,10 @@ module Accountify
       end
 
       it 'queues event created job' do
-        event_id = Invoice.update(
+        _invoice, event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
-          status: updated_status, due_date: updated_due_date,
+          currency_code: currency_code,
+          due_date: updated_due_date,
           sub_total_amount: updated_sub_total_amount)
 
         expect(Event::CreatedJob.jobs).to match([
