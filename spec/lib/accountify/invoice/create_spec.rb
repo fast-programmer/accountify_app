@@ -16,22 +16,34 @@ module Accountify
 
     let(:due_date) { Date.today + 30.days }
 
-    let(:sub_total_amount) { BigDecimal('1000.00') }
-    let(:sub_total_currency_code) { 'AUD' }
-    let(:sub_total) do
-      {
-        amount: sub_total_amount,
-        currency_code: sub_total_currency_code
-      }
+    let(:line_items) do
+      [
+        {
+          description: 'Chair',
+          quantity: 1,
+          unit_amount: {
+            amount: BigDecimal("100.00"),
+            currency_code: 'AUD'
+          }
+        },
+        {
+          description: 'Table',
+          quantity: 3,
+          unit_amount: {
+            amount: BigDecimal("300.00"),
+            currency_code: 'AUD'
+          }
+        }
+      ]
     end
 
     describe '.create' do
-      it 'creates model' do
+      it 'creates invoice' do
         id, _event_id = Invoice.create(
           iam_user: iam_user, iam_tenant: iam_tenant,
           organisation_id: organisation.id, contact_id: contact.id,
           currency_code: currency_code, due_date: due_date,
-          sub_total: sub_total)
+          line_items: line_items)
 
         invoice = Models::Invoice
           .where(iam_tenant_id: iam_tenant[:id])
@@ -40,7 +52,18 @@ module Accountify
         expect(invoice.status).to eq(Invoice::Status::DRAFT)
         expect(invoice.currency_code).to eq(currency_code)
         expect(invoice.due_date).to eq(due_date)
-        expect(invoice.sub_total_amount).to eq(sub_total_amount)
+
+        expect(invoice.line_items).to match_array(
+          line_items.map do |line_item|
+            have_attributes(
+              description: line_item[:description],
+              unit_amount_amount: line_item[:unit_amount][:amount],
+              unit_amount_currency_code: line_item[:unit_amount][:currency_code],
+              quantity: line_item[:quantity])
+          end)
+
+        expect(invoice.sub_total_currency_code).to eq(currency_code)
+        expect(invoice.sub_total_amount).to eq(BigDecimal("1000.00"))
       end
 
       it 'creates created event' do
@@ -48,7 +71,7 @@ module Accountify
           iam_user: iam_user, iam_tenant: iam_tenant,
           organisation_id: organisation.id, contact_id: contact.id,
           currency_code: currency_code, due_date: due_date,
-          sub_total: sub_total)
+          line_items: line_items)
 
         event = Invoice::CreatedEvent
           .where(iam_tenant_id: iam_tenant[:id])
@@ -60,9 +83,17 @@ module Accountify
             'status' => Invoice::Status::DRAFT,
             'currency_code' => currency_code,
             'due_date' => due_date.to_s,
+            'line_items' => line_items.map do |line_item|
+              {
+                'description' => line_item[:description],
+                'unit_amount_amount' => line_item[:unit_amount][:amount].to_s,
+                'unit_amount_currency_code' => line_item[:unit_amount][:currency_code],
+                'quantity' => line_item[:quantity]
+              }
+            end,
             'sub_total' => {
-              'amount' => sub_total[:amount].to_s,
-              'currency_code' => sub_total[:currency_code] } } })
+              'amount' => BigDecimal('1000.00').to_s,
+              'currency_code' => currency_code } } })
       end
 
       it 'associates event with model' do
@@ -70,7 +101,7 @@ module Accountify
           iam_user: iam_user, iam_tenant: iam_tenant,
           organisation_id: organisation.id, contact_id: contact.id,
           currency_code: currency_code, due_date: due_date,
-          sub_total: sub_total)
+          line_items: line_items)
 
         invoice = Models::Invoice
           .where(iam_tenant_id: iam_tenant[:id])
@@ -84,7 +115,7 @@ module Accountify
           iam_user: iam_user, iam_tenant: iam_tenant,
           organisation_id: organisation.id, contact_id: contact.id,
           currency_code: currency_code, due_date: due_date,
-          sub_total: sub_total)
+          line_items: line_items)
 
         expect(Event::CreatedJob.jobs).to match([
           hash_including(

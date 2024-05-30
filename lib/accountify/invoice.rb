@@ -11,7 +11,7 @@ module Accountify
 
     def create(iam_user:, iam_tenant:,
                organisation_id:, contact_id:,
-               currency_code:, due_date:, sub_total:)
+               currency_code:, due_date:, line_items:)
       invoice = nil
       event = nil
 
@@ -23,8 +23,18 @@ module Accountify
           status: Status::DRAFT,
           currency_code: currency_code,
           due_date: due_date,
-          sub_total_amount: sub_total[:amount],
-          sub_total_currency_code: sub_total[:currency_code])
+          sub_total_amount: line_items.sum do |line_item|
+            line_item[:unit_amount][:amount] * line_item[:quantity]
+          end,
+          sub_total_currency_code: currency_code)
+
+        invoice_line_items = line_items.map do |line_item|
+          invoice.line_items.create!(
+            description: line_item[:description],
+            unit_amount_amount: line_item[:unit_amount][:amount],
+            unit_amount_currency_code: line_item[:unit_amount][:currency_code],
+            quantity: line_item[:quantity])
+        end
 
         event = CreatedEvent.create!(
           iam_user_id: iam_user[:id],
@@ -36,6 +46,14 @@ module Accountify
               'status' => invoice.status,
               'currency_code' => invoice.currency_code,
               'due_date' => invoice.due_date,
+              'line_items' => invoice_line_items.map do |invoice_line_item|
+                {
+                  'description' => invoice_line_item.description,
+                  'unit_amount_amount' => invoice_line_item.unit_amount_amount.to_s,
+                  'unit_amount_currency_code' => invoice_line_item.unit_amount_currency_code,
+                  'quantity' => invoice_line_item.quantity
+                }
+              end,
               'sub_total' => {
                 'amount' => invoice.sub_total_amount.to_s,
                 'currency_code' => invoice.sub_total_currency_code } } })
