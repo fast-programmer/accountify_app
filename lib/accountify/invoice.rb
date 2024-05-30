@@ -70,7 +70,6 @@ module Accountify
 
     def update(iam_user:, iam_tenant:, id:,
                currency_code:, due_date:, sub_total_amount:)
-      invoice = nil
       event = nil
 
       ActiveRecord::Base.transaction do
@@ -103,7 +102,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      [invoice, event.id]
+      event.id
     end
 
     class DeletedEvent < ::Models::Event; end

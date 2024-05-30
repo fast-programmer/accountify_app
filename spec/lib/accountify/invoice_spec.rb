@@ -161,7 +161,7 @@ module Accountify
       end
 
       it 'creates updated event' do
-        _invoice, event_id = Invoice.update(
+        event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
           currency_code: currency_code,
           due_date: updated_due_date,
@@ -183,7 +183,7 @@ module Accountify
       end
 
       it 'associates event with model' do
-        invoice, event_id = Invoice.update(
+        event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
           currency_code: currency_code,
           due_date: updated_due_date,
@@ -197,7 +197,7 @@ module Accountify
       end
 
       it 'queues event created job' do
-        _invoice, event_id = Invoice.update(
+        event_id = Invoice.update(
           iam_user: iam_user, iam_tenant: iam_tenant, id: id,
           currency_code: currency_code,
           due_date: updated_due_date,
@@ -216,10 +216,10 @@ module Accountify
 
     describe '.delete' do
       let(:id) do
-        create(:accountify_invoice, iam_tenant_id: iam_tenant[:id],
+        create(:accountify_invoice, :draft,
+          iam_tenant_id: iam_tenant[:id],
           organisation_id: organisation.id,
           contact_id: contact.id,
-          status: status,
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: sub_total_amount).id
@@ -236,8 +236,7 @@ module Accountify
       end
 
       it 'creates deleted event' do
-        event_id = Invoice.delete(
-          iam_user: iam_user, iam_tenant: iam_tenant, id: id)
+        event_id = Invoice.delete(iam_user: iam_user, iam_tenant: iam_tenant, id: id)
 
         event = Invoice::DeletedEvent
           .where(iam_tenant_id: iam_tenant[:id])
@@ -250,19 +249,15 @@ module Accountify
       end
 
       it 'associates event with model' do
-        event_id = Invoice.delete(
-          iam_user: iam_user, iam_tenant: iam_tenant, id: id)
+        event_id = Invoice.delete(iam_user: iam_user, iam_tenant: iam_tenant, id: id)
 
-        invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant[:id])
-          .find_by!(id: id)
+        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant[:id]).find_by!(id: id)
 
         expect(invoice.events.last.id).to eq(event_id)
       end
 
       it 'queues event created job' do
-        event_id = Invoice.delete(
-          iam_user: iam_user, iam_tenant: iam_tenant, id: id)
+        event_id = Invoice.delete(iam_user: iam_user, iam_tenant: iam_tenant, id: id)
 
         expect(Event::CreatedJob.jobs).to match([
           hash_including(
