@@ -78,6 +78,15 @@ module Accountify
         status: invoice.status,
         currency_code: invoice.currency_code,
         due_date: invoice.due_date,
+        line_items: invoice.line_items.map do |line_item|
+          {
+            description: line_item[:description],
+            unit_amount: {
+              amount: line_item.unit_amount_amount,
+              currency_code: line_item.unit_amount_currency_code },
+            quantity: line_item.quantity
+          }
+        end,
         sub_total: {
           amount: invoice.sub_total_amount,
           currency_code: invoice.sub_total_currency_code }
