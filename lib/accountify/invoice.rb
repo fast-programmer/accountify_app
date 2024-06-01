@@ -7,11 +7,11 @@ module Accountify
       AUTHORISED = 'authorised'
     end
 
-    class CreatedEvent < ::Models::Event; end
+    class DraftedEvent < ::Models::Event; end
 
-    def create(iam_user_id:, iam_tenant_id:,
-               organisation_id:, contact_id:,
-               currency_code:, due_date:, line_items:)
+    def draft(iam_user_id:, iam_tenant_id:,
+              organisation_id:, contact_id:,
+              currency_code:, due_date:, line_items:)
       invoice = nil
       event = nil
 
@@ -43,7 +43,7 @@ module Accountify
             quantity: line_item[:quantity])
         end
 
-        event = CreatedEvent.create!(
+        event = DraftedEvent.create!(
           iam_user_id: iam_user_id,
           iam_tenant_id: iam_tenant_id,
           eventable: invoice,

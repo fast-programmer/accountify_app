@@ -18,7 +18,7 @@ module Accountify
     end
 
     let(:result) do
-      Invoice.create(
+      Invoice.draft(
         iam_user_id: iam_user_id,
         iam_tenant_id: iam_tenant_id,
         organisation_id: organisation.id,
@@ -48,10 +48,10 @@ module Accountify
     end
 
     let(:event) do
-      Invoice::CreatedEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
+      Invoice::DraftedEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
     end
 
-    describe '.create' do
+    describe '.draft' do
       it 'creates invoice' do
         expect(invoice).to have_attributes(
           organisation_id: organisation.id,
@@ -74,7 +74,7 @@ module Accountify
           sub_total_currency_code: "AUD")
       end
 
-      it 'creates created event' do
+      it 'creates drafted event' do
         expect(event.body).to eq({
           'invoice' => {
             'id' => id,
@@ -110,7 +110,7 @@ module Accountify
                 'iam_user_id' => iam_user_id,
                 'iam_tenant_id' => iam_tenant_id,
                 'id' => event_id,
-                'type' => 'Accountify::Invoice::CreatedEvent')])])
+                'type' => 'Accountify::Invoice::DraftedEvent')])])
       end
     end
   end
