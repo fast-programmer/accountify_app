@@ -4,17 +4,17 @@ module Accountify
 
     class CreatedEvent < ::Models::Event; end
 
-    def create(iam_user:, iam_tenant:, name:)
+    def create(iam_user_id:, iam_tenant_id:, name:)
       organisation = nil
       event = nil
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id])
+          .where(iam_tenant_id: iam_tenant_id)
           .create!(name: name)
 
         event = CreatedEvent
-          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id)
           .create!(
             eventable: organisation,
             body: {
@@ -24,17 +24,17 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 
       [organisation.id, event.id]
     end
 
-    def find_by_id(iam_user:, iam_tenant:, id:)
+    def find_by_id(iam_user_id:, iam_tenant_id:, id:)
       organisation = Models::Organisation
-        .where(iam_tenant_id: iam_tenant[:id])
+        .where(iam_tenant_id: iam_tenant_id)
         .find_by!(id: id)
 
       {
@@ -45,17 +45,17 @@ module Accountify
 
     class UpdatedEvent < ::Models::Event; end
 
-    def update(iam_user:, iam_tenant:, id:, name:)
+    def update(iam_user_id:, iam_tenant_id:, id:, name:)
       event = nil
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
         organisation.update!(name: name)
 
         event = UpdatedEvent
-          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id)
           .create!(
             eventable: organisation,
             body: {
@@ -65,8 +65,8 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 
@@ -75,17 +75,17 @@ module Accountify
 
     class DeletedEvent < ::Models::Event; end
 
-    def delete(iam_user:, iam_tenant:, id:)
+    def delete(iam_user_id:, iam_tenant_id:, id:)
       event = nil
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
         organisation.update!(deleted_at: DateTime.now.utc)
 
         event = DeletedEvent
-          .where(iam_user_id: iam_user[:id], iam_tenant_id: iam_tenant[:id])
+          .where(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id)
           .create!(
             eventable: organisation,
             body: {
@@ -96,8 +96,8 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 
