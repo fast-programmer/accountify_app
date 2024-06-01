@@ -12,4 +12,17 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
   # mount Outboxer::Web, at: '/outboxer'
+
+  namespace :accountify do
+    resources :organisation, only: [:create, :show, :update, :destroy]
+
+    resources :contact, only: [:create, :show, :update, :destroy]
+
+    resources :invoice, only: [:create, :show, :update, :destroy] do
+      member do
+        patch 'approve'
+        patch 'void'
+      end
+    end
+  end
 end
