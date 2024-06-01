@@ -9,7 +9,7 @@ module Accountify
 
     class CreatedEvent < ::Models::Event; end
 
-    def create(iam_user:, iam_tenant:,
+    def create(iam_user_id:, iam_tenant_id:,
                organisation_id:, contact_id:,
                currency_code:, due_date:, line_items:)
       invoice = nil
@@ -17,7 +17,7 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.create!(
-          iam_tenant_id: iam_tenant[:id],
+          iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
           contact_id: contact_id,
           status: Status::DRAFT,
@@ -37,8 +37,8 @@ module Accountify
         end
 
         event = CreatedEvent.create!(
-          iam_user_id: iam_user[:id],
-          iam_tenant_id: iam_tenant[:id],
+          iam_user_id: iam_user_id,
+          iam_tenant_id: iam_tenant_id,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -60,8 +60,8 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 
