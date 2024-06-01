@@ -2,67 +2,82 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe Invoice do
-    let(:iam_user) { { id: 12 } }
-    let(:iam_tenant) { { id: 4 } }
+    let(:current_date) { Date.today }
 
-    let(:organisation) { create(:accountify_organisation, iam_tenant_id: iam_tenant[:id]) }
+    let(:iam_user_id) { 12 }
+
+    let(:iam_tenant_id) { 4 }
+
+    let(:organisation) do
+      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+    end
 
     let(:contact) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant[:id], organisation_id: organisation.id)
-    end
-
-    let(:currency_code) { 'AUD' }
-
-    let(:due_date) { Date.today + 30.days }
-
-    let(:sub_total) do
-      {
-        amount: BigDecimal("600.00"),
-        currency_code: currency_code
-      }
+        iam_tenant_id: iam_tenant_id, organisation_id: organisation.id)
     end
 
     let(:id) do
-      invoice = create(:accountify_invoice, :draft,
-        iam_tenant_id: iam_tenant[:id],
+      create(:accountify_invoice,
+        iam_tenant_id: iam_tenant_id,
         organisation_id: organisation.id,
         contact_id: contact.id,
-        currency_code: currency_code,
-        due_date: due_date,
-        sub_total_amount: sub_total[:amount],
-        sub_total_currency_code: sub_total[:currency_code])
+        currency_code: "AUD",
+        due_date: current_date + 30.days,
+        status: Invoice::Status::DRAFT,
+        sub_total_amount: BigDecimal("1800.00"),
+        sub_total_currency_code: "AUD"
+      ).id
+    end
 
+    let(:line_item_1) do
       create(:accountify_invoice_line_item,
-        invoice_id: invoice.id,
+        invoice_id: id,
         description: "Leather Boots",
         unit_amount_amount: BigDecimal("300.0"),
-        unit_amount_currency_code: currency_code,
+        unit_amount_currency_code: "AUD",
         quantity: 2)
-
-      invoice.id
     end
+
+    let(:line_item_2) do
+      create(:accountify_invoice_line_item,
+        invoice_id: id,
+        description: "White Pants",
+        unit_amount_amount: BigDecimal("400.0"),
+        unit_amount_currency_code: "AUD",
+        quantity: 3)
+    end
+
+    let!(:line_items) { [line_item_1, line_item_2] }
 
     describe '.find_by_id' do
       it 'returns attributes' do
-        invoice = Invoice.find_by_id(iam_user: iam_user, iam_tenant: iam_tenant, id: id)
+        invoice = Invoice.find_by_id(
+          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
 
         expect(invoice).to eq({
           id: id,
           organisation_id: organisation.id,
           contact_id: contact.id,
           status: Invoice::Status::DRAFT,
-          currency_code: currency_code,
-          due_date: due_date,
+          currency_code: "AUD",
+          due_date: (current_date + 30.days).to_s,
           line_items: [{
             description: "Leather Boots",
             unit_amount: {
               amount: BigDecimal("300.0"),
-              currency_code: currency_code },
-            quantity: 2 }],
+              currency_code: "AUD" },
+            quantity: 2
+          }, {
+            description: "White Pants",
+            unit_amount: {
+              amount: BigDecimal("400.0"),
+              currency_code: "AUD" },
+            quantity: 3
+          }],
           sub_total: {
-            amount: BigDecimal("600.00"),
-            currency_code: currency_code } })
+            amount: BigDecimal("1800.00"),
+            currency_code: "AUD" } })
       end
     end
   end

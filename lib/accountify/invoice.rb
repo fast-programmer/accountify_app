@@ -68,8 +68,8 @@ module Accountify
       [invoice.id, event.id]
     end
 
-    def find_by_id(iam_user:, iam_tenant:, id:)
-      invoice = Models::Invoice.where(iam_tenant_id: iam_tenant[:id]).find_by!(id: id)
+    def find_by_id(iam_user_id:, iam_tenant_id:, id:)
+      invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
 
       {
         id: invoice.id,
@@ -77,7 +77,7 @@ module Accountify
         contact_id: invoice.contact_id,
         status: invoice.status,
         currency_code: invoice.currency_code,
-        due_date: invoice.due_date,
+        due_date: invoice.due_date.to_s,
         line_items: invoice.line_items.map do |line_item|
           {
             description: line_item[:description],

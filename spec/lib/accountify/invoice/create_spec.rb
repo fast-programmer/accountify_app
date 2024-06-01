@@ -17,32 +17,42 @@ module Accountify
         iam_tenant_id: iam_tenant_id, organisation_id: organisation.id)
     end
 
+    let(:result) do
+      Invoice.create(
+        iam_user_id: iam_user_id,
+        iam_tenant_id: iam_tenant_id,
+        organisation_id: organisation.id,
+        contact_id: contact.id,
+        currency_code: "AUD",
+        due_date: current_date + 30.days,
+        line_items: [{
+          description: "Chair",
+          unit_amount: {
+            amount: BigDecimal("100.00"),
+            currency_code: "AUD" },
+          quantity: 1
+        }, {
+          description: "Table",
+          unit_amount: {
+            amount: BigDecimal("300.00"),
+            currency_code: "AUD" },
+          quantity: 3 } ])
+    end
+
+    let(:id) { result[0] }
+
+    let(:event_id) { result[1] }
+
+    let(:invoice) do
+      Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+    end
+
+    let(:event) do
+      Invoice::CreatedEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
+    end
+
     describe '.create' do
       it 'creates invoice' do
-        id, _event_id = Invoice.create(
-          iam_user_id: iam_user_id,
-          iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation.id,
-          contact_id: contact.id,
-          currency_code: "AUD",
-          due_date: current_date + 30.days,
-          line_items: [{
-            description: "Chair",
-            unit_amount: {
-              amount: BigDecimal("100.00"),
-              currency_code: "AUD" },
-            quantity: 1
-          }, {
-            description: "Table",
-            unit_amount: {
-              amount: BigDecimal("300.00"),
-              currency_code: "AUD" },
-            quantity: 3 } ])
-
-        invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant_id)
-          .find_by!(id: id)
-
         expect(invoice.status).to eq(Invoice::Status::DRAFT)
         expect(invoice.currency_code).to eq("AUD")
         expect(invoice.due_date).to eq(current_date + 30.days)
@@ -65,30 +75,6 @@ module Accountify
       end
 
       it 'creates created event' do
-        id, event_id = Invoice.create(
-          iam_user_id: iam_user_id,
-          iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation.id,
-          contact_id: contact.id,
-          currency_code: "AUD",
-          due_date: current_date + 30.days,
-          line_items: [{
-            description: "Chair",
-            unit_amount: {
-              amount: BigDecimal("100.00"),
-              currency_code: "AUD" },
-            quantity: 1
-          }, {
-            description: "Table",
-            unit_amount: {
-              amount: BigDecimal("300.00"),
-              currency_code: "AUD" },
-            quantity: 3 } ])
-
-        event = Invoice::CreatedEvent
-          .where(iam_tenant_id: iam_tenant_id)
-          .find_by!(id: event_id)
-
         expect(event.body).to eq({
           'invoice' => {
             'id' => id,
@@ -115,54 +101,10 @@ module Accountify
       end
 
       it 'associates event with model' do
-        id, event_id = Invoice.create(
-          iam_user_id: iam_user_id,
-          iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation.id,
-          contact_id: contact.id,
-          currency_code: "AUD",
-          due_date: current_date + 30.days,
-          line_items: [{
-            description: "Chair",
-            unit_amount: {
-              amount: BigDecimal("100.00"),
-              currency_code: "AUD" },
-            quantity: 1
-          }, {
-            description: "Table",
-            unit_amount: {
-              amount: BigDecimal("300.00"),
-              currency_code: "AUD" },
-            quantity: 3 } ])
-
-        invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant_id)
-          .find_by!(id: id)
-
         expect(invoice.events.last.id).to eq(event_id)
       end
 
       it 'queues event created job' do
-        _id, event_id = Invoice.create(
-          iam_user_id: iam_user_id,
-          iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation.id,
-          contact_id: contact.id,
-          currency_code: "AUD",
-          due_date: current_date + 30.days,
-          line_items: [{
-            description: "Chair",
-            unit_amount: {
-              amount: BigDecimal("100.00"),
-              currency_code: "AUD" },
-            quantity: 1
-          }, {
-            description: "Table",
-            unit_amount: {
-              amount: BigDecimal("300.00"),
-              currency_code: "AUD" },
-            quantity: 3 } ])
-
         expect(Event::CreatedJob.jobs).to match([
           hash_including(
             'args' => [
