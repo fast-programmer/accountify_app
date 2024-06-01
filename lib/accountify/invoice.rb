@@ -95,7 +95,7 @@ module Accountify
 
     class UpdatedEvent < ::Models::Event; end
 
-    def update(iam_user:, iam_tenant:, id:,
+    def update(iam_user_id:, iam_tenant_id:, id:,
                organisation_id:, contact_id:,
                due_date:, line_items:)
       invoice = nil
@@ -103,17 +103,17 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: organisation_id)
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: organisation_id)
 
         contact = Models::Contact
-          .where(iam_tenant_id: iam_tenant[:id])
+          .where(iam_tenant_id: iam_tenant_id)
           .lock.find_by!(organisation_id: organisation.id, id: contact_id)
 
         invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
         invoice.update!(
-          iam_tenant_id: iam_tenant[:id],
+          iam_tenant_id: iam_tenant_id,
           organisation_id: organisation.id,
           contact_id: contact.id,
           status: Status::DRAFT,
@@ -133,8 +133,8 @@ module Accountify
         end
 
         event = UpdatedEvent.create!(
-          iam_user_id: iam_user[:id],
-          iam_tenant_id: iam_tenant[:id],
+          iam_user_id: iam_user_id,
+          iam_tenant_id: iam_tenant_id,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -158,8 +158,8 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 

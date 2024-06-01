@@ -4,30 +4,31 @@ module Accountify
   RSpec.describe Invoice do
     let(:current_date) { Date.today }
 
-    let(:iam_user) { { id: 12 } }
-    let(:iam_tenant) { { id: 4 } }
+    let(:iam_user_id) { 12 }
+
+    let(:iam_tenant_id) { 4 }
 
     let(:organisation_1) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant[:id])
+      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
     end
 
     let(:organisation_2) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant[:id])
+      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
     end
 
     let(:contact_1) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant[:id], organisation_id: organisation_1.id)
+        iam_tenant_id: iam_tenant_id, organisation_id: organisation_1.id)
     end
 
     let(:contact_2) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant[:id], organisation_id: organisation_2.id)
+        iam_tenant_id: iam_tenant_id, organisation_id: organisation_2.id)
     end
 
     let(:id) do
       create(:accountify_invoice,
-        iam_tenant_id: iam_tenant[:id],
+        iam_tenant_id: iam_tenant_id,
         organisation_id: organisation_1.id,
         contact_id: contact_1.id,
         currency_code: "AUD",
@@ -50,7 +51,7 @@ module Accountify
     describe '.update' do
       it 'updates model' do
         Invoice.update(
-          iam_user: iam_user, iam_tenant: iam_tenant,
+          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
           id: id,
           contact_id: contact_2.id,
           organisation_id: organisation_2.id,
@@ -62,7 +63,7 @@ module Accountify
               currency_code: "AUD" },
             quantity: 3 }])
 
-        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant[:id]).find_by!(id: id)
+        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
 
         expect(invoice.organisation_id).to eq(organisation_2.id)
         expect(invoice.contact_id).to eq(contact_2.id)
@@ -83,7 +84,7 @@ module Accountify
 
       it 'creates updated event' do
         event_id = Invoice.update(
-          iam_user: iam_user, iam_tenant: iam_tenant,
+          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
           id: id,
           contact_id: contact_2.id,
           organisation_id: organisation_2.id,
@@ -96,7 +97,7 @@ module Accountify
             quantity: 3 }])
 
         event = Invoice::UpdatedEvent
-          .where(iam_tenant_id: iam_tenant[:id])
+          .where(iam_tenant_id: iam_tenant_id)
           .find_by!(id: event_id)
 
         expect(event.body).to eq({
@@ -119,7 +120,7 @@ module Accountify
 
       it 'associates event with model' do
         event_id = Invoice.update(
-          iam_user: iam_user, iam_tenant: iam_tenant,
+          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
           id: id,
           contact_id: contact_2.id,
           organisation_id: organisation_2.id,
@@ -132,7 +133,7 @@ module Accountify
             quantity: 3 }])
 
         invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant[:id])
+          .where(iam_tenant_id: iam_tenant_id)
           .find_by!(id: id)
 
         expect(invoice.events.last.id).to eq(event_id)
@@ -140,7 +141,7 @@ module Accountify
 
       it 'queues event created job' do
         event_id = Invoice.update(
-          iam_user: iam_user, iam_tenant: iam_tenant,
+          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
           id: id,
           contact_id: contact_2.id,
           organisation_id: organisation_2.id,
@@ -156,8 +157,8 @@ module Accountify
           hash_including(
             'args' => [
               hash_including(
-                'iam_user_id' => iam_user[:id],
-                'iam_tenant_id' => iam_tenant[:id],
+                'iam_user_id' => iam_user_id,
+                'iam_tenant_id' => iam_tenant_id,
                 'id' => event_id,
                 'type' => 'Accountify::Invoice::UpdatedEvent')])])
       end
