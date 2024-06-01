@@ -96,17 +96,41 @@ module Accountify
     class UpdatedEvent < ::Models::Event; end
 
     def update(iam_user:, iam_tenant:, id:,
-               currency_code:, due_date:, sub_total_amount:)
+               organisation_id:, contact_id:,
+               due_date:, line_items:)
+      invoice = nil
       event = nil
 
       ActiveRecord::Base.transaction do
+        organisation = Models::Organisation
+          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: organisation_id)
+
+        contact = Models::Contact
+          .where(iam_tenant_id: iam_tenant[:id])
+          .lock.find_by!(organisation_id: organisation.id, id: contact_id)
+
         invoice = Models::Invoice
           .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
 
         invoice.update!(
-          currency_code: currency_code,
+          iam_tenant_id: iam_tenant[:id],
+          organisation_id: organisation.id,
+          contact_id: contact.id,
+          status: Status::DRAFT,
           due_date: due_date,
-          sub_total_amount: sub_total_amount )
+          sub_total_amount: line_items.sum do |line_item|
+            line_item[:unit_amount][:amount] * line_item[:quantity]
+          end)
+
+        invoice.line_items.delete_all
+
+        invoice_line_items = line_items.map do |line_item|
+          invoice.line_items.create!(
+            description: line_item[:description],
+            unit_amount_amount: line_item[:unit_amount][:amount],
+            unit_amount_currency_code: line_item[:unit_amount][:currency_code],
+            quantity: line_item[:quantity])
+        end
 
         event = UpdatedEvent.create!(
           iam_user_id: iam_user[:id],
@@ -115,9 +139,19 @@ module Accountify
           body: {
             'invoice' => {
               'id' => invoice.id,
+              'organisation_id' => organisation.id,
+              'contact_id' => contact.id,
               'status' => invoice.status,
               'currency_code' => invoice.currency_code,
-              'due_date' => invoice.due_date,
+              'due_date' => invoice.due_date.to_s,
+              'line_items' => invoice_line_items.map do |invoice_line_item|
+                {
+                  'description' => invoice_line_item.description,
+                  'unit_amount_amount' => invoice_line_item.unit_amount_amount.to_s,
+                  'unit_amount_currency_code' => invoice_line_item.unit_amount_currency_code,
+                  'quantity' => invoice_line_item.quantity
+                }
+              end,
               'sub_total' => {
                 'amount' => invoice.sub_total_amount.to_s,
                 'currency_code' => invoice.sub_total_currency_code } } })
