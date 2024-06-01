@@ -4,7 +4,7 @@ module Accountify
 
     module Status
       DRAFT = 'draft'
-      AUTHORISED = 'authorised'
+      APPROVED = 'approved'
     end
 
     class DraftedEvent < ::Models::Event; end
@@ -194,6 +194,36 @@ module Accountify
             'invoice' => {
               'id' => invoice.id,
               'deleted_at' => invoice.deleted_at } } )
+      end
+
+      Event::CreatedJob.perform_async({
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
+        'id' => event.id,
+        'type' => event.type })
+
+      event.id
+    end
+
+    class ApprovedEvent < ::Models::Event; end
+
+    def approve(iam_user_id:, iam_tenant_id:, id:)
+      event = nil
+
+      ActiveRecord::Base.transaction do
+        invoice = Models::Invoice
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
+
+        invoice.update!(status: Invoice::Status::APPROVED)
+
+        event = ApprovedEvent.create!(
+          iam_user_id: iam_user_id,
+          iam_tenant_id: iam_tenant_id,
+          eventable: invoice,
+          body: {
+            'invoice' => {
+              'id' => invoice.id,
+              'status' => invoice.status } } )
       end
 
       Event::CreatedJob.perform_async({
