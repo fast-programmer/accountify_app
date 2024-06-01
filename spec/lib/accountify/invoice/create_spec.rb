@@ -53,48 +53,46 @@ module Accountify
 
     describe '.create' do
       it 'creates invoice' do
-        expect(invoice.status).to eq(Invoice::Status::DRAFT)
-        expect(invoice.currency_code).to eq("AUD")
-        expect(invoice.due_date).to eq(current_date + 30.days)
-
-        expect(invoice.line_items).to match_array([
-          have_attributes(
-            description: "Chair",
-            unit_amount_amount: BigDecimal("100.00"),
-            unit_amount_currency_code: "AUD",
-            quantity: 1),
-          have_attributes(
-            description: "Table",
-            unit_amount_amount: BigDecimal("300.00"),
-            unit_amount_currency_code: "AUD",
-            quantity: 3),
-        ])
-
-        expect(invoice.sub_total_amount).to eq(BigDecimal("1000.00"))
-        expect(invoice.sub_total_currency_code).to eq("AUD")
+        expect(invoice).to have_attributes(
+          organisation_id: organisation.id,
+          contact_id: contact.id,
+          status: Invoice::Status::DRAFT,
+          currency_code: "AUD",
+          due_date: current_date + 30.days,
+          line_items: match_array([
+            have_attributes(
+              description: "Chair",
+              unit_amount_amount: BigDecimal("100.00"),
+              unit_amount_currency_code: "AUD",
+              quantity: 1),
+            have_attributes(
+              description: "Table",
+              unit_amount_amount: BigDecimal("300.00"),
+              unit_amount_currency_code: "AUD",
+              quantity: 3) ]),
+          sub_total_amount: BigDecimal("1000.00"),
+          sub_total_currency_code: "AUD")
       end
 
       it 'creates created event' do
         expect(event.body).to eq({
           'invoice' => {
             'id' => id,
+            'organisation_id' => organisation.id,
+            'contact_id' => contact.id,
             'status' => Invoice::Status::DRAFT,
             'currency_code' => "AUD",
             'due_date' => (current_date + 30.days ).to_s,
-            'line_items' => [
-              {
-                'description' => "Chair",
-                'unit_amount_amount' => BigDecimal("100.00").to_s,
-                'unit_amount_currency_code' => "AUD",
-                'quantity' => 1
-              },
-              {
-                'description' => "Table",
-                'unit_amount_amount' => BigDecimal("300.00").to_s,
-                'unit_amount_currency_code' => "AUD",
-                'quantity' => 3
-              }
-            ],
+            'line_items' => [{
+              'description' => "Chair",
+              'unit_amount_amount' => BigDecimal("100.00").to_s,
+              'unit_amount_currency_code' => "AUD",
+              'quantity' => 1
+            }, {
+              'description' => "Table",
+              'unit_amount_amount' => BigDecimal("300.00").to_s,
+              'unit_amount_currency_code' => "AUD",
+              'quantity' => 3 }],
             'sub_total' => {
               'amount' => BigDecimal('1000.00').to_s,
               'currency_code' => "AUD" } } })

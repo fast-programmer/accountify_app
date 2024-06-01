@@ -50,11 +50,12 @@ module Accountify
 
     let!(:line_items) { [line_item_1, line_item_2] }
 
+    let(:invoice) do
+      Invoice.find_by_id(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
+    end
+
     describe '.find_by_id' do
       it 'returns attributes' do
-        invoice = Invoice.find_by_id(
-          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
-
         expect(invoice).to eq({
           id: id,
           organisation_id: organisation.id,
@@ -73,8 +74,7 @@ module Accountify
             unit_amount: {
               amount: BigDecimal("400.0"),
               currency_code: "AUD" },
-            quantity: 3
-          }],
+            quantity: 3 }],
           sub_total: {
             amount: BigDecimal("1800.00"),
             currency_code: "AUD" } })

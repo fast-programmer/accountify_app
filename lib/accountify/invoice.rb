@@ -16,6 +16,13 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
+        organisation = Models::Organisation
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: organisation_id)
+
+        contact = Models::Contact
+          .where(iam_tenant_id: iam_tenant_id)
+          .lock.find_by!(organisation_id: organisation.id, id: contact_id)
+
         invoice = Models::Invoice.create!(
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
@@ -43,6 +50,8 @@ module Accountify
           body: {
             'invoice' => {
               'id' => invoice.id,
+              'organisation_id' => organisation.id,
+              'contact_id' => contact.id,
               'status' => invoice.status,
               'currency_code' => invoice.currency_code,
               'due_date' => invoice.due_date,
@@ -112,6 +121,8 @@ module Accountify
         invoice = Models::Invoice
           .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
+        invoice.line_items.destroy_all
+
         invoice.update!(
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation.id,
@@ -121,8 +132,6 @@ module Accountify
           sub_total_amount: line_items.sum do |line_item|
             line_item[:unit_amount][:amount] * line_item[:quantity]
           end)
-
-        invoice.line_items.delete_all
 
         invoice_line_items = line_items.map do |line_item|
           invoice.line_items.create!(
@@ -168,18 +177,18 @@ module Accountify
 
     class DeletedEvent < ::Models::Event; end
 
-    def delete(iam_user:, iam_tenant:, id:)
+    def delete(iam_user_id:, iam_tenant_id:, id:)
       event = nil
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant[:id]).lock.find_by!(id: id)
+          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
         invoice.update!(deleted_at: DateTime.now.utc)
 
         event = DeletedEvent.create!(
-          iam_user_id: iam_user[:id],
-          iam_tenant_id: iam_tenant[:id],
+          iam_user_id: iam_user_id,
+          iam_tenant_id: iam_tenant_id,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -188,8 +197,8 @@ module Accountify
       end
 
       Event::CreatedJob.perform_async({
-        'iam_user_id' => iam_user[:id],
-        'iam_tenant_id' => iam_tenant[:id],
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
         'type' => event.type })
 

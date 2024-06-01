@@ -39,7 +39,7 @@ module Accountify
       ).id
     end
 
-    let(:line_item) do
+    let(:line_item_1) do
       create(:accountify_invoice_line_item,
         invoice_id: id,
         description: "Leather Boots",
@@ -48,58 +48,73 @@ module Accountify
         quantity: 2)
     end
 
+    let(:line_item_2) do
+      create(:accountify_invoice_line_item,
+        invoice_id: id,
+        description: "White Pants",
+        unit_amount_amount: BigDecimal("400.0"),
+        unit_amount_currency_code: "AUD",
+        quantity: 3)
+    end
+
+    let!(:line_items) { [line_item_1, line_item_2] }
+
+    let!(:event_id) do
+      Invoice.update(
+        iam_user_id: iam_user_id,
+        iam_tenant_id: iam_tenant_id,
+        id: id,
+        contact_id: contact_2.id,
+        organisation_id: organisation_2.id,
+        due_date: current_date + 14.days,
+        line_items: [{
+          description: "Green Jumper",
+          unit_amount: {
+            amount: BigDecimal("25.00"),
+            currency_code: "AUD" },
+          quantity: 3
+        }, {
+          description: "Blue Socks",
+          unit_amount: {
+            amount: BigDecimal("5.00"),
+            currency_code: "AUD" },
+          quantity: 4 }])
+    end
+
+    let(:invoice) do
+      Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+    end
+
+    let(:event) do
+      Invoice::UpdatedEvent
+        .where(iam_tenant_id: iam_tenant_id)
+        .find_by!(id: event_id)
+    end
+
     describe '.update' do
       it 'updates model' do
-        Invoice.update(
-          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
-          id: id,
-          contact_id: contact_2.id,
+        expect(invoice).to have_attributes(
           organisation_id: organisation_2.id,
+          contact_id: contact_2.id,
+          status: Invoice::Status::DRAFT,
+          currency_code: "AUD",
           due_date: current_date + 14.days,
-          line_items: [{
-            description: "White Shirt",
-            unit_amount: {
-              amount: BigDecimal("25.00"),
-              currency_code: "AUD" },
-            quantity: 3 }])
-
-        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
-
-        expect(invoice.organisation_id).to eq(organisation_2.id)
-        expect(invoice.contact_id).to eq(contact_2.id)
-        expect(invoice.status).to eq(Invoice::Status::DRAFT)
-        expect(invoice.currency_code).to eq("AUD")
-        expect(invoice.due_date).to eq(current_date + 14.days)
-
-        expect(invoice.line_items).to match_array([
-          have_attributes(
-            description: "White Shirt",
-            unit_amount_amount: BigDecimal("25.00"),
-            unit_amount_currency_code: "AUD",
-            quantity: 3) ])
-
-        expect(invoice.sub_total_amount).to eq(BigDecimal("75.00"))
-        expect(invoice.sub_total_currency_code).to eq("AUD")
+          line_items: match_array([
+            have_attributes(
+              description: "Green Jumper",
+              unit_amount_amount: BigDecimal("25.00"),
+              unit_amount_currency_code: "AUD",
+              quantity: 3 ),
+            have_attributes(
+              description: "Blue Socks",
+              unit_amount_amount: BigDecimal("5.00"),
+              unit_amount_currency_code: "AUD",
+              quantity: 4 ) ]),
+          sub_total_amount: BigDecimal("95.00"),
+          sub_total_currency_code: "AUD")
       end
 
       it 'creates updated event' do
-        event_id = Invoice.update(
-          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
-          id: id,
-          contact_id: contact_2.id,
-          organisation_id: organisation_2.id,
-          due_date: current_date + 14.days,
-          line_items: [{
-            description: "White Shirt",
-            unit_amount: {
-              amount: BigDecimal("25.00"),
-              currency_code: "AUD" },
-            quantity: 3 }])
-
-        event = Invoice::UpdatedEvent
-          .where(iam_tenant_id: iam_tenant_id)
-          .find_by!(id: event_id)
-
         expect(event.body).to eq({
           'invoice' => {
             'id' => id,
@@ -109,50 +124,25 @@ module Accountify
             'currency_code' => "AUD",
             'due_date' => (current_date + 14.days).to_s,
             'line_items' => [{
-              'description' => "White Shirt",
+              'description' => "Green Jumper",
               'unit_amount_amount' => BigDecimal("25.00").to_s,
               'unit_amount_currency_code' => "AUD",
-              'quantity' => 3 }],
+              'quantity' => 3
+            }, {
+              'description' => "Blue Socks",
+              'unit_amount_amount' => BigDecimal("5.00").to_s,
+              'unit_amount_currency_code' => "AUD",
+              'quantity' => 4 }],
             'sub_total' => {
-              'amount' => BigDecimal("75.00").to_s,
+              'amount' => BigDecimal("95.00").to_s,
               'currency_code' => "AUD" } } })
       end
 
       it 'associates event with model' do
-        event_id = Invoice.update(
-          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
-          id: id,
-          contact_id: contact_2.id,
-          organisation_id: organisation_2.id,
-          due_date: current_date + 14.days,
-          line_items: [{
-            description: "White Shirt",
-            unit_amount: {
-              amount: BigDecimal("25.00"),
-              currency_code: "AUD" },
-            quantity: 3 }])
-
-        invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant_id)
-          .find_by!(id: id)
-
         expect(invoice.events.last.id).to eq(event_id)
       end
 
       it 'queues event created job' do
-        event_id = Invoice.update(
-          iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id,
-          id: id,
-          contact_id: contact_2.id,
-          organisation_id: organisation_2.id,
-          due_date: current_date + 14.days,
-          line_items: [{
-            description: "White Shirt",
-            unit_amount: {
-              amount: BigDecimal("25.00"),
-              currency_code: "AUD" },
-            quantity: 3 }])
-
         expect(Event::CreatedJob.jobs).to match([
           hash_including(
             'args' => [
