@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_27_212747) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,6 +26,32 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_27_212747) do
     t.index ["deleted_at"], name: "index_accountify_contacts_on_deleted_at"
     t.index ["iam_tenant_id"], name: "index_accountify_contacts_on_iam_tenant_id"
     t.index ["organisation_id"], name: "index_accountify_contacts_on_organisation_id"
+  end
+
+  create_table "accountify_invoice_line_items", force: :cascade do |t|
+    t.bigint "invoice_id", null: false
+    t.string "description", null: false
+    t.integer "quantity", null: false
+    t.decimal "unit_amount_amount", precision: 12, scale: 2, null: false
+    t.string "unit_amount_currency_code", null: false
+    t.index ["invoice_id"], name: "index_accountify_invoice_line_items_on_invoice_id"
+  end
+
+  create_table "accountify_invoices", force: :cascade do |t|
+    t.bigint "iam_tenant_id", null: false
+    t.bigint "organisation_id", null: false
+    t.bigint "contact_id", null: false
+    t.string "status", null: false
+    t.string "currency_code"
+    t.date "due_date"
+    t.decimal "sub_total_amount", precision: 12, scale: 2
+    t.string "sub_total_currency_code"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_accountify_invoices_on_contact_id"
+    t.index ["iam_tenant_id"], name: "index_accountify_invoices_on_iam_tenant_id"
+    t.index ["organisation_id"], name: "index_accountify_invoices_on_organisation_id"
   end
 
   create_table "accountify_organisations", force: :cascade do |t|
@@ -68,5 +94,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_27_212747) do
   end
 
   add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
+  add_foreign_key "accountify_invoice_line_items", "accountify_invoices", column: "invoice_id"
+  add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
+  add_foreign_key "accountify_invoices", "accountify_organisations", column: "organisation_id"
   add_foreign_key "outboxer_exceptions", "outboxer_messages"
 end
