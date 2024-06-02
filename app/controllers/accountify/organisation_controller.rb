@@ -11,12 +11,12 @@ module Accountify
     end
 
     def show
-      organisation_details = Organisation.find_by_id(
+      organisation = Organisation.find_by_id(
         iam_user_id: iam_user_id,
         iam_tenant_id: iam_tenant_id,
         id: params[:id])
 
-      render json: organisation_details, status: :ok
+      render json: organisation, status: :ok
     end
 
     def update
