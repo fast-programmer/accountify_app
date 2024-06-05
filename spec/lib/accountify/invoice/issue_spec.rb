@@ -53,23 +53,23 @@ module Accountify
     let(:invoice) { Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id) }
 
     let(:event) do
-      Invoice::ApprovedEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
+      Invoice::IssuedEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
     end
 
     let!(:event_id) do
-      Invoice.approve(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
+      Invoice.issue(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
     end
 
-    describe '.approve' do
+    describe '.issue' do
       it "updates model status" do
-        expect(invoice.status).to eq(Invoice::Status::APPROVED)
+        expect(invoice.status).to eq(Invoice::Status::ISSUED)
       end
 
-      it 'creates approved event' do
+      it 'creates issued event' do
         expect(event.body).to include(
           'invoice' => a_hash_including(
             'id' => id,
-            'status' => Invoice::Status::APPROVED))
+            'status' => Invoice::Status::ISSUED))
       end
 
       it 'associates event with model' do
@@ -84,7 +84,7 @@ module Accountify
                 'iam_user_id' => iam_user_id,
                 'iam_tenant_id' => iam_tenant_id,
                 'id' => event_id,
-                'type' => 'Accountify::Invoice::ApprovedEvent')])])
+                'type' => 'Accountify::Invoice::IssuedEvent')])])
       end
     end
   end

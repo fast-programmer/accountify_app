@@ -4,7 +4,7 @@ module Accountify
 
     module Status
       DRAFT = 'draft'
-      APPROVED = 'approved'
+      ISSUED = 'issued'
       VOIDED = 'voided'
     end
 
@@ -18,11 +18,12 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: organisation_id)
+          .where(iam_tenant_id: iam_tenant_id)
+          .find_by!(id: organisation_id)
 
         contact = Models::Contact
           .where(iam_tenant_id: iam_tenant_id)
-          .lock.find_by!(organisation_id: organisation.id, id: contact_id)
+          .find_by!(organisation_id: organisation.id, id: contact_id)
 
         invoice = Models::Invoice.create!(
           iam_tenant_id: iam_tenant_id,
@@ -182,8 +183,7 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        invoice = Models::Invoice
-          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
+        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
         invoice.update!(deleted_at: DateTime.now.utc)
 
@@ -206,17 +206,17 @@ module Accountify
       event.id
     end
 
-    class ApprovedEvent < ::Models::Event; end
+    class IssuedEvent < ::Models::Event; end
 
-    def approve(iam_user_id:, iam_tenant_id:, id:)
+    def issue(iam_user_id:, iam_tenant_id:, id:)
       event = nil
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
-        invoice.update!(status: Invoice::Status::APPROVED)
+        invoice.update!(status: Invoice::Status::ISSUED)
 
-        event = ApprovedEvent.create!(
+        event = IssuedEvent.create!(
           iam_user_id: iam_user_id,
           iam_tenant_id: iam_tenant_id,
           eventable: invoice,
