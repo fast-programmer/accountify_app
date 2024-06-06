@@ -1,5 +1,5 @@
-iam_user = { id: 1 }
-iam_tenant = { id: 1 }
+iam_user_id = 1
+iam_tenant_id = 1
 
 $running = true
 
@@ -13,8 +13,8 @@ while $running
   begin
     organisation, event = Accountify::Organisation
       .create(
-        iam_user: iam_user,
-        iam_tenant: iam_tenant,
+        iam_user_id: iam_user_id,
+        iam_tenant_id: iam_tenant_id,
         name: 'Big Bin Corp')
 
     puts "Created (organisation,event)=(#{organisation[:id]},#{event[:id]}) for #{iam_user[:id]} at #{Time.now}"
