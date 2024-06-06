@@ -33,14 +33,14 @@ module Accountify
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
-            line_item[:unit_amount][:amount] * line_item[:quantity]
+            BigDecimal(line_item[:unit_amount][:amount]) * line_item[:quantity].to_i
           end,
           sub_total_currency_code: currency_code)
 
         invoice_line_items = line_items.map do |line_item|
           invoice.line_items.create!(
             description: line_item[:description],
-            unit_amount_amount: line_item[:unit_amount][:amount],
+            unit_amount_amount: BigDecimal(line_item[:unit_amount][:amount]),
             unit_amount_currency_code: line_item[:unit_amount][:currency_code],
             quantity: line_item[:quantity])
         end
@@ -114,11 +114,12 @@ module Accountify
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
-          .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: organisation_id)
+          .where(iam_tenant_id: iam_tenant_id)
+          .find_by!(id: organisation_id)
 
         contact = Models::Contact
           .where(iam_tenant_id: iam_tenant_id)
-          .lock.find_by!(organisation_id: organisation.id, id: contact_id)
+          .find_by!(organisation_id: organisation.id, id: contact_id)
 
         invoice = Models::Invoice
           .where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
@@ -132,7 +133,7 @@ module Accountify
           status: Status::DRAFT,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
-            line_item[:unit_amount][:amount] * line_item[:quantity]
+            BigDecimal(line_item[:unit_amount][:amount]) * line_item[:quantity].to_i
           end)
 
         invoice_line_items = line_items.map do |line_item|
@@ -185,7 +186,7 @@ module Accountify
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
-        invoice.update!(deleted_at: DateTime.now.utc)
+        invoice.update!(deleted_at: Time.now.utc)
 
         event = DeletedEvent.create!(
           iam_user_id: iam_user_id,

@@ -1,7 +1,7 @@
 module Accountify
   class InvoiceController < AccountifyController
     def create
-      invoice_id, event_id = Invoice.draft(
+      id, event_id = Invoice.draft(
         iam_user_id: iam_user_id,
         iam_tenant_id: iam_tenant_id,
         organisation_id: params[:organisation_id],
@@ -10,7 +10,7 @@ module Accountify
         due_date: params[:due_date],
         line_items: params[:line_items])
 
-      render json: { invoice_id: invoice_id, event_id: event_id }, status: :created
+      render json: { id: id, event_id: event_id }, status: :created
     end
 
     def show
@@ -44,8 +44,8 @@ module Accountify
       render json: { event_id: event_id }, status: :ok
     end
 
-    def approve
-      event_id = Invoice.approve(
+    def issue
+      event_id = Invoice.issue(
         iam_user_id: iam_user_id,
         iam_tenant_id: iam_tenant_id,
         id: params[:id])

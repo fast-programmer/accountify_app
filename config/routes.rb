@@ -20,7 +20,7 @@ Rails.application.routes.draw do
 
     resources :invoice, only: [:create, :show, :update, :destroy] do
       member do
-        patch 'approve'
+        patch 'issue'
         patch 'void'
       end
     end

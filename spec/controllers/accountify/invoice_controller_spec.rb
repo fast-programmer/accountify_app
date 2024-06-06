@@ -2,11 +2,21 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe InvoiceController, type: :controller do
+    let(:current_date) { Date.today }
+
     let(:iam_user_id) { 1 }
+
     let(:iam_tenant_id) { 1 }
-    let(:organisation) { create(:accountify_organisation, iam_tenant_id: iam_tenant_id) }
-    let(:contact) { create(:accountify_contact, iam_tenant_id: iam_tenant_id, organisation_id: organisation.id) }
-    let(:invoice) { create(:accountify_invoice, iam_tenant_id: iam_tenant_id, organisation_id: organisation.id, contact_id: contact.id) }
+
+    let(:organisation) do
+      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+    end
+
+    let(:contact) do
+      create(:accountify_contact,
+        iam_tenant_id: iam_tenant_id,
+        organisation_id: organisation.id)
+    end
 
     before do
       request.headers['X-Iam-User-Id'] = iam_user_id
@@ -14,27 +24,77 @@ module Accountify
     end
 
     describe 'POST #create' do
-      it 'creates a new invoice with line items' do
+      let(:response) do
         post :create, params: {
           organisation_id: organisation.id,
           contact_id: contact.id,
-          currency_code: 'USD',
+          currency_code: 'AUD',
           due_date: '2024-12-31',
-          line_items: [
-            { description: 'Item 1', quantity: 2, unit_amount_amount: 100.0, 
-              unit_amount_currency_code: 'USD' },
-            { description: 'Item 2', quantity: 5, unit_amount_amount: 50.0, 
-              unit_amount_currency_code: 'USD' }
-          ]
-        }
+          line_items: [{
+            description: 'Item 1',
+            unit_amount: { amount: '100.00', currency_code: 'AUD' },
+            quantity: '2'
+          }, {
+            description: 'Item 2',
+            unit_amount: { amount: '50.00', currency_code: 'AUD' },
+            quantity: '5' }] }
+      end
 
+      let!(:response_body_json) { JSON.parse(response.body) }
+
+      let(:invoice) { Models::Invoice.find_by!(id: response_body_json['invoice_id']) }
+
+      let(:event) { invoice.events.find_by!(id: response_body_json['event_id']) }
+
+      it 'returns 201 created with invoice_id and event_id in body' do
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to have_key('invoice_id')
-        expect(JSON.parse(response.body)).to have_key('event_id')
+
+        expect(response_body_json).to include('invoice_id', 'event_id')
+      end
+
+      it 'creates invoice' do
+        expect(invoice.persisted?).to be true
+      end
+
+      it 'creates event' do
+        expect(event.persisted?).to be true
       end
     end
 
     describe 'GET #show' do
+      let(:id) do
+        create(:accountify_invoice,
+          iam_tenant_id: iam_tenant_id,
+          organisation_id: organisation.id,
+          contact_id: contact.id,
+          currency_code: "AUD",
+          status: Invoice::Status::DRAFT,
+          due_date: current_date + 30.days,
+          sub_total_amount: BigDecimal("600.00"),
+          sub_total_currency_code: "AUD"
+        ).id
+      end
+
+      let(:line_item_1) do
+        create(:accountify_invoice_line_item,
+          invoice_id: id,
+          description: "Leather Boots",
+          unit_amount_amount: BigDecimal("300.0"),
+          unit_amount_currency_code: "AUD",
+          quantity: 2)
+      end
+
+      let(:line_item_2) do
+        create(:accountify_invoice_line_item,
+          invoice_id: id,
+          description: "White Pants",
+          unit_amount_amount: BigDecimal("400.0"),
+          unit_amount_currency_code: "AUD",
+          quantity: 3)
+      end
+
+      let!(:line_items) { [line_item_1, line_item_2] }
+
       it 'returns the invoice' do
         get :show, params: { id: invoice.id }
 
@@ -51,9 +111,9 @@ module Accountify
           contact_id: contact.id,
           due_date: '2024-12-31',
           line_items: [
-            { description: 'Updated Item 1', quantity: 3, unit_amount_amount: 120.0, 
+            { description: 'Updated Item 1', quantity: 3, unit_amount_amount: 120.0,
               unit_amount_currency_code: 'USD' },
-            { description: 'Updated Item 2', quantity: 4, unit_amount_amount: 60.0, 
+            { description: 'Updated Item 2', quantity: 4, unit_amount_amount: 60.0,
               unit_amount_currency_code: 'USD' }
           ]
         }
