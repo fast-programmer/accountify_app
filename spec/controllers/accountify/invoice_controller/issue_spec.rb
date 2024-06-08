@@ -18,7 +18,7 @@ module Accountify
         organisation_id: organisation.id)
     end
 
-    let(:invoice) do
+    let(:id) do
       create(:accountify_invoice,
         iam_tenant_id: iam_tenant_id,
         organisation_id: organisation.id,
@@ -38,7 +38,8 @@ module Accountify
             description: "White Pants",
             unit_amount_amount: BigDecimal("400.0"),
             unit_amount_currency_code: "AUD",
-            quantity: 3) ])
+            quantity: 3) ]
+      ).id
     end
 
     before do
@@ -46,7 +47,7 @@ module Accountify
       request.headers['X-Iam-Tenant-Id'] = iam_tenant_id
     end
 
-    let(:response) { patch :issue, params: { id: invoice.id } }
+    let(:response) { patch :issue, params: { id: id } }
 
     let!(:response_body_json) { JSON.parse(response.body) }
 
@@ -56,6 +57,10 @@ module Accountify
         .find_by!(id: response_body_json['event_id'])
     end
 
+    let(:invoice) do
+      Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+    end
+
     describe 'PATCH #issue' do
       it 'returns 200 with deleted event id in body' do
         expect(response).to have_http_status(:ok)
@@ -63,13 +68,12 @@ module Accountify
         expect(JSON.parse(response.body)).to have_key('event_id')
       end
 
-      it 'updates the invoice status to issued' do
-        expect(
-          Models::Invoice
-            .where(deleted_at: nil, iam_tenant_id: iam_tenant_id)
-            .find_by!(id: invoice.id)
-            .status
-        ).to eq(Invoice::Status::ISSUED)
+      it 'updates invoice status to issued' do
+        expect(invoice.status).to eq(Invoice::Status::ISSUED)
+      end
+
+      it 'sets invoice issued_at' do
+        expect(invoice.issued_at).not_to be_nil
       end
 
       it 'creates event' do

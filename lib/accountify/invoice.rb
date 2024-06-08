@@ -216,7 +216,7 @@ module Accountify
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
 
-        invoice.update!(status: Invoice::Status::ISSUED)
+        invoice.update!(status: Invoice::Status::ISSUED, issued_at: Time.current)
 
         event = IssuedEvent.create!(
           iam_user_id: iam_user_id,
@@ -225,7 +225,8 @@ module Accountify
           body: {
             'invoice' => {
               'id' => invoice.id,
-              'status' => invoice.status } } )
+              'status' => invoice.status,
+              'issued_at' => invoice.issued_at } } )
       end
 
       Event::CreatedJob.perform_async({
