@@ -44,6 +44,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
     t.string "status", null: false
     t.string "currency_code"
     t.date "due_date"
+    t.datetime "issued_at"
     t.datetime "paid_at"
     t.decimal "sub_total_amount", precision: 12, scale: 2
     t.string "sub_total_currency_code"

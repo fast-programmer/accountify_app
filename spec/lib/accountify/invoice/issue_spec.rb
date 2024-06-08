@@ -65,11 +65,16 @@ module Accountify
         expect(invoice.status).to eq(Invoice::Status::ISSUED)
       end
 
+      it "updates model issued_at" do
+        expect(invoice.issued_at).to be_present
+      end
+
       it 'creates issued event' do
         expect(event.body).to include(
           'invoice' => a_hash_including(
             'id' => id,
-            'status' => Invoice::Status::ISSUED))
+            'status' => Invoice::Status::ISSUED,
+            'issued_at' => be_present ) )
       end
 
       it 'associates event with model' do
