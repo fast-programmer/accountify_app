@@ -42,11 +42,7 @@ module Accountify
     end
 
     let!(:event_id) do
-      Invoice.paid(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
-        id: id,
-        paid_at: Time.now.utc - 1.hour)
+      Invoice.paid(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
     end
 
     let(:invoice) do

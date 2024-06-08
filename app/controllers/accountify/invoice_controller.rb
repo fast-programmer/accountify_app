@@ -53,6 +53,15 @@ module Accountify
       render json: { event_id: event_id }, status: :ok
     end
 
+    def paid
+      event_id = Invoice.paid(
+        iam_user_id: iam_user_id,
+        iam_tenant_id: iam_tenant_id,
+        id: params[:id])
+
+      render json: { event_id: event_id }, status: :ok
+    end
+
     def void
       event_id = Invoice.void(
         iam_user_id: iam_user_id,

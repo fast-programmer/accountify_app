@@ -239,7 +239,7 @@ module Accountify
 
     class PaidEvent < ::Models::Event; end
 
-    def paid(iam_user_id:, iam_tenant_id:, id:, paid_at:)
+    def paid(iam_user_id:, iam_tenant_id:, id:)
       event = nil
 
       ActiveRecord::Base.transaction do
