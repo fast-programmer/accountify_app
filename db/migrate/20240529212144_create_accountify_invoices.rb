@@ -15,6 +15,8 @@ class CreateAccountifyInvoices < ActiveRecord::Migration[7.1]
 
       t.date :due_date
 
+      t.datetime :paid_at
+
       t.decimal :sub_total_amount, precision: 12, scale: 2
       t.string :sub_total_currency_code
 

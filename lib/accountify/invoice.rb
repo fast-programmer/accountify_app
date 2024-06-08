@@ -5,6 +5,7 @@ module Accountify
     module Status
       DRAFT = 'draft'
       ISSUED = 'issued'
+      PAID = 'paid'
       VOIDED = 'voided'
     end
 
@@ -225,6 +226,40 @@ module Accountify
             'invoice' => {
               'id' => invoice.id,
               'status' => invoice.status } } )
+      end
+
+      Event::CreatedJob.perform_async({
+        'iam_user_id' => iam_user_id,
+        'iam_tenant_id' => iam_tenant_id,
+        'id' => event.id,
+        'type' => event.type })
+
+      event.id
+    end
+
+    class PaidEvent < ::Models::Event; end
+
+    def paid(iam_user_id:, iam_tenant_id:, id:)
+      event = nil
+
+      ActiveRecord::Base.transaction do
+        invoice = Models::Invoice.where(iam_tenant_id: iam_tenant_id).lock.find_by!(id: id)
+
+        if invoice.status != Invoice::Status::ISSUED
+          raise "Accountify::Invoice #{id} must be issued, not #{invoice.status}"
+        end
+
+        invoice.update!(status: Invoice::Status::PAID, paid_at: Time.current)
+
+        event = PaidEvent.create!(
+          iam_user_id: iam_user_id,
+          iam_tenant_id: iam_tenant_id,
+          eventable: invoice,
+          body: {
+            'invoice' => {
+              'id' => invoice.id,
+              'status' => invoice.status,
+              'paid_at' => invoice.paid_at } } )
       end
 
       Event::CreatedJob.perform_async({
