@@ -58,11 +58,16 @@ module Accountify
         expect(invoice.status).to eq(Invoice::Status::PAID)
       end
 
+      it "sets model paid_at" do
+        expect(invoice.paid_at).to be_present
+      end
+
       it 'creates paid event' do
         expect(event.body).to include(
           'invoice' => a_hash_including(
             'id' => id,
-            'status' => Invoice::Status::PAID))
+            'status' => Invoice::Status::PAID,
+            'paid_at' => be_present ) )
       end
 
       it 'associates event with model' do

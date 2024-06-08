@@ -249,7 +249,7 @@ module Accountify
           raise "Accountify::Invoice #{id} must be issued, not #{invoice.status}"
         end
 
-        invoice.update!(status: Invoice::Status::PAID)
+        invoice.update!(status: Invoice::Status::PAID, paid_at: Time.current)
 
         event = PaidEvent.create!(
           iam_user_id: iam_user_id,
@@ -258,7 +258,8 @@ module Accountify
           body: {
             'invoice' => {
               'id' => invoice.id,
-              'status' => invoice.status } } )
+              'status' => invoice.status,
+              'paid_at' => invoice.paid_at } } )
       end
 
       Event::CreatedJob.perform_async({
