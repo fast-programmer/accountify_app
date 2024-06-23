@@ -23,20 +23,8 @@ module Accountify
         currency_code: "AUD",
         status: Invoice::Status::ISSUED,
         due_date: current_date,
-        sub_total_amount: BigDecimal("200.00"),
-        sub_total_currency_code: "AUD",
-        line_items: [
-          build(:accountify_invoice_line_item,
-            description: "Leather Boots",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 1),
-          build(:accountify_invoice_line_item,
-            description: "White Pants",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 1) ]
-      )
+        sub_total_amount: BigDecimal("100.00"),
+        sub_total_currency_code: "AUD")
     end
 
     let!(:invoice_2) do
@@ -47,20 +35,8 @@ module Accountify
         currency_code: "AUD",
         status: Invoice::Status::ISSUED,
         due_date: current_date + 1.month,
-        sub_total_amount: BigDecimal("400.00"),
-        sub_total_currency_code: "AUD",
-        line_items: [
-          build(:accountify_invoice_line_item,
-            description: "Leather Boots",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 2),
-          build(:accountify_invoice_line_item,
-            description: "White Pants",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 2) ]
-      )
+        sub_total_amount: BigDecimal("200.00"),
+        sub_total_currency_code: "AUD")
     end
 
     let!(:invoice_3) do
@@ -71,20 +47,8 @@ module Accountify
         currency_code: "AUD",
         status: Invoice::Status::ISSUED,
         due_date: current_date + 2.months,
-        sub_total_amount: BigDecimal("600.00"),
-        sub_total_currency_code: "AUD",
-        line_items: [
-          build(:accountify_invoice_line_item,
-            description: "Leather Boots",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 3),
-          build(:accountify_invoice_line_item,
-            description: "White Pants",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 3) ]
-      )
+        sub_total_amount: BigDecimal("300.00"),
+        sub_total_currency_code: "AUD")
     end
 
     let!(:invoice_4) do
@@ -95,20 +59,8 @@ module Accountify
         currency_code: "AUD",
         status: Invoice::Status::ISSUED,
         due_date: current_date + 3.months,
-        sub_total_amount: BigDecimal("800.00"),
-        sub_total_currency_code: "AUD",
-        line_items: [
-          build(:accountify_invoice_line_item,
-            description: "Leather Boots",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 4),
-          build(:accountify_invoice_line_item,
-            description: "White Pants",
-            unit_amount_amount: BigDecimal("100.0"),
-            unit_amount_currency_code: "AUD",
-            quantity: 4) ]
-      )
+        sub_total_amount: BigDecimal("400.00"),
+        sub_total_currency_code: "AUD")
     end
 
     let(:as_at_date) { Date.parse('2024-06-23') }
@@ -126,8 +78,7 @@ module Accountify
         num_periods: num_periods,
         period_frequency: period_frequency,
         period_unit: period_unit,
-        ageing_by: ageing_by
-      )
+        ageing_by: ageing_by)
     end
 
     describe '.generate' do
@@ -143,20 +94,20 @@ module Accountify
             {
               'start_date' => Date.parse('2024-06-23'),
               'end_date' => Date.parse('2024-07-22'),
-              'sub_total' => BigDecimal('200.0')
+              'sub_total' => BigDecimal('100.0')
             },
             {
               'start_date' => Date.parse('2024-07-23'),
               'end_date' => Date.parse('2024-08-22'),
-              'sub_total' => BigDecimal('400.0')},
+              'sub_total' => BigDecimal('200.0')},
             {
               'start_date' => Date.parse('2024-08-23'),
               'end_date' => Date.parse('2024-09-22'),
-              'sub_total' => BigDecimal('600.0')},
+              'sub_total' => BigDecimal('300.0')},
             {
               'start_date' => Date.parse('2024-09-23'),
               'end_date' => Date.parse('2024-10-22'),
-              'sub_total' => BigDecimal('800.0')
+              'sub_total' => BigDecimal('400.0')
             }
           ]
         )
