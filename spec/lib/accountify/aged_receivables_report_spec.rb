@@ -27,13 +27,31 @@ module Accountify
         expect(aged_receivables_report.periods.size).to eq(num_periods)
 
         expect(
-          aged_receivables_report.periods.map { |p| p.attributes.slice('start_date', 'end_date', 'sub_total') }
-        ).to eq([
-          {'start_date' => Date.parse('2024-06-23'), 'end_date' => Date.parse('2024-07-22'), 'sub_total' => BigDecimal('0')},
-          {'start_date' => Date.parse('2024-07-23'), 'end_date' => Date.parse('2024-08-22'), 'sub_total' => BigDecimal('0')},
-          {'start_date' => Date.parse('2024-08-23'), 'end_date' => Date.parse('2024-09-22'), 'sub_total' => BigDecimal('0')},
-          {'start_date' => Date.parse('2024-09-23'), 'end_date' => Date.parse('2024-10-22'), 'sub_total' => BigDecimal('0')}
-        ])
+          aged_receivables_report.periods.map do |period|
+            period.attributes.slice('start_date', 'end_date', 'sub_total')
+          end
+        ).to eq(
+          [
+            {
+              'start_date' => Date.parse('2024-06-23'),
+              'end_date' => Date.parse('2024-07-22'),
+              'sub_total' => BigDecimal('0')
+            },
+            {
+              'start_date' => Date.parse('2024-07-23'),
+              'end_date' => Date.parse('2024-08-22'),
+              'sub_total' => BigDecimal('0')},
+            {
+              'start_date' => Date.parse('2024-08-23'),
+              'end_date' => Date.parse('2024-09-22'),
+              'sub_total' => BigDecimal('0')},
+            {
+              'start_date' => Date.parse('2024-09-23'),
+              'end_date' => Date.parse('2024-10-22'),
+              'sub_total' => BigDecimal('0')
+            }
+          ]
+        )
       end
     end
   end

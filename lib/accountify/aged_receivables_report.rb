@@ -16,26 +16,37 @@ module Accountify
         ageing_by: ageing_by)
 
       period_dates = (1..num_periods).map do |i|
-        case period_unit
-        when :month
-          as_at_date + i.months * period_frequency - 1.day
-        when :week
-          as_at_date + i.weeks * period_frequency - 1.day
-        when :day
-          as_at_date + i.day * period_frequency - 1.day
-        else
-          raise ArgumentError, "Unsupported period unit: #{period_unit}"
-        end
+        start_date = case period_unit
+                     when :month
+                       as_at_date + (i - 1) * period_frequency.months
+                     when :week
+                       as_at_date + (i - 1) * period_frequency.weeks
+                     when :day
+                       as_at_date + (i - 1) * period_frequency.days
+                     end
+
+        end_date = case period_unit
+                   when :month
+                     as_at_date + i * period_frequency.months - 1.day
+                   when :week
+                     as_at_date + i * period_frequency.weeks - 1.day
+                   when :day
+                     as_at_date + i * period_frequency.days - 1.day
+                   end
+        { start_date: start_date, end_date: end_date }
       end
 
-      ([as_at_date] + period_dates).each_cons(2) do |start_date, end_date|
+      period_dates.each do |period|
         sub_total = Models::Invoice
           .where(iam_tenant_id: iam_tenant_id)
           .where(currency_code: currency_code)
-          .where("#{ageing_by} >= ? AND #{ageing_by} <= ?", start_date, end_date)
+          .where("#{ageing_by} >= ? AND #{ageing_by} <= ?", period[:start_date], period[:end_date])
           .sum(:sub_total_amount)
 
-        report.periods.create!(start_date: start_date, end_date: end_date, sub_total: sub_total)
+        report.periods.create!(
+          start_date: period[:start_date],
+          end_date: period[:end_date],
+          sub_total: sub_total)
       end
 
       report
