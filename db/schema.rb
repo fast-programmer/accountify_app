@@ -10,9 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
+ActiveRecord::Schema[7.1].define(version: 2024_06_20_220453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accountify_aged_receivables_report_periods", force: :cascade do |t|
+    t.bigint "aged_receivables_report_id", null: false
+    t.date "start_date", null: false
+    t.date "end_date", null: false
+    t.decimal "sub_total", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["aged_receivables_report_id"], name: "idx_on_aged_receivables_report_id_7f32513b52"
+  end
+
+  create_table "accountify_aged_receivables_reports", force: :cascade do |t|
+    t.bigint "iam_tenant_id", null: false
+    t.date "as_at_date", null: false
+    t.string "currency_code", null: false
+    t.integer "num_periods", null: false
+    t.integer "period_frequency", null: false
+    t.string "period_unit", null: false
+    t.string "ageing_by", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["iam_tenant_id"], name: "index_accountify_aged_receivables_reports_on_iam_tenant_id"
+  end
 
   create_table "accountify_contacts", force: :cascade do |t|
     t.bigint "iam_tenant_id", null: false
@@ -95,6 +118,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
     t.index ["status", "created_at"], name: "index_outboxer_messages_on_status_and_created_at"
   end
 
+  add_foreign_key "accountify_aged_receivables_report_periods", "accountify_aged_receivables_reports", column: "aged_receivables_report_id"
   add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoice_line_items", "accountify_invoices", column: "invoice_id"
   add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
