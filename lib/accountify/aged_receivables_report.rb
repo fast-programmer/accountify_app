@@ -9,11 +9,9 @@ module Accountify
       report = nil
 
       ActiveRecord::Base.transaction(isolation: :repeatable_read) do
-        Models::AgedReceivablesReport
-          .where(iam_tenant_id: iam_tenant_id)
-          .each do |report|
-            report.periods.destroy_all
-            report.delete
+        Models::AgedReceivablesReport.where(iam_tenant_id: iam_tenant_id).each do |report|
+          report.periods.destroy_all
+          report.delete
         end
 
         report = Models::AgedReceivablesReport.create(
