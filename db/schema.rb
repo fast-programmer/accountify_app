@@ -34,7 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_20_220453) do
     t.string "ageing_by", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["iam_tenant_id"], name: "index_accountify_aged_receivables_reports_on_iam_tenant_id"
+    t.index ["iam_tenant_id"], name: "index_accountify_aged_receivables_reports_on_iam_tenant_id", unique: true
   end
 
   create_table "accountify_contacts", force: :cascade do |t|

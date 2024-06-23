@@ -9,6 +9,13 @@ module Accountify
       report = nil
 
       ActiveRecord::Base.transaction(isolation: :repeatable_read) do
+        Models::AgedReceivablesReport
+          .where(iam_tenant_id: iam_tenant_id)
+          .each do |report|
+            report.periods.destroy_all
+            report.delete
+        end
+
         report = Models::AgedReceivablesReport.create(
           iam_tenant_id: iam_tenant_id,
           as_at_date: as_at_date,
@@ -19,23 +26,25 @@ module Accountify
           ageing_by: ageing_by)
 
         period_dates = (1..num_periods).map do |i|
-          start_date = case period_unit
-                        when :month
-                          as_at_date + (i - 1) * period_frequency.months
-                        when :week
-                          as_at_date + (i - 1) * period_frequency.weeks
-                        when :day
-                          as_at_date + (i - 1) * period_frequency.days
-                        end
+          start_date =
+            case period_unit
+            when :month
+              as_at_date + (i - 1) * period_frequency.months
+            when :week
+              as_at_date + (i - 1) * period_frequency.weeks
+            when :day
+              as_at_date + (i - 1) * period_frequency.days
+            end
 
-          end_date = case period_unit
-                      when :month
-                        as_at_date + i * period_frequency.months - 1.day
-                      when :week
-                        as_at_date + i * period_frequency.weeks - 1.day
-                      when :day
-                        as_at_date + i * period_frequency.days - 1.day
-                     end
+          end_date =
+            case period_unit
+            when :month
+              as_at_date + i * period_frequency.months - 1.day
+            when :week
+              as_at_date + i * period_frequency.weeks - 1.day
+            when :day
+              as_at_date + i * period_frequency.days - 1.day
+            end
 
           { start_date: start_date, end_date: end_date }
         end
@@ -44,7 +53,9 @@ module Accountify
           sub_total = Models::Invoice
             .where(iam_tenant_id: iam_tenant_id)
             .where(currency_code: currency_code)
-            .where("#{ageing_by} >= ? AND #{ageing_by} <= ?", period[:start_date], period[:end_date])
+            .where(
+              "#{ageing_by} >= ? AND #{ageing_by} <= ?",
+              period[:start_date], period[:end_date])
             .sum(:sub_total_amount)
 
           report.periods.create!(
