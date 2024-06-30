@@ -25,4 +25,3 @@ module Event
     end
   end
 end
-

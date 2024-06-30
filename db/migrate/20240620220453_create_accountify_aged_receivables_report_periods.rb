@@ -6,7 +6,8 @@ class CreateAccountifyAgedReceivablesReportPeriods < ActiveRecord::Migration[7.1
 
       t.date :start_date, null: false
       t.date :end_date, null: false
-      t.decimal :sub_total, precision: 12, scale: 2, null: false
+      t.decimal :sub_total_amount, precision: 12, scale: 2, null: false
+      t.string :sub_total_currency_code, null: false
 
       t.timestamps
     end

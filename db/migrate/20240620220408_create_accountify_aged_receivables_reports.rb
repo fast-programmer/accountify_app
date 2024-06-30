@@ -6,7 +6,7 @@ class CreateAccountifyAgedReceivablesReports < ActiveRecord::Migration[7.1]
       t.date :as_at_date, null: false
       t.string :currency_code, null: false
       t.integer :num_periods, null: false
-      t.integer :period_frequency, null: false
+      t.integer :period_amount, null: false
       t.string :period_unit, null: false
       t.string :ageing_by, null: false
 

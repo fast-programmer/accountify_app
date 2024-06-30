@@ -18,7 +18,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_20_220453) do
     t.bigint "aged_receivables_report_id", null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
-    t.decimal "sub_total", precision: 12, scale: 2, null: false
+    t.decimal "sub_total_amount", precision: 12, scale: 2, null: false
+    t.string "sub_total_currency_code", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["aged_receivables_report_id"], name: "idx_on_aged_receivables_report_id_7f32513b52"
@@ -29,7 +30,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_06_20_220453) do
     t.date "as_at_date", null: false
     t.string "currency_code", null: false
     t.integer "num_periods", null: false
-    t.integer "period_frequency", null: false
+    t.integer "period_amount", null: false
     t.string "period_unit", null: false
     t.string "ageing_by", null: false
     t.datetime "created_at", null: false
