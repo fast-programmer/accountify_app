@@ -6,19 +6,12 @@ module Accountify
                  as_at_date:, num_periods:, period_amount:, period_unit:,
                  ageing_by:, currency_code:)
       validate(
-        iam_tenant_id: iam_tenant_id,
         as_at_date: as_at_date,
         num_periods: num_periods,
         period_amount: period_amount,
         period_unit: period_unit,
         ageing_by: ageing_by,
         currency_code: currency_code)
-
-      period_ranges = generate_period_ranges(
-        as_at_date: as_at_date,
-        num_periods: num_periods,
-        period_amount: period_amount,
-        period_unit: period_unit)
 
       id = nil
 
@@ -36,6 +29,12 @@ module Accountify
           created_at: current_utc_time,
           updated_at: current_utc_time)
 
+        period_ranges = generate_period_ranges(
+          as_at_date: as_at_date,
+          num_periods: num_periods,
+          period_amount: period_amount,
+          period_unit: period_unit)
+
         period_ranges.each do |period_range|
           sub_total_amount = Models::Invoice
             .where(iam_tenant_id: iam_tenant_id)
@@ -50,6 +49,70 @@ module Accountify
             end_date: period_range[:end_date],
             sub_total_amount: sub_total_amount,
             sub_total_currency_code: currency_code)
+        end
+
+        id = report.id
+      end
+
+      find_by_id(iam_tenant_id: iam_tenant_id, id: id)
+    rescue ActiveRecord::RecordNotUnique
+      regenerate(
+        iam_tenant_id: iam_tenant_id,
+        as_at_date: as_at_date,
+        num_periods: num_period,
+        period_amount: period_amount,
+        period_unit: period_unit,
+        ageing_by: ageing_by,
+        currency_code: currency_code)
+    end
+
+    def regenerate(iam_tenant_id:,
+                   as_at_date:, num_periods:, period_amount:, period_unit:,
+                   ageing_by:, currency_code:)
+      id = nil
+
+      ActiveRecord::Base.transaction(transaction_isolation: :repeatable_read) do
+        current_utc_time = Time.current.utc
+
+        report = Models::AgedReceivablesReport
+          .where(iam_tenant_id: iam_tenant_id)
+          .lock('FOR UPDATE NOWAIT')
+          .first!
+
+        if report.generated_at <= generate_at
+          report.periods.delete_all
+
+          report.update!(
+            as_at_date: as_at_date,
+            currency_code: currency_code,
+            num_periods: num_periods,
+            period_amount: period_amount,
+            period_unit: period_unit,
+            ageing_by: ageing_by,
+            created_at: current_utc_time,
+            updated_at: current_utc_time)
+
+          period_ranges = generate_period_ranges(
+            as_at_date: as_at_date,
+            num_periods: num_periods,
+            period_amount: period_amount,
+            period_unit: period_unit)
+
+          period_ranges.each do |period_range|
+            sub_total_amount = Models::Invoice
+              .where(iam_tenant_id: iam_tenant_id)
+              .where(sub_total_currency_code: currency_code)
+              .where(
+                "#{ageing_by} >= ? AND #{ageing_by} <= ?",
+                period_range[:start_date], period_range[:end_date])
+              .sum(:sub_total_amount)
+
+            report.periods.create!(
+              start_date: period_range[:start_date],
+              end_date: period_range[:end_date],
+              sub_total_amount: sub_total_amount,
+              sub_total_currency_code: currency_code)
+          end
         end
 
         id = report.id
@@ -116,8 +179,7 @@ module Accountify
       end
     end
 
-    def validate(iam_tenant_id:,
-                 as_at_date:, num_periods:, period_amount:, period_unit:,
+    def validate(as_at_date:, num_periods:, period_amount:, period_unit:,
                  ageing_by:, currency_code:)
       if !as_at_date.is_a?(Date)
         raise ArgumentError.new('as_at_date must be a valid date')
