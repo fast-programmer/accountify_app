@@ -26,9 +26,9 @@ module Accountify
     def regenerate(iam_tenant_id:, organisation_id:,
                    event_created_at: Time.current, current_time: Time.current)
       ActiveRecord::Base.connection_pool.with_connection do
-        ActiveRecord::Base.transaction(transaction_isolation: :repeatable_read) do
+        ActiveRecord::Base.transaction(isolation: :repeatable_read) do
           summary = Models::InvoiceStatusSummary
-            .where('generated_at <= ?', event_occurred_at)
+            .where('generated_at <= ?', event_created_at)
             .lock('FOR UPDATE NOWAIT')
             .find_by!(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
 

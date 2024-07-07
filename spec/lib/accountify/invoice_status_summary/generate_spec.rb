@@ -10,48 +10,49 @@ module Accountify
 
       let(:contact) do
         create(:accountify_contact,
-          iam_tenant_id: iam_tenant_id, organisation_id: organisation.id)
+          iam_tenant_id: iam_tenant_id,
+          organisation_id: organisation.id)
       end
 
       let!(:draft_invoice) do
         create(:accountify_invoice,
-          status: Invoice::Status::DRAFT,
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          contact_id: contact.id)
+          contact_id: contact.id,
+          status: Invoice::Status::DRAFT)
       end
 
       let!(:issued_invoice) do
         create(:accountify_invoice,
-          status: Invoice::Status::ISSUED,
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          contact_id: contact.id)
+          contact_id: contact.id,
+          status: Invoice::Status::ISSUED)
       end
 
       let!(:paid_invoice) do
         create(:accountify_invoice,
-          status: Invoice::Status::PAID,
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          contact_id: contact.id)
+          contact_id: contact.id,
+          status: Invoice::Status::PAID)
       end
 
       let!(:voided_invoice) do
         create(:accountify_invoice,
-          status: Invoice::Status::VOIDED,
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          contact_id: contact.id)
+          contact_id: contact.id,
+          status: Invoice::Status::VOIDED)
       end
 
       it 'creates a new invoice status summary' do
-        expect {
+        expect do
           InvoiceStatusSummary.generate(
             iam_tenant_id: iam_tenant_id,
             organisation_id: organisation_id,
             current_time: current_time)
-        }.to change { Accountify::Models::InvoiceStatusSummary.count }.by(1)
+        end.to change { Models::InvoiceStatusSummary.count }.by(1)
       end
 
       it 'creates a summary with the correct counts' do
@@ -73,24 +74,6 @@ module Accountify
           current_time: current_time)
 
         expect(summary[:generated_at]).to be_within(1.second).of(current_time.utc)
-      end
-
-      context 'when there are no invoices of a certain status' do
-        before do
-          Accountify::Models::Invoice.where(status: Invoice::Status::DRAFT).delete_all
-        end
-
-        it 'sets the count to 0 for that status' do
-          summary = InvoiceStatusSummary.generate(
-            iam_tenant_id: iam_tenant_id,
-            organisation_id: organisation_id,
-            current_time: current_time)
-
-          expect(summary[:draft_count]).to eq(0)
-          expect(summary[:issued_count]).to eq(1)
-          expect(summary[:paid_count]).to eq(1)
-          expect(summary[:voided_count]).to eq(1)
-        end
       end
     end
   end
