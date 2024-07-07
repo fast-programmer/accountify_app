@@ -7,16 +7,7 @@ gem "rails"
 
 gem "sinatra"
 
-# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
-
 gem "puma"
-
-group :development, :test do
-  gem "pry-byebug"
-end
-
-group :development do
-end
 
 gem "pg"
 gem "activerecord"
@@ -25,7 +16,15 @@ gem 'outboxer', '1.0.0.pre.beta'
 
 gem "sidekiq"
 
+group :development do
+end
+
+group :test do
+  gem 'database_cleaner-active_record'
+end
+
 group :development, :test do
+  gem "pry-byebug"
   gem 'rspec-rails'
   gem 'factory_bot_rails'
 end

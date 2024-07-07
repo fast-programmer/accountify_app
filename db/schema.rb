@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,6 +35,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
     t.decimal "unit_amount_amount", precision: 12, scale: 2, null: false
     t.string "unit_amount_currency_code", null: false
     t.index ["invoice_id"], name: "index_accountify_invoice_line_items_on_invoice_id"
+  end
+
+  create_table "accountify_invoice_status_summaries", force: :cascade do |t|
+    t.bigint "iam_tenant_id", null: false
+    t.bigint "organisation_id", null: false
+    t.integer "draft_count", null: false
+    t.integer "issued_count", null: false
+    t.integer "paid_count", null: false
+    t.integer "voided_count", null: false
+    t.datetime "generated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["iam_tenant_id", "organisation_id"], name: "idx_on_iam_tenant_id_organisation_id_05c62176cc", unique: true
+    t.index ["organisation_id"], name: "index_accountify_invoice_status_summaries_on_organisation_id"
   end
 
   create_table "accountify_invoices", force: :cascade do |t|
@@ -97,6 +111,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_30_211442) do
 
   add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoice_line_items", "accountify_invoices", column: "invoice_id"
+  add_foreign_key "accountify_invoice_status_summaries", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
   add_foreign_key "accountify_invoices", "accountify_organisations", column: "organisation_id"
   add_foreign_key "outboxer_exceptions", "outboxer_messages"
