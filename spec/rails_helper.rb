@@ -2,7 +2,7 @@ ENV['RAILS_ENV'] ||= 'test'
 
 require 'spec_helper'
 require 'factory_bot_rails'
-equire 'database_cleaner/active_record'
+require 'database_cleaner/active_record'
 
 require_relative '../config/environment'
 

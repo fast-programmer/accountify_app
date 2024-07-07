@@ -8,32 +8,41 @@ module Accountify
       let(:organisation_id) { organisation.id }
       let(:current_time) { Time.current }
 
+      let(:contact) do
+        create(:accountify_contact,
+          iam_tenant_id: iam_tenant_id, organisation_id: organisation.id)
+      end
+
       let!(:draft_invoice) do
         create(:accountify_invoice,
           status: Invoice::Status::DRAFT,
           iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation_id)
+          organisation_id: organisation_id,
+          contact_id: contact.id)
       end
 
       let!(:issued_invoice) do
         create(:accountify_invoice,
           status: Invoice::Status::ISSUED,
           iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation_id)
+          organisation_id: organisation_id,
+          contact_id: contact.id)
       end
 
       let!(:paid_invoice) do
         create(:accountify_invoice,
           status: Invoice::Status::PAID,
           iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation_id)
+          organisation_id: organisation_id,
+          contact_id: contact.id)
       end
 
       let!(:voided_invoice) do
         create(:accountify_invoice,
           status: Invoice::Status::VOIDED,
           iam_tenant_id: iam_tenant_id,
-          organisation_id: organisation_id)
+          organisation_id: organisation_id,
+          contact_id: contact.id)
       end
 
       it 'creates a new invoice status summary' do
