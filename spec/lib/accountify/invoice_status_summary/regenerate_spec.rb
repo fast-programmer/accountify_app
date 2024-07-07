@@ -79,7 +79,7 @@ module Accountify
         summary = InvoiceStatusSummary.regenerate(
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          event_created_at: current_time + 1.day,
+          event_created_at: current_time - 2.days,
           current_time: current_time)
 
         expect(summary[:generated_at]).to be_within(1.second).of(event_created_at - 1.hour)

@@ -45,7 +45,7 @@ module Accountify
         end
       end
 
-      nil
+      find_by_organisation_id(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
     rescue ActiveRecord::RecordNotFound
       find_by_organisation_id(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
     rescue ActiveRecord::LockWaitTimeout => error
