@@ -1,7 +1,9 @@
+ENV['RAILS_ENV'] ||= 'test'
+
 require 'spec_helper'
 require 'factory_bot_rails'
+equire 'database_cleaner/active_record'
 
-ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 
 abort("The Rails environment is running in production mode!") if Rails.env.production?
@@ -19,7 +21,15 @@ end
 RSpec.configure do |config|
   config.fixture_paths = [Rails.root.join('spec/fixtures')]
 
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
+
+  config.before(:each) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.clean
+  end
 
   config.infer_spec_type_from_file_location!
 

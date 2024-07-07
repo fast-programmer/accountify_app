@@ -24,7 +24,7 @@ module Accountify
     end
 
     def regenerate(iam_tenant_id:, organisation_id:,
-                   event_occurred_at: Time.current, current_time: Time.current)
+                   event_created_at: Time.current, current_time: Time.current)
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(transaction_isolation: :repeatable_read) do
           summary = Models::InvoiceStatusSummary
