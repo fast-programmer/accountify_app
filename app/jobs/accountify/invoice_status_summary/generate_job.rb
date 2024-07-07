@@ -4,7 +4,7 @@ module Accountify
       include Sidekiq::Job
 
       def perform(args)
-        InvoiceStatusSummary.regenerate(
+        InvoiceStatusSummary.generate(
           iam_tenant_id: args['iam_tenant_id'],
           organisation_id: args['organisation_id'],
           current_time: Time.current)
