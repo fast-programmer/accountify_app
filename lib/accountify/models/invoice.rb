@@ -9,6 +9,8 @@ module Accountify
 
       has_many :events, -> { order(created_at: :asc) },
         as: :eventable, class_name: 'Models::Event'
+
+      has_one :invoice_status_summary
     end
   end
 end
