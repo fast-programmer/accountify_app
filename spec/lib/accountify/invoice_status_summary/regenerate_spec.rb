@@ -7,7 +7,7 @@ module Accountify
       let(:organisation) { create(:accountify_organisation) }
       let(:organisation_id) { organisation.id }
       let(:current_time) { Time.current }
-      let(:event_created_at) { current_time - 1.day }
+      let(:invoice_updated_at) { current_time - 1.day }
 
       let(:contact) do
         create(:accountify_contact,
@@ -51,7 +51,7 @@ module Accountify
         create(:accountify_invoice_status_summary,
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          generated_at: event_created_at - 1.hour,
+          generated_at: invoice_updated_at - 1.hour,
           draft_count: 1,
           issued_count: 1,
           paid_count: 1,
@@ -63,7 +63,7 @@ module Accountify
           InvoiceStatusSummary.regenerate(
             iam_tenant_id: iam_tenant_id,
             organisation_id: organisation_id,
-            event_created_at: event_created_at,
+            invoice_updated_at: invoice_updated_at,
             current_time: current_time)
         end.to change { Models::InvoiceStatusSummary.count }.by(0)
 
@@ -79,10 +79,10 @@ module Accountify
         summary = InvoiceStatusSummary.regenerate(
           iam_tenant_id: iam_tenant_id,
           organisation_id: organisation_id,
-          event_created_at: current_time - 2.days,
+          invoice_updated_at: current_time - 2.days,
           current_time: current_time)
 
-        expect(summary[:generated_at]).to be_within(1.second).of(event_created_at - 1.hour)
+        expect(summary[:generated_at]).to be_within(1.second).of(invoice_updated_at - 1.hour)
       end
 
       it 'raises Accountify::NotAvailable error on lock wait timeout' do
@@ -93,7 +93,7 @@ module Accountify
           InvoiceStatusSummary.regenerate(
             iam_tenant_id: iam_tenant_id,
             organisation_id: organisation_id,
-            event_created_at: event_created_at,
+            invoice_updated_at: invoice_updated_at,
             current_time: current_time)
         end.to raise_error(Accountify::NotAvailable)
       end
@@ -106,7 +106,7 @@ module Accountify
           InvoiceStatusSummary.regenerate(
             iam_tenant_id: iam_tenant_id,
             organisation_id: organisation_id,
-            event_created_at: event_created_at,
+            invoice_updated_at: invoice_updated_at,
             current_time: current_time)
         end.to raise_error(ActiveRecord::RecordNotFound)
       end

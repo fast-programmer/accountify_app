@@ -15,19 +15,19 @@ module Event
         Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
           'iam_tenant_id' => args['iam_tenant_id'],
           'organisation_id' => args['organisation_id'],
-          'event_created_at' => args['created_at'] })
+          'invoice_updated_at' => args['updated_at'] })
 
       when 'Accountify::Invoice::UpdatedEvent'
         Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
           'iam_tenant_id' => args['iam_tenant_id'],
           'organisation_id' => args['organisation_id'],
-          'event_created_at' => args['created_at'] })
+          'invoice_updated_at' => args['invoice_updated_at'] })
 
       when 'Accountify::Invoice::PaidEvent'
         Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
           'iam_tenant_id' => args['iam_tenant_id'],
           'organisation_id' => args['organisation_id'],
-          'event_created_at' => args['created_at'] })
+          'invoice_updated_at' => args['updated_at'] })
 
       when 'Accountify::Invoice::VoidedEvent'
         Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
