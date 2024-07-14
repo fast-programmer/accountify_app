@@ -16,6 +16,8 @@ gem 'outboxer', '1.0.0.pre.beta'
 
 gem "sidekiq"
 
+gem "bcrypt"
+
 group :development do
 end
 

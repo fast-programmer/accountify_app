@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_14_102955) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -90,6 +90,30 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable_type_and_eventable_id"
   end
 
+  create_table "iam_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "tenant_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tenant_id"], name: "index_iam_memberships_on_tenant_id"
+    t.index ["user_id"], name: "index_iam_memberships_on_user_id"
+  end
+
+  create_table "iam_tenants", force: :cascade do |t|
+    t.string "subdomain", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["subdomain"], name: "index_iam_tenants_on_subdomain", unique: true
+  end
+
+  create_table "iam_users", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_iam_users_on_email", unique: true
+  end
+
   create_table "outboxer_exceptions", force: :cascade do |t|
     t.bigint "outboxer_message_id", null: false
     t.string "class_name", null: false
@@ -114,5 +138,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
   add_foreign_key "accountify_invoice_status_summaries", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
   add_foreign_key "accountify_invoices", "accountify_organisations", column: "organisation_id"
+  add_foreign_key "iam_memberships", "iam_tenants", column: "tenant_id"
+  add_foreign_key "iam_memberships", "iam_users", column: "user_id"
   add_foreign_key "outboxer_exceptions", "outboxer_messages"
 end

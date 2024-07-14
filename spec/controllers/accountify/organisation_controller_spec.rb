@@ -2,16 +2,16 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe OrganisationController, type: :controller do
-    let(:iam_user_id) { 1 }
-
-    let(:iam_tenant_id) { 1 }
+    let(:iam_user) { create(:iam_user, id: 1) }
+    let(:iam_tenant) { create(:iam_tenant, id: 1) }
+    let!(:iam_membership) { create(:iam_membership, user: iam_user, tenant: iam_tenant) }
 
     let(:organisation) do
       create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
     end
 
     before do
-      request.headers['X-Iam-User-Id'] = iam_user_id
+      request.headers['X-API-Key'] = iam_user_id
       request.headers['X-Iam-Tenant-Id'] = iam_tenant_id
     end
 
