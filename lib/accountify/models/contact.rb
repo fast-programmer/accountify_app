@@ -4,7 +4,7 @@ module Accountify
       self.table_name = 'accountify_contacts'
 
       has_many :events, -> { order(created_at: :asc) },
-        as: :eventable, class_name: 'Models::Event'
+        as: :eventable, class_name: 'Event'
     end
   end
 end

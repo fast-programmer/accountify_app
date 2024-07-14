@@ -9,7 +9,7 @@ module Accountify
       VOIDED = 'voided'
     end
 
-    class DraftedEvent < ::Models::Event; end
+    class DraftedEvent < Event; end
 
     def draft(iam_user_id:, iam_tenant_id:,
               organisation_id:, contact_id:,
@@ -75,7 +75,7 @@ module Accountify
                 'currency_code' => invoice.sub_total_currency_code } } })
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -110,7 +110,7 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < ::Models::Event; end
+    class UpdatedEvent < Event; end
 
     def update(iam_user_id:, iam_tenant_id:, id:,
                organisation_id:, contact_id:,
@@ -178,7 +178,7 @@ module Accountify
                 'currency_code' => invoice.sub_total_currency_code } } })
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -188,7 +188,7 @@ module Accountify
       event.id
     end
 
-    class DeletedEvent < ::Models::Event; end
+    class DeletedEvent < Event; end
 
     def delete(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
@@ -209,7 +209,7 @@ module Accountify
               'deleted_at' => invoice.deleted_at } } )
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -219,7 +219,7 @@ module Accountify
       event.id
     end
 
-    class IssuedEvent < ::Models::Event; end
+    class IssuedEvent < Event; end
 
     def issue(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
@@ -244,7 +244,7 @@ module Accountify
               'issued_at' => invoice.issued_at } } )
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -254,7 +254,7 @@ module Accountify
       event.id
     end
 
-    class PaidEvent < ::Models::Event; end
+    class PaidEvent < Event; end
 
     def paid(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
@@ -280,7 +280,7 @@ module Accountify
               'paid_at' => invoice.paid_at } } )
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -290,7 +290,7 @@ module Accountify
       event.id
     end
 
-    class VoidedEvent < ::Models::Event; end
+    class VoidedEvent < Event; end
 
     def void(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
@@ -310,7 +310,7 @@ module Accountify
               'status' => invoice.status } } )
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,

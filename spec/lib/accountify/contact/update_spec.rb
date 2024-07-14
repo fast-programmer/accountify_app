@@ -62,7 +62,7 @@ module Accountify
       end
 
       it 'queues event created job' do
-        expect(Event::CreatedJob.jobs).to match([
+        expect(EventCreatedJob.jobs).to match([
           hash_including(
             'args' => [
               hash_including(

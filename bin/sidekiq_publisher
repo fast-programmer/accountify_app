@@ -26,7 +26,7 @@ Outboxer::Publisher.publish!(
 ) do |outboxer_message|
   case outboxer_message.outboxer_messageable_type
   when 'Event'
-    Event::CreatedJob.perform_async({ 'id' => outboxer_message.outboxer_messageable_id })
+    EventCreatedJob.perform_async({ 'id' => outboxer_message.outboxer_messageable_id })
   end
 end
 

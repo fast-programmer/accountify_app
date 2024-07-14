@@ -2,7 +2,7 @@ module Accountify
   module Organisation
     extend self
 
-    class CreatedEvent < ::Models::Event; end
+    class CreatedEvent < Event; end
 
     def create(iam_user_id:, iam_tenant_id:, name:)
       organisation = nil
@@ -23,7 +23,7 @@ module Accountify
                 'name' => organisation.name } } )
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -43,7 +43,7 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < ::Models::Event; end
+    class UpdatedEvent < Event; end
 
     def update(iam_user_id:, iam_tenant_id:, id:, name:)
       event = nil
@@ -64,7 +64,7 @@ module Accountify
                 'name' => organisation.name } })
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
@@ -73,7 +73,7 @@ module Accountify
       event.id
     end
 
-    class DeletedEvent < ::Models::Event; end
+    class DeletedEvent < Event; end
 
     def delete(iam_user_id:, iam_tenant_id:, id:)
       event = nil
@@ -95,7 +95,7 @@ module Accountify
                 'deleted_at' => organisation.deleted_at } })
       end
 
-      Event::CreatedJob.perform_async({
+      EventCreatedJob.perform_async({
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
