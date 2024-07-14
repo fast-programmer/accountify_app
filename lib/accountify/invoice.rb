@@ -256,7 +256,7 @@ module Accountify
 
     class PaidEvent < ::Models::Event; end
 
-    def paid(iam_user_id:, iam_tenant_id:, id:)
+    def paid(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
 
       ActiveRecord::Base.transaction do
@@ -272,6 +272,7 @@ module Accountify
           iam_user_id: iam_user_id,
           iam_tenant_id: iam_tenant_id,
           eventable: invoice,
+          created_at: current_time.utc,
           body: {
             'invoice' => {
               'id' => invoice.id,
@@ -283,14 +284,15 @@ module Accountify
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
-        'type' => event.type })
+        'type' => event.type,
+        'occurred_at' => event.created_at.utc.iso8601 })
 
       event.id
     end
 
     class VoidedEvent < ::Models::Event; end
 
-    def void(iam_user_id:, iam_tenant_id:, id:)
+    def void(iam_user_id:, iam_tenant_id:, id:, current_time: Time.current)
       event = nil
 
       ActiveRecord::Base.transaction do
@@ -312,7 +314,8 @@ module Accountify
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
-        'type' => event.type })
+        'type' => event.type,
+        'occurred_at' => event.created_at.utc.iso8601 })
 
       event.id
     end
