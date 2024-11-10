@@ -6,8 +6,7 @@ module Accountify
         iam_tenant_id: iam_tenant_id,
         name: params[:name])
 
-      render json: { organisation_id: organisation_id, event_id: event_id },
-        status: :created
+      render json: { organisation_id: organisation_id, event_id: event_id }, status: :created
     end
 
     def show

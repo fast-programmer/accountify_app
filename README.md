@@ -65,6 +65,14 @@ classDiagram
 ### Create
 
 ```
+curl -X POST https://localhost:3000/accountify/organisation \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -H "X-Iam-Tenant-id: 1" \
+     -d '{"name": "New Organisation"}'
+```
+
+```
 curl -X POST http://localhost:3000/accountify/organisation \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
