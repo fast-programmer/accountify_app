@@ -1,3 +1,16 @@
+GIT
+  remote: https://github.com/fast-programmer/outboxer.git
+  revision: 35799287939993e71e5aa1f1fdc837d62d19ee30
+  branch: master
+  specs:
+    outboxer (1.0.0.pre.beta)
+      activerecord (~> 7.0)
+      kaminari (~> 1.0)
+      rack-flash3 (~> 1.0)
+      rackup (~> 2.0)
+      sidekiq (~> 7.0)
+      sinatra (~> 4.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -76,11 +89,11 @@ GEM
       mutex_m
       tzinfo (~> 2.0)
     base64 (0.2.0)
-    bigdecimal (3.1.7)
-    builder (3.2.4)
+    bigdecimal (3.1.8)
+    builder (3.3.0)
     byebug (11.1.3)
     coderay (1.1.3)
-    concurrent-ruby (1.2.3)
+    concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
     crass (1.0.6)
     database_cleaner-active_record (2.1.0)
@@ -90,7 +103,7 @@ GEM
     date (3.3.4)
     diff-lcs (1.5.1)
     drb (2.2.1)
-    erubi (1.12.0)
+    erubi (1.13.0)
     factory_bot (6.4.6)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.3)
@@ -98,7 +111,7 @@ GEM
       railties (>= 5.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    i18n (1.14.4)
+    i18n (1.14.6)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
     irb (1.12.0)
@@ -116,7 +129,8 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    loofah (2.22.0)
+    logger (1.6.1)
+    loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     mail (2.8.1)
@@ -127,9 +141,9 @@ GEM
     marcel (1.0.4)
     method_source (1.0.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.5)
-    minitest (5.22.3)
-    mustermann (3.0.0)
+    mini_portile2 (2.8.8)
+    minitest (5.25.1)
+    mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     mutex_m (0.2.0)
     net-imap (0.4.10)
@@ -142,18 +156,11 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.1)
-    nokogiri (1.16.4)
+    nokogiri (1.16.7)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.16.4-arm64-darwin)
+    nokogiri (1.16.7-arm64-darwin)
       racc (~> 1.4)
-    outboxer (1.0.0.pre.beta)
-      activerecord (~> 7.0)
-      kaminari (~> 1.0)
-      rack-flash3 (~> 1.0)
-      rackup (~> 2.0)
-      sidekiq (~> 7.0)
-      sinatra (~> 4.0)
     pg (1.5.6)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -165,8 +172,8 @@ GEM
       stringio
     puma (6.4.2)
       nio4r (~> 2.0)
-    racc (1.7.3)
-    rack (3.0.10)
+    racc (1.8.1)
+    rack (3.1.8)
     rack-flash3 (1.0.5)
       rack
     rack-protection (4.0.0)
@@ -176,9 +183,8 @@ GEM
       rack (>= 3.0.0)
     rack-test (2.1.0)
       rack (>= 1.3)
-    rackup (2.1.0)
+    rackup (2.2.1)
       rack (>= 3)
-      webrick (~> 1.8)
     rails (7.1.3.2)
       actioncable (= 7.1.3.2)
       actionmailbox (= 7.1.3.2)
@@ -211,7 +217,7 @@ GEM
     rake (13.2.1)
     rdoc (6.6.3.1)
       psych (>= 4.0.0)
-    redis-client (0.22.0)
+    redis-client (0.22.2)
       connection_pool
     reline (0.5.1)
       io-console (~> 0.5)
@@ -233,11 +239,11 @@ GEM
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
     ruby2_keywords (0.0.5)
-    sidekiq (7.2.2)
-      concurrent-ruby (< 2)
+    sidekiq (7.3.5)
       connection_pool (>= 2.3.0)
+      logger
       rack (>= 2.2.4)
-      redis-client (>= 0.19.0)
+      redis-client (>= 0.22.2)
     sinatra (4.0.0)
       mustermann (~> 3.0)
       rack (>= 3.0.0, < 4)
@@ -246,11 +252,10 @@ GEM
       tilt (~> 2.0)
     stringio (3.1.0)
     thor (1.3.1)
-    tilt (2.3.0)
-    timeout (0.4.1)
+    tilt (2.4.0)
+    timeout (0.4.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
-    webrick (1.8.1)
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
@@ -264,7 +269,7 @@ DEPENDENCIES
   activerecord
   database_cleaner-active_record
   factory_bot_rails
-  outboxer (= 1.0.0.pre.beta)
+  outboxer!
   pg
   pry-byebug
   puma
