@@ -12,7 +12,7 @@ class Event < ActiveRecord::Base
 
   # callbacks
 
-  # after_create do |event|
-  #   Outboxer::Message.queue(messageable: event)
-  # end
+  after_create do |event|
+    Outboxer::Message.queue(messageable: event)
+  end
 end

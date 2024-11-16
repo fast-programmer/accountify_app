@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/fast-programmer/outboxer.git
-  revision: 35799287939993e71e5aa1f1fdc837d62d19ee30
+  revision: 2b3565d38693196be307ee08746e10282610f873
   branch: master
   specs:
     outboxer (1.0.0.pre.beta)
