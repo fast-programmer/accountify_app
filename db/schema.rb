@@ -90,29 +90,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable_type_and_eventable_id"
   end
 
-  create_table "outboxer_exceptions", force: :cascade do |t|
-    t.bigint "outboxer_message_id", null: false
-    t.string "class_name", null: false
-    t.string "message_text", null: false
-    t.text "backtrace", array: true
-    t.datetime "created_at", null: false
-    t.index ["outboxer_message_id"], name: "index_outboxer_exceptions_on_outboxer_message_id"
-  end
-
-  create_table "outboxer_messages", force: :cascade do |t|
-    t.string "status", null: false
-    t.string "outboxer_messageable_type", null: false
-    t.bigint "outboxer_messageable_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["outboxer_messageable_type", "outboxer_messageable_id"], name: "index_outboxer_messages_on_outboxer_messageable"
-    t.index ["status", "created_at"], name: "index_outboxer_messages_on_status_and_created_at"
-  end
-
   add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoice_line_items", "accountify_invoices", column: "invoice_id"
   add_foreign_key "accountify_invoice_status_summaries", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
   add_foreign_key "accountify_invoices", "accountify_organisations", column: "organisation_id"
-  add_foreign_key "outboxer_exceptions", "outboxer_messages"
 end
