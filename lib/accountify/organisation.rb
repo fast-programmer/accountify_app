@@ -23,13 +23,6 @@ module Accountify
                 'name' => organisation.name } } )
       end
 
-      EventCreatedJob.perform_async({
-        'iam_user_id' => iam_user_id,
-        'iam_tenant_id' => iam_tenant_id,
-        'organisation_id' => organisation.id,
-        'id' => event.id,
-        'type' => event.type })
-
       [organisation.id, event.id]
     end
 
