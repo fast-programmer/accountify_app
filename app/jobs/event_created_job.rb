@@ -1,7 +1,7 @@
 class EventCreatedJob
   include Sidekiq::Job
 
-  sidekiq_options queue: 'events', retry: false
+  sidekiq_options retry: false
 
   def perform(args)
     case args['type']

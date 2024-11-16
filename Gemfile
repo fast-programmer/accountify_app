@@ -12,6 +12,7 @@ gem "puma"
 gem "pg"
 gem "activerecord"
 
+gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'master'
 gem "sidekiq"
 
 group :development do
