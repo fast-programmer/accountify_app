@@ -12,8 +12,6 @@ gem "puma"
 gem "pg"
 gem "activerecord"
 
-gem 'outboxer', '1.0.0.pre.beta'
-
 gem "sidekiq"
 
 group :development do
