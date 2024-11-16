@@ -104,18 +104,6 @@ GEM
     irb (1.12.0)
       rdoc
       reline (>= 0.4.2)
-    kaminari (1.2.2)
-      activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.2.2)
-      kaminari-activerecord (= 1.2.2)
-      kaminari-core (= 1.2.2)
-    kaminari-actionview (1.2.2)
-      actionview
-      kaminari-core (= 1.2.2)
-    kaminari-activerecord (1.2.2)
-      activerecord
-      kaminari-core (= 1.2.2)
-    kaminari-core (1.2.2)
     loofah (2.22.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -147,13 +135,6 @@ GEM
       racc (~> 1.4)
     nokogiri (1.16.4-arm64-darwin)
       racc (~> 1.4)
-    outboxer (1.0.0.pre.beta)
-      activerecord (~> 7.0)
-      kaminari (~> 1.0)
-      rack-flash3 (~> 1.0)
-      rackup (~> 2.0)
-      sidekiq (~> 7.0)
-      sinatra (~> 4.0)
     pg (1.5.6)
     pry (0.14.2)
       coderay (~> 1.1)
@@ -167,8 +148,6 @@ GEM
       nio4r (~> 2.0)
     racc (1.7.3)
     rack (3.0.10)
-    rack-flash3 (1.0.5)
-      rack
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
@@ -264,7 +243,6 @@ DEPENDENCIES
   activerecord
   database_cleaner-active_record
   factory_bot_rails
-  outboxer (= 1.0.0.pre.beta)
   pg
   pry-byebug
   puma
