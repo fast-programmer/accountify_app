@@ -3,6 +3,8 @@ class CreateAccountifyOrganisations < ActiveRecord::Migration[7.1]
     create_table :accountify_organisations do |t|
       t.bigint :tenant_id, null: false
 
+      t.integer :lock_version, default: 0, null: false
+
       t.text :name, null: false
 
       t.datetime :deleted_at
