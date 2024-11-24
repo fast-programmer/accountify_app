@@ -91,14 +91,14 @@ module Accountify
 
     class DeletedEvent < Event; end
 
-    def delete(user_id:, tenant_id:, id:)
+    def delete(user_id:, tenant_id:, id:, time: ::Time)
       event = nil
 
       ActiveRecord::Base.transaction do
         contact = Models::Contact
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
-        contact.update!(deleted_at: DateTime.now.utc)
+        contact.update!(deleted_at: time.now.utc)
 
         event = DeletedEvent
           .create!(

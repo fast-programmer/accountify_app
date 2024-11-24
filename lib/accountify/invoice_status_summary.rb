@@ -2,7 +2,9 @@ module Accountify
   module InvoiceStatusSummary
     extend self
 
-    def generate(tenant_id:, organisation_id:, current_time: Time.current)
+    def generate(tenant_id:, organisation_id:, time: ::Time)
+      current_utc_time = time.now.utc
+
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
           grouped_invoices = Models::Invoice
@@ -12,7 +14,7 @@ module Accountify
           Models::InvoiceStatusSummary.create!(
             tenant_id: tenant_id,
             organisation_id: organisation_id,
-            generated_at: current_time.utc,
+            generated_at: current_utc_time,
             draft_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
             issued_count: grouped_invoices[Invoice::Status::ISSUED] || 0,
             paid_count: grouped_invoices[Invoice::Status::PAID] || 0,
@@ -24,7 +26,9 @@ module Accountify
     end
 
     def regenerate(tenant_id:, organisation_id:,
-                   invoice_updated_at: Time.current, current_time: Time.current)
+                   invoice_updated_at: ::Time.now.utc, time: ::Time)
+      current_utc_time = time.now.utc
+
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
           summary = Models::InvoiceStatusSummary
@@ -37,7 +41,7 @@ module Accountify
             .count
 
           summary.update!(
-            generated_at: current_time.utc,
+            generated_at: current_utc_time,
             draft_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
             issued_count: grouped_invoices[Invoice::Status::ISSUED] || 0,
             paid_count: grouped_invoices[Invoice::Status::PAID] || 0,
