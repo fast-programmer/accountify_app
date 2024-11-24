@@ -16,7 +16,7 @@ module Accountify
           organisation_id: organisation.id)
       end
 
-      let!(:draft_invoice) do
+      let!(:drafted_invoice) do
         create(:accountify_invoice,
           tenant_id: tenant_id,
           organisation_id: organisation_id,
@@ -53,7 +53,7 @@ module Accountify
           tenant_id: tenant_id,
           organisation_id: organisation_id,
           generated_at: invoice_updated_at - 1.hour,
-          draft_count: 1,
+          drafted_count: 1,
           issued_count: 1,
           paid_count: 1,
           voided_count: 1)
@@ -70,7 +70,7 @@ module Accountify
 
         summary = Models::InvoiceStatusSummary.find(invoice_status_summary.id)
         expect(summary.generated_at).to be_within(1.second).of(current_utc_time)
-        expect(summary.draft_count).to eq(1)
+        expect(summary.drafted_count).to eq(1)
         expect(summary.issued_count).to eq(1)
         expect(summary.paid_count).to eq(1)
         expect(summary.voided_count).to eq(1)
