@@ -15,7 +15,7 @@ module Accountify
             tenant_id: tenant_id,
             organisation_id: organisation_id,
             generated_at: current_utc_time,
-            draft_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
+            drafted_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
             issued_count: grouped_invoices[Invoice::Status::ISSUED] || 0,
             paid_count: grouped_invoices[Invoice::Status::PAID] || 0,
             voided_count: grouped_invoices[Invoice::Status::VOIDED] || 0)
@@ -42,7 +42,7 @@ module Accountify
 
           summary.update!(
             generated_at: current_utc_time,
-            draft_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
+            drafted_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
             issued_count: grouped_invoices[Invoice::Status::ISSUED] || 0,
             paid_count: grouped_invoices[Invoice::Status::PAID] || 0,
             voided_count: grouped_invoices[Invoice::Status::VOIDED] || 0)
@@ -65,7 +65,7 @@ module Accountify
         {
           id: summary.id,
           generated_at: summary.generated_at,
-          draft_count: summary.draft_count,
+          drafted_count: summary.drafted_count,
           issued_count: summary.issued_count,
           paid_count: summary.paid_count,
           voided_count: summary.voided_count,

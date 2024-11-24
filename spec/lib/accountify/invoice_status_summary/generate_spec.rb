@@ -16,7 +16,7 @@ module Accountify
           organisation_id: organisation.id)
       end
 
-      let!(:draft_invoice) do
+      let!(:drafted_invoice) do
         create(:accountify_invoice,
           tenant_id: tenant_id,
           organisation_id: organisation_id,
@@ -59,7 +59,7 @@ module Accountify
         summary = InvoiceStatusSummary.generate(
           tenant_id: tenant_id, organisation_id: organisation_id)
 
-        expect(summary[:draft_count]).to eq(1)
+        expect(summary[:drafted_count]).to eq(1)
         expect(summary[:issued_count]).to eq(1)
         expect(summary[:paid_count]).to eq(1)
         expect(summary[:voided_count]).to eq(1)

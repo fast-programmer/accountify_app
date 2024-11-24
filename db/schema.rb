@@ -40,7 +40,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
   create_table "accountify_invoice_status_summaries", force: :cascade do |t|
     t.bigint "tenant_id", null: false
     t.bigint "organisation_id", null: false
-    t.integer "draft_count", null: false
+    t.integer "drafted_count", null: false
     t.integer "issued_count", null: false
     t.integer "paid_count", null: false
     t.integer "voided_count", null: false

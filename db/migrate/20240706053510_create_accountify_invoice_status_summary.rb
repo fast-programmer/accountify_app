@@ -6,7 +6,7 @@ class CreateAccountifyInvoiceStatusSummary < ActiveRecord::Migration[7.1]
       t.references :organisation, null: false,
         foreign_key: { to_table: :accountify_organisations }, index: true
 
-      t.integer :draft_count, null: false
+      t.integer :drafted_count, null: false
       t.integer :issued_count, null: false
       t.integer :paid_count, null: false
       t.integer :voided_count, null: false
