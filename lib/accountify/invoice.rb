@@ -14,9 +14,11 @@ module Accountify
     def draft(user_id:, tenant_id:,
               organisation_id:, contact_id:,
               currency_code:, due_date:, line_items:,
-              current_time: Time.current)
+              time: ::Time)
       invoice = nil
       event = nil
+
+      current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
@@ -38,8 +40,8 @@ module Accountify
             BigDecimal(line_item[:unit_amount][:amount]) * line_item[:quantity].to_i
           end,
           sub_total_currency_code: currency_code,
-          created_at: current_time.utc,
-          updated_at: current_time.utc)
+          created_at: current_utc_time,
+          updated_at: current_utc_time)
 
         invoice_line_items = line_items.map do |line_item|
           invoice.line_items.create!(
@@ -52,7 +54,7 @@ module Accountify
         event = DraftedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
-          created_at: current_time.utc,
+          created_at: current_utc_time,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -116,9 +118,11 @@ module Accountify
     def update(user_id:, tenant_id:, id:,
                organisation_id:, contact_id:,
                due_date:, line_items:,
-               current_time: Time.current)
+               time: ::Time)
       invoice = nil
       event = nil
+
+      current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
         organisation = Models::Organisation
@@ -137,7 +141,7 @@ module Accountify
         invoice.update!(
           tenant_id: tenant_id,
           organisation_id: organisation.id,
-          updated_at: current_time.utc,
+          updated_at: current_utc_time,
           contact_id: contact.id,
           status: Status::DRAFT,
           due_date: due_date,
@@ -156,7 +160,7 @@ module Accountify
         event = UpdatedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
-          created_at: current_time.utc,
+          created_at: current_utc_time,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -192,18 +196,20 @@ module Accountify
 
     class DeletedEvent < Event; end
 
-    def delete(user_id:, tenant_id:, id:, current_time: Time.current)
+    def delete(user_id:, tenant_id:, id:, time: ::Time)
       event = nil
+
+      current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
-        invoice.update!(updated_at: current_time.utc, deleted_at: current_time.utc)
+        invoice.update!(updated_at: current_utc_time, deleted_at: current_utc_time)
 
         event = DeletedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
-          created_at: current_time.utc,
+          created_at: current_utc_time,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -225,21 +231,23 @@ module Accountify
 
     class IssuedEvent < Event; end
 
-    def issue(user_id:, tenant_id:, id:, current_time: Time.current)
+    def issue(user_id:, tenant_id:, id:, time: ::Time)
       event = nil
+
+      current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         invoice.update!(
           status: Invoice::Status::ISSUED,
-          issued_at: current_time.utc,
-          updated_at: current_time.utc)
+          issued_at: current_utc_time,
+          updated_at: current_utc_time)
 
         event = IssuedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
-          created_at: current_time.utc,
+          created_at: current_utc_time,
           eventable: invoice,
           body: {
             'invoice' => {
@@ -262,8 +270,10 @@ module Accountify
 
     class PaidEvent < Event; end
 
-    def paid(user_id:, tenant_id:, id:, current_time: Time.current)
+    def paid(user_id:, tenant_id:, id:, time: ::Time)
       event = nil
+
+      current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
         invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
@@ -278,7 +288,7 @@ module Accountify
           user_id: user_id,
           tenant_id: tenant_id,
           eventable: invoice,
-          created_at: current_time.utc,
+          created_at: current_utc_time,
           body: {
             'invoice' => {
               'id' => invoice.id,
@@ -300,7 +310,7 @@ module Accountify
 
     class VoidedEvent < Event; end
 
-    def void(user_id:, tenant_id:, id:, current_time: Time.current)
+    def void(user_id:, tenant_id:, id:, time: ::Time)
       event = nil
 
       ActiveRecord::Base.transaction do
