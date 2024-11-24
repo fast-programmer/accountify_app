@@ -8,7 +8,7 @@ class EventCreatedJob
     when 'Accountify::Organisation::CreatedEvent'
       Accountify::InvoiceStatusSummary::GenerateJob.perform_async({
         'iam_tenant_id' => args['iam_tenant_id'],
-        'organisation_id' => args['id'] })
+        'organisation_id' => args['organisation_id'] })
 
     when 'Accountify::Invoice::IssuedEvent'
       Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({

@@ -14,6 +14,8 @@ organisation_id, _ = Accountify::Organisation.create(
   iam_tenant_id: iam_tenant_id,
   name: 'Debbies Debts Ltd')
 
+sleep 1
+
 contact_id, _ = Accountify::Contact.create(
   iam_user_id: iam_user_id,
   iam_tenant_id: iam_tenant_id,
@@ -102,3 +104,6 @@ ensure
   Process.kill("TERM", sidekiq_process.pid)
   Process.wait(sidekiq_process.pid)
 end
+
+# bundle exec ruby script/accountify/invoice/test_lifecycle.rb
+# bin/rspec script/accountify/invoice/test_lifecycle.rb

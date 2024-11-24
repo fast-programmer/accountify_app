@@ -70,7 +70,7 @@ module Accountify
         }
       end
     rescue ActiveRecord::RecordNotFound
-      raise NotFound.new, 'InvoiceStatusSummary not found'
+      raise NotFound.new, "InvoiceStatusSummary organisation_id=#{organisation_id} not found"
     end
   end
 end
