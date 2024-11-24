@@ -6,8 +6,9 @@ module Accountify
       let(:tenant_id) { 1 }
       let(:organisation) { create(:accountify_organisation) }
       let(:organisation_id) { organisation.id }
-      let(:current_time) { Time.current }
-      let(:invoice_updated_at) { current_time - 1.day }
+      let(:current_utc_time) { ::Time.now.utc }
+      let(:time) { double('Time', now: double('Time', utc: current_utc_time)) }
+      let(:invoice_updated_at) { current_utc_time - 1.day }
 
       let(:contact) do
         create(:accountify_contact,
@@ -64,11 +65,11 @@ module Accountify
             tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
-            current_time: current_time)
+            time: time)
         end.to change { Models::InvoiceStatusSummary.count }.by(0)
 
         summary = Models::InvoiceStatusSummary.find(invoice_status_summary.id)
-        expect(summary.generated_at).to be_within(1.second).of(current_time.utc)
+        expect(summary.generated_at).to be_within(1.second).of(current_utc_time)
         expect(summary.draft_count).to eq(1)
         expect(summary.issued_count).to eq(1)
         expect(summary.paid_count).to eq(1)
@@ -79,8 +80,8 @@ module Accountify
         summary = InvoiceStatusSummary.regenerate(
           tenant_id: tenant_id,
           organisation_id: organisation_id,
-          invoice_updated_at: current_time - 2.days,
-          current_time: current_time)
+          invoice_updated_at: current_utc_time - 2.days,
+          time: time)
 
         expect(summary[:generated_at]).to be_within(1.second).of(invoice_updated_at - 1.hour)
       end
@@ -94,7 +95,7 @@ module Accountify
             tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
-            current_time: current_time)
+            time: time)
         end.to raise_error(Accountify::NotAvailable)
       end
 
@@ -107,7 +108,7 @@ module Accountify
             tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
-            current_time: current_time)
+            time: time)
         end.to raise_error(Accountify::NotFound)
       end
     end
