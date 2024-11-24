@@ -42,8 +42,8 @@ module Accountify
     end
 
     before do
-      request.headers['X-Iam-User-Id'] = user_id
-      request.headers['X-Iam-Tenant-Id'] = tenant_id
+      request.headers['X-User-Id'] = user_id
+      request.headers['X-Tenant-Id'] = tenant_id
     end
 
     let(:response) { delete :destroy, params: { id: invoice.id } }
