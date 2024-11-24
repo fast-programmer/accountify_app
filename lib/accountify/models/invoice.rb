@@ -3,7 +3,7 @@ module Accountify
     class Invoice < ActiveRecord::Base
       self.table_name = 'accountify_invoices'
 
-      class LineItem < ActiveRecord::Base; end
+      validates :organisation_id, presence: true
 
       has_many :line_items, -> { order(id: :asc) }
 
@@ -11,6 +11,8 @@ module Accountify
         as: :eventable
 
       has_one :invoice_status_summary
+
+      class LineItem < ActiveRecord::Base; end
     end
   end
 end

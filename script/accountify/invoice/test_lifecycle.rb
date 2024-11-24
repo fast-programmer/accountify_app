@@ -9,26 +9,26 @@ tenant_id = 456
 
 current_date = ::Time.now.to_date
 
-organisation_id, _ = Accountify::Organisation.create(
+organisation = Accountify::Organisation.create(
   user_id: user_id,
   tenant_id: tenant_id,
   name: 'Debbies Debts Ltd')
 
 sleep 1
 
-contact_id, _ = Accountify::Contact.create(
+contact = Accountify::Contact.create(
   user_id: user_id,
   tenant_id: tenant_id,
-  organisation_id: organisation_id,
+  organisation_id: organisation[:id],
   first_name: 'John',
   last_name: 'Elliot',
   email: 'john.elliot@tradies.com')
 
-invoice_id, _ = Accountify::Invoice.draft(
+invoice = Accountify::Invoice.draft(
   user_id: user_id,
   tenant_id: tenant_id,
-  organisation_id: organisation_id,
-  contact_id: contact_id,
+  organisation_id: organisation[:id],
+  contact_id: contact[:id],
   currency_code: "AUD",
   due_date: current_date + 30.days,
   line_items: [{
@@ -47,9 +47,9 @@ invoice_id, _ = Accountify::Invoice.draft(
 Accountify::Invoice.update(
   user_id: user_id,
   tenant_id: tenant_id,
-  id: invoice_id,
-  contact_id: contact_id,
-  organisation_id: organisation_id,
+  id: invoice[:id],
+  contact_id: contact[:id],
+  organisation_id: organisation[:id],
   due_date: current_date + 14.days,
   line_items: [{
     description: "Green Jumper",
@@ -64,13 +64,13 @@ Accountify::Invoice.update(
       currency_code: "AUD" },
     quantity: 4 }])
 
-Accountify::Invoice.issue(user_id: user_id, tenant_id: tenant_id, id: invoice_id)
+Accountify::Invoice.issue(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: invoice_id)
+Accountify::Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.void(user_id: user_id, tenant_id: tenant_id, id: invoice_id)
+Accountify::Invoice.void(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: invoice_id)
+Accountify::Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
 puts "Starting Sidekiq..."
 sidekiq_cmd = "bundle exec sidekiq -r ./config/sidekiq.rb"
@@ -87,7 +87,7 @@ begin
 
       invoice_status_summary = Accountify::InvoiceStatusSummary.find_by_organisation_id(
         tenant_id: tenant_id,
-        organisation_id: organisation_id)
+        organisation_id: organisation[:id])
     rescue Accountify::NotFound
       sleep 1
 

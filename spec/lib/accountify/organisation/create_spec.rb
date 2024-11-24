@@ -7,20 +7,18 @@ module Accountify
 
     let(:name) { 'Big Bin Corp' }
 
-    let(:result) do
+    let(:organisation) do
       Organisation.create(
         user_id: user_id, tenant_id: tenant_id, name: name)
     end
 
-    let(:id) { result[0] }
+    let(:event_id) { organisation[:events].last[:id] }
 
-    let(:event_id) { result[1] }
-
-    let(:organisation) do
-      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: id)
+    let(:organisation_model) do
+      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: organisation[:id])
     end
 
-    let(:event) do
+    let(:event_model) do
       Organisation::CreatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: event_id)
@@ -28,18 +26,18 @@ module Accountify
 
     describe '.create' do
       it 'creates model' do
-        expect(organisation.name).to eq(name)
+        expect(organisation_model.name).to eq(name)
       end
 
       it 'creates created event' do
-        expect(event.body).to eq ({
+        expect(event_model.body).to eq ({
           'organisation' => {
-            'id' => id,
+            'id' => organisation[:id],
             'name' => name } })
       end
 
       it 'associates event with model' do
-        expect(organisation.events.last.id).to eq(event_id)
+        expect(organisation_model.events.last.id).to eq(event_id)
       end
 
       it 'queues event created job' do
