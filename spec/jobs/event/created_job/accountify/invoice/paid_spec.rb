@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe EventCreatedJob, type: :job do
-  let(:iam_tenant_id) { 555 }
+  let(:tenant_id) { 555 }
 
   before do
     EventCreatedJob.new.perform({
-      'iam_tenant_id' => iam_tenant_id,
+      'tenant_id' => tenant_id,
       'type' => 'Accountify::Invoice::PaidEvent' })
   end
 
@@ -15,7 +15,7 @@ RSpec.describe EventCreatedJob, type: :job do
         hash_including(
           'args' => [
             hash_including(
-              'iam_tenant_id' => iam_tenant_id )])])
+              'tenant_id' => tenant_id )])])
     end
   end
 end

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :accountify_invoice, class: 'Accountify::Models::Invoice' do
-    iam_tenant_id { 4 }
+    tenant_id { 4 }
     currency_code { "AUD" }
     due_date { Date.today + 30.days }
     sub_total_amount { BigDecimal("100.00") }

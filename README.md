@@ -68,7 +68,7 @@ classDiagram
 curl -X POST http://localhost:3000/accountify/organisation \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{"name": "New Organisation"}'
 ```
 
@@ -77,7 +77,7 @@ curl -X POST http://localhost:3000/accountify/organisation \
 ```
 curl -X GET http://localhost:3000/accountify/organisation/1 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 ### Update
@@ -86,7 +86,7 @@ curl -X GET http://localhost:3000/accountify/organisation/1 \
 curl -X PUT http://localhost:3000/accountify/organisation/1 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{"name": "Updated Organisation Name"}'
 ```
 
@@ -95,7 +95,7 @@ curl -X PUT http://localhost:3000/accountify/organisation/1 \
 ```
 curl -X DELETE http://localhost:3000/accountify/organisation/1 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 
@@ -107,7 +107,7 @@ curl -X DELETE http://localhost:3000/accountify/organisation/1 \
 curl -X POST http://localhost:3000/accountify/contact \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{
            "organisation_id": 2,
            "first_name": "John",
@@ -121,7 +121,7 @@ curl -X POST http://localhost:3000/accountify/contact \
 ```
 curl -X GET http://localhost:3000/accountify/contact/1 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 ### Update
@@ -130,7 +130,7 @@ curl -X GET http://localhost:3000/accountify/contact/1 \
 curl -X PUT http://localhost:3000/accountify/contact/3 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{
            "first_name": "Jane",
            "last_name": "Doe",
@@ -143,7 +143,7 @@ curl -X PUT http://localhost:3000/accountify/contact/3 \
 ```
 curl -X DELETE http://localhost:3000/accountify/contact/3 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 
@@ -155,7 +155,7 @@ curl -X DELETE http://localhost:3000/accountify/contact/3 \
 curl -X POST http://localhost:3000/accountify/invoice \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{
            "organisation_id": 2,
            "contact_id": 3,
@@ -181,7 +181,7 @@ curl -X POST http://localhost:3000/accountify/invoice \
 ```
 curl -X GET http://localhost:3000/accountify/invoice/1 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 ### Update
@@ -190,7 +190,7 @@ curl -X GET http://localhost:3000/accountify/invoice/1 \
 curl -X PUT http://localhost:3000/accountify/invoice/1 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1" \
+     -H "X-Tenant-id: 1" \
      -d '{
            "organisation_id": 2,
            "contact_id": 3,
@@ -216,7 +216,7 @@ curl -X PUT http://localhost:3000/accountify/invoice/1 \
 ```
 curl -X PATCH http://localhost:3000/accountify/invoice/1/approve \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 ### Void
@@ -224,7 +224,7 @@ curl -X PATCH http://localhost:3000/accountify/invoice/1/approve \
 ```
 curl -X PATCH http://localhost:3000/accountify/invoice/1/void \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```
 
 ### Delete
@@ -232,5 +232,5 @@ curl -X PATCH http://localhost:3000/accountify/invoice/1/void \
 ```
 curl -X DELETE http://localhost:3000/accountify/invoice/1 \
      -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
-     -H "X-Iam-Tenant-id: 1"
+     -H "X-Tenant-id: 1"
 ```

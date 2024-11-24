@@ -2,12 +2,12 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe Contact do
-    let(:iam_user_id) { 12 }
+    let(:user_id) { 12 }
 
-    let(:iam_tenant_id) { 4 }
+    let(:tenant_id) { 4 }
 
     let(:organisation) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+      create(:accountify_organisation, tenant_id: tenant_id)
     end
 
     let(:first_name) { 'John' }
@@ -15,7 +15,7 @@ module Accountify
     let(:email) { 'john.doe@example.com' }
 
     let(:id) do
-      create(:accountify_contact, iam_tenant_id: iam_tenant_id,
+      create(:accountify_contact, tenant_id: tenant_id,
         organisation_id: organisation.id,
         first_name: first_name,
         last_name: last_name,
@@ -24,16 +24,16 @@ module Accountify
     end
 
     let!(:event_id) do
-      Contact.delete(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
+      Contact.delete(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     let(:contact) do
-      Models::Contact.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+      Models::Contact.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event) do
       Contact::DeletedEvent
-        .where(iam_tenant_id: iam_tenant_id)
+        .where(tenant_id: tenant_id)
         .find_by!(id: event_id)
     end
 
@@ -58,8 +58,8 @@ module Accountify
           hash_including(
             'args' => [
               hash_including(
-                'iam_user_id' => iam_user_id,
-                'iam_tenant_id' => iam_tenant_id,
+                'user_id' => user_id,
+                'tenant_id' => tenant_id,
                 'id' => event_id,
                 'type' => 'Accountify::Contact::DeletedEvent')])])
       end

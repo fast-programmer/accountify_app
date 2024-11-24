@@ -3,7 +3,7 @@ require 'rails_helper'
 module Accountify
   RSpec.describe InvoiceStatusSummary do
     describe '.regenerate' do
-      let(:iam_tenant_id) { 1 }
+      let(:tenant_id) { 1 }
       let(:organisation) { create(:accountify_organisation) }
       let(:organisation_id) { organisation.id }
       let(:current_time) { Time.current }
@@ -11,13 +11,13 @@ module Accountify
 
       let(:contact) do
         create(:accountify_contact,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation.id)
       end
 
       let!(:draft_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::DRAFT)
@@ -25,7 +25,7 @@ module Accountify
 
       let!(:issued_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::ISSUED)
@@ -33,7 +33,7 @@ module Accountify
 
       let!(:paid_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::PAID)
@@ -41,7 +41,7 @@ module Accountify
 
       let!(:voided_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::VOIDED)
@@ -49,7 +49,7 @@ module Accountify
 
       let!(:invoice_status_summary) do
         create(:accountify_invoice_status_summary,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           generated_at: invoice_updated_at - 1.hour,
           draft_count: 1,
@@ -61,7 +61,7 @@ module Accountify
       it 'updates the existing invoice status summary' do
         expect do
           InvoiceStatusSummary.regenerate(
-            iam_tenant_id: iam_tenant_id,
+            tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
             current_time: current_time)
@@ -77,7 +77,7 @@ module Accountify
 
       it 'returns the summary if not updated' do
         summary = InvoiceStatusSummary.regenerate(
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           invoice_updated_at: current_time - 2.days,
           current_time: current_time)
@@ -91,7 +91,7 @@ module Accountify
 
         expect do
           InvoiceStatusSummary.regenerate(
-            iam_tenant_id: iam_tenant_id,
+            tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
             current_time: current_time)
@@ -104,7 +104,7 @@ module Accountify
 
         expect do
           InvoiceStatusSummary.regenerate(
-            iam_tenant_id: iam_tenant_id,
+            tenant_id: tenant_id,
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
             current_time: current_time)

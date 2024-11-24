@@ -2,14 +2,14 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe Organisation do
-    let(:iam_user_id) { 12 }
-    let(:iam_tenant_id) { 4 }
+    let(:user_id) { 12 }
+    let(:tenant_id) { 4 }
 
     let(:name) { 'Big Bin Corp' }
 
     let(:result) do
       Organisation.create(
-        iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, name: name)
+        user_id: user_id, tenant_id: tenant_id, name: name)
     end
 
     let(:id) { result[0] }
@@ -17,12 +17,12 @@ module Accountify
     let(:event_id) { result[1] }
 
     let(:organisation) do
-      Models::Organisation.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event) do
       Organisation::CreatedEvent
-        .where(iam_tenant_id: iam_tenant_id)
+        .where(tenant_id: tenant_id)
         .find_by!(id: event_id)
     end
 
@@ -47,8 +47,8 @@ module Accountify
           hash_including(
             'args' => [
               hash_including(
-                'iam_user_id' => iam_user_id,
-                'iam_tenant_id' => iam_tenant_id,
+                'user_id' => user_id,
+                'tenant_id' => tenant_id,
                 'id' => event_id,
                 'type' => 'Accountify::Organisation::CreatedEvent')])])
       end

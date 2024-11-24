@@ -4,22 +4,22 @@ module Accountify
   RSpec.describe Invoice do
     let(:current_date) { Date.today }
 
-    let(:iam_user_id) { 12 }
+    let(:user_id) { 12 }
 
-    let(:iam_tenant_id) { 4 }
+    let(:tenant_id) { 4 }
 
     let(:organisation) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+      create(:accountify_organisation, tenant_id: tenant_id)
     end
 
     let(:contact) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant_id, organisation_id: organisation.id)
+        tenant_id: tenant_id, organisation_id: organisation.id)
     end
 
     let(:id) do
       create(:accountify_invoice,
-        iam_tenant_id: iam_tenant_id,
+        tenant_id: tenant_id,
         organisation_id: organisation.id,
         contact_id: contact.id,
         currency_code: "AUD",
@@ -42,15 +42,15 @@ module Accountify
     end
 
     let!(:event_id) do
-      Invoice.paid(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
+      Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     let(:invoice) do
-      Models::Invoice.where(iam_tenant_id: iam_tenant_id).find_by!(id: id)
+      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event) do
-      Invoice::PaidEvent.where(iam_tenant_id: iam_tenant_id).find_by!(id: event_id)
+      Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: event_id)
     end
 
     describe '.paid' do
@@ -79,8 +79,8 @@ module Accountify
           hash_including(
             'args' => [
               hash_including(
-                'iam_user_id' => iam_user_id,
-                'iam_tenant_id' => iam_tenant_id,
+                'user_id' => user_id,
+                'tenant_id' => tenant_id,
                 'id' => event_id,
                 'type' => 'Accountify::Invoice::PaidEvent')])])
       end

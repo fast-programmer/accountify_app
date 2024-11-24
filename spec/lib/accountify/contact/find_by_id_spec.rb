@@ -2,11 +2,11 @@ require 'rails_helper'
 
 module Accountify
   RSpec.describe Contact do
-    let(:iam_user_id) { 12 }
+    let(:user_id) { 12 }
 
-    let(:iam_tenant_id) { 4 }
+    let(:tenant_id) { 4 }
 
-    let(:organisation) { create(:accountify_organisation, iam_tenant_id: iam_tenant_id) }
+    let(:organisation) { create(:accountify_organisation, tenant_id: tenant_id) }
 
     let(:first_name) { 'John' }
     let(:last_name) { 'Doe' }
@@ -14,7 +14,7 @@ module Accountify
 
     let(:id) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant_id,
+        tenant_id: tenant_id,
         organisation_id: organisation.id,
         first_name: first_name,
         last_name: last_name,
@@ -23,7 +23,7 @@ module Accountify
     end
 
     let(:contact) do
-      Contact.find_by_id(iam_user_id: iam_user_id, iam_tenant_id: iam_tenant_id, id: id)
+      Contact.find_by_id(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     describe '.find_by_id' do

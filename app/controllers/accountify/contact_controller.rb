@@ -2,8 +2,8 @@ module Accountify
   class ContactController < AccountifyController
     def create
       contact_id, event_id = Contact.create(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
         first_name: params[:first_name],
         last_name: params[:last_name],
@@ -14,8 +14,8 @@ module Accountify
 
     def show
       contact = Contact.find_by_id(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: contact
@@ -23,8 +23,8 @@ module Accountify
 
     def update
       event_id = Contact.update(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id],
         first_name: params[:first_name],
         last_name: params[:last_name],
@@ -35,8 +35,8 @@ module Accountify
 
     def destroy
       event_id = Contact.delete(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: { event_id: event_id }, status: :ok

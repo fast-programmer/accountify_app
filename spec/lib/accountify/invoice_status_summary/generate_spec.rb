@@ -3,20 +3,20 @@ require 'rails_helper'
 module Accountify
   RSpec.describe InvoiceStatusSummary do
     describe '.generate' do
-      let(:iam_tenant_id) { 1 }
+      let(:tenant_id) { 1 }
       let(:organisation) { create(:accountify_organisation) }
       let(:organisation_id) { organisation.id }
       let(:current_time) { Time.current }
 
       let(:contact) do
         create(:accountify_contact,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation.id)
       end
 
       let!(:draft_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::DRAFT)
@@ -24,7 +24,7 @@ module Accountify
 
       let!(:issued_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::ISSUED)
@@ -32,7 +32,7 @@ module Accountify
 
       let!(:paid_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::PAID)
@@ -40,7 +40,7 @@ module Accountify
 
       let!(:voided_invoice) do
         create(:accountify_invoice,
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
           status: Invoice::Status::VOIDED)
@@ -49,7 +49,7 @@ module Accountify
       it 'creates a new invoice status summary' do
         expect do
           InvoiceStatusSummary.generate(
-            iam_tenant_id: iam_tenant_id,
+            tenant_id: tenant_id,
             organisation_id: organisation_id,
             current_time: current_time)
         end.to change { Models::InvoiceStatusSummary.count }.by(1)
@@ -57,7 +57,7 @@ module Accountify
 
       it 'creates a summary with the correct counts' do
         summary = InvoiceStatusSummary.generate(
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           current_time: current_time)
 
@@ -69,7 +69,7 @@ module Accountify
 
       it 'uses the current time as the generated_at time' do
         summary = InvoiceStatusSummary.generate(
-          iam_tenant_id: iam_tenant_id,
+          tenant_id: tenant_id,
           organisation_id: organisation_id,
           current_time: current_time)
 

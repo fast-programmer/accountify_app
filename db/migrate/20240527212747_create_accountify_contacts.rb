@@ -1,7 +1,7 @@
 class CreateAccountifyContacts < ActiveRecord::Migration[7.1]
   def change
     create_table :accountify_contacts do |t|
-      t.bigint :iam_tenant_id, null: false, index: true
+      t.bigint :tenant_id, null: false, index: true
 
       t.references :organisation, null: false,
         foreign_key: { to_table: :accountify_organisations }, index: true
