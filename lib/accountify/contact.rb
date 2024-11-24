@@ -35,7 +35,8 @@ module Accountify
         'iam_user_id' => iam_user_id,
         'iam_tenant_id' => iam_tenant_id,
         'id' => event.id,
-        'type' => event.type })
+        'type' => event.type,
+        'organisation_id' => event.body['contact']['organisation_id'] })
 
       [contact.id, event.id]
     end

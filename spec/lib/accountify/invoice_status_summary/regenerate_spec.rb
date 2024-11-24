@@ -108,7 +108,7 @@ module Accountify
             organisation_id: organisation_id,
             invoice_updated_at: invoice_updated_at,
             current_time: current_time)
-        end.to raise_error(ActiveRecord::RecordNotFound)
+        end.to raise_error(Accountify::NotFound)
       end
     end
   end
