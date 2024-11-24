@@ -3,6 +3,8 @@ module Accountify
     class GenerateJob
       include Sidekiq::Job
 
+      sidekiq_options queue: 'reporting', backtrace: true
+
       def perform(args)
         InvoiceStatusSummary.generate(
           iam_tenant_id: args['iam_tenant_id'],
