@@ -9,8 +9,7 @@ module Accountify
         InvoiceStatusSummary.regenerate(
           tenant_id: args['tenant_id'],
           organisation_id: args['organisation_id'],
-          invoice_updated_at: args['invoice_updated_at'],
-          current_time: Time.current)
+          invoice_updated_at: args['invoice_updated_at'])
       rescue NotAvailable
         RegenerateJob.perform_in(1.minute, args)
       end
