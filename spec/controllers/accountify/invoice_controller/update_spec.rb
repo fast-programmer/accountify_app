@@ -4,31 +4,31 @@ module Accountify
   RSpec.describe InvoiceController, type: :controller do
     let(:current_date) { Date.today }
 
-    let(:iam_user_id) { 12 }
+    let(:user_id) { 12 }
 
-    let(:iam_tenant_id) { 4 }
+    let(:tenant_id) { 4 }
 
     let(:organisation_1) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+      create(:accountify_organisation, tenant_id: tenant_id)
     end
 
     let(:organisation_2) do
-      create(:accountify_organisation, iam_tenant_id: iam_tenant_id)
+      create(:accountify_organisation, tenant_id: tenant_id)
     end
 
     let(:contact_1) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant_id, organisation_id: organisation_1.id)
+        tenant_id: tenant_id, organisation_id: organisation_1.id)
     end
 
     let(:contact_2) do
       create(:accountify_contact,
-        iam_tenant_id: iam_tenant_id, organisation_id: organisation_2.id)
+        tenant_id: tenant_id, organisation_id: organisation_2.id)
     end
 
     let(:id) do
       create(:accountify_invoice,
-        iam_tenant_id: iam_tenant_id,
+        tenant_id: tenant_id,
         organisation_id: organisation_1.id,
         contact_id: contact_1.id,
         currency_code: "AUD",
@@ -51,8 +51,8 @@ module Accountify
     end
 
     before do
-      request.headers['X-Iam-User-Id'] = iam_user_id
-      request.headers['X-Iam-Tenant-Id'] = iam_tenant_id
+      request.headers['X-Iam-User-Id'] = user_id
+      request.headers['X-Iam-Tenant-Id'] = tenant_id
     end
 
     let!(:response) do
@@ -76,7 +76,7 @@ module Accountify
 
     let(:event) do
       Invoice::UpdatedEvent
-        .where(iam_tenant_id: iam_tenant_id)
+        .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['event_id'])
     end
 

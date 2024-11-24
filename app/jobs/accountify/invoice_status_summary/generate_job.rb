@@ -7,7 +7,7 @@ module Accountify
 
       def perform(args)
         InvoiceStatusSummary.generate(
-          iam_tenant_id: args['iam_tenant_id'],
+          tenant_id: args['tenant_id'],
           organisation_id: args['organisation_id'],
           current_time: Time.current)
       end

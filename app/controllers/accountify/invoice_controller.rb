@@ -2,8 +2,8 @@ module Accountify
   class InvoiceController < AccountifyController
     def create
       id, event_id = Invoice.draft(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
         contact_id: params[:contact_id],
         currency_code: params[:currency_code],
@@ -15,8 +15,8 @@ module Accountify
 
     def show
       invoice = Invoice.find_by_id(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: invoice
@@ -24,8 +24,8 @@ module Accountify
 
     def update
       event_id = Invoice.update(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id],
         organisation_id: params[:organisation_id],
         contact_id: params[:contact_id],
@@ -37,8 +37,8 @@ module Accountify
 
     def destroy
       event_id = Invoice.delete(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: { event_id: event_id }, status: :ok
@@ -46,8 +46,8 @@ module Accountify
 
     def issue
       event_id = Invoice.issue(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: { event_id: event_id }, status: :ok
@@ -55,8 +55,8 @@ module Accountify
 
     def paid
       event_id = Invoice.paid(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: { event_id: event_id }, status: :ok
@@ -64,8 +64,8 @@ module Accountify
 
     def void
       event_id = Invoice.void(
-        iam_user_id: iam_user_id,
-        iam_tenant_id: iam_tenant_id,
+        user_id: user_id,
+        tenant_id: tenant_id,
         id: params[:id])
 
       render json: { event_id: event_id }, status: :ok

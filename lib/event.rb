@@ -3,7 +3,7 @@ class Event < ActiveRecord::Base
 
   # validations
 
-  validates :iam_user_id, :iam_tenant_id, presence: true
+  validates :user_id, :tenant_id, presence: true
   validates :eventable_type, :eventable_id, presence: true
 
   # associations

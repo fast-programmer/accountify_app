@@ -15,7 +15,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
   enable_extension "plpgsql"
 
   create_table "accountify_contacts", force: :cascade do |t|
-    t.bigint "iam_tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.bigint "organisation_id", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
@@ -24,8 +24,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_accountify_contacts_on_deleted_at"
-    t.index ["iam_tenant_id"], name: "index_accountify_contacts_on_iam_tenant_id"
     t.index ["organisation_id"], name: "index_accountify_contacts_on_organisation_id"
+    t.index ["tenant_id"], name: "index_accountify_contacts_on_tenant_id"
   end
 
   create_table "accountify_invoice_line_items", force: :cascade do |t|
@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
   end
 
   create_table "accountify_invoice_status_summaries", force: :cascade do |t|
-    t.bigint "iam_tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.bigint "organisation_id", null: false
     t.integer "draft_count", null: false
     t.integer "issued_count", null: false
@@ -47,12 +47,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
     t.datetime "generated_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["iam_tenant_id", "organisation_id"], name: "idx_on_iam_tenant_id_organisation_id_05c62176cc", unique: true
     t.index ["organisation_id"], name: "index_accountify_invoice_status_summaries_on_organisation_id"
+    t.index ["tenant_id", "organisation_id"], name: "idx_on_tenant_id_organisation_id_33a11db97a", unique: true
   end
 
   create_table "accountify_invoices", force: :cascade do |t|
-    t.bigint "iam_tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.bigint "organisation_id", null: false
     t.bigint "contact_id", null: false
     t.string "status", null: false
@@ -66,22 +66,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["contact_id"], name: "index_accountify_invoices_on_contact_id"
-    t.index ["iam_tenant_id"], name: "index_accountify_invoices_on_iam_tenant_id"
     t.index ["organisation_id"], name: "index_accountify_invoices_on_organisation_id"
+    t.index ["tenant_id"], name: "index_accountify_invoices_on_tenant_id"
   end
 
   create_table "accountify_organisations", force: :cascade do |t|
-    t.bigint "iam_tenant_id", null: false
+    t.bigint "tenant_id", null: false
     t.text "name", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["iam_tenant_id", "deleted_at"], name: "index_accountify_organisations_on_iam_tenant_id_and_deleted_at"
+    t.index ["tenant_id", "deleted_at"], name: "index_accountify_organisations_on_tenant_id_and_deleted_at"
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "iam_user_id", null: false
-    t.bigint "iam_tenant_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "tenant_id", null: false
     t.text "type", null: false
     t.text "eventable_type", null: false
     t.bigint "eventable_id", null: false

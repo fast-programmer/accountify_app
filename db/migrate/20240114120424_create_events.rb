@@ -1,8 +1,8 @@
 class CreateEvents < ActiveRecord::Migration[7.0]
   def change
     create_table :events do |t|
-      t.bigint :iam_user_id, null: false
-      t.bigint :iam_tenant_id, null: false
+      t.bigint :user_id, null: false
+      t.bigint :tenant_id, null: false
 
       t.text :type, null: false
 

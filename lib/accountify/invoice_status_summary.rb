@@ -2,15 +2,15 @@ module Accountify
   module InvoiceStatusSummary
     extend self
 
-    def generate(iam_tenant_id:, organisation_id:, current_time: Time.current)
+    def generate(tenant_id:, organisation_id:, current_time: Time.current)
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
           grouped_invoices = Models::Invoice
-            .where(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id).group(:status)
+            .where(tenant_id: tenant_id, organisation_id: organisation_id).group(:status)
             .count
 
           Models::InvoiceStatusSummary.create!(
-            iam_tenant_id: iam_tenant_id,
+            tenant_id: tenant_id,
             organisation_id: organisation_id,
             generated_at: current_time.utc,
             draft_count: grouped_invoices[Invoice::Status::DRAFT] || 0,
@@ -20,20 +20,20 @@ module Accountify
         end
       end
 
-      find_by_organisation_id(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
+      find_by_organisation_id(tenant_id: tenant_id, organisation_id: organisation_id)
     end
 
-    def regenerate(iam_tenant_id:, organisation_id:,
+    def regenerate(tenant_id:, organisation_id:,
                    invoice_updated_at: Time.current, current_time: Time.current)
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
           summary = Models::InvoiceStatusSummary
             .where('generated_at <= ?', invoice_updated_at)
             .lock('FOR UPDATE NOWAIT')
-            .find_by!(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
+            .find_by!(tenant_id: tenant_id, organisation_id: organisation_id)
 
           grouped_invoices = Models::Invoice
-            .where(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id).group(:status)
+            .where(tenant_id: tenant_id, organisation_id: organisation_id).group(:status)
             .count
 
           summary.update!(
@@ -45,18 +45,18 @@ module Accountify
         end
       end
 
-      find_by_organisation_id(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
+      find_by_organisation_id(tenant_id: tenant_id, organisation_id: organisation_id)
     rescue ActiveRecord::RecordNotFound
-      find_by_organisation_id(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
+      find_by_organisation_id(tenant_id: tenant_id, organisation_id: organisation_id)
     rescue ActiveRecord::LockWaitTimeout => error
       raise Accountify::NotAvailable.new,
         "Resource temporarily unavailable. Original error: #{error.message}"
     end
 
-    def find_by_organisation_id(iam_tenant_id:, organisation_id:)
+    def find_by_organisation_id(tenant_id:, organisation_id:)
       ActiveRecord::Base.connection_pool.with_connection do
         summary = Models::InvoiceStatusSummary
-          .find_by!(iam_tenant_id: iam_tenant_id, organisation_id: organisation_id)
+          .find_by!(tenant_id: tenant_id, organisation_id: organisation_id)
 
         {
           id: summary.id,
