@@ -1,14 +1,14 @@
 class EventCreatedJob
   include Sidekiq::Job
 
-  sidekiq_options queue: 'events', retry: false
+  sidekiq_options queue: 'reporting', retry: false
 
   def perform(args)
     case args['type']
     when 'Accountify::Organisation::CreatedEvent'
       Accountify::InvoiceStatusSummary::GenerateJob.perform_async({
         'iam_tenant_id' => args['iam_tenant_id'],
-        'organisation_id' => args['organisation_id'] })
+        'organisation_id' => args['id'] })
 
     when 'Accountify::Invoice::IssuedEvent'
       Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({

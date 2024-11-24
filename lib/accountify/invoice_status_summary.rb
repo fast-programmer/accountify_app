@@ -69,6 +69,8 @@ module Accountify
           updated_at: summary.updated_at
         }
       end
+    rescue ActiveRecord::RecordNotFound
+      raise NotFound.new, 'InvoiceStatusSummary not found'
     end
   end
 end
