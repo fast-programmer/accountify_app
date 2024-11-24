@@ -16,6 +16,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
 
   create_table "accountify_contacts", force: :cascade do |t|
     t.bigint "tenant_id", null: false
+    t.integer "lock_version", default: 0, null: false
     t.bigint "organisation_id", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
@@ -39,6 +40,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
 
   create_table "accountify_invoice_status_summaries", force: :cascade do |t|
     t.bigint "tenant_id", null: false
+    t.integer "lock_version", default: 0, null: false
     t.bigint "organisation_id", null: false
     t.integer "drafted_count", null: false
     t.integer "issued_count", null: false
@@ -53,6 +55,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
 
   create_table "accountify_invoices", force: :cascade do |t|
     t.bigint "tenant_id", null: false
+    t.integer "lock_version", default: 0, null: false
     t.bigint "organisation_id", null: false
     t.bigint "contact_id", null: false
     t.string "status", null: false
@@ -72,6 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_06_053510) do
 
   create_table "accountify_organisations", force: :cascade do |t|
     t.bigint "tenant_id", null: false
+    t.integer "lock_version", default: 0, null: false
     t.text "name", null: false
     t.datetime "deleted_at"
     t.datetime "created_at", null: false
