@@ -12,8 +12,6 @@ module Accountify
         user_id: user_id, tenant_id: tenant_id, name: name)
     end
 
-    let(:event_id) { organisation[:events].last[:id] }
-
     let(:organisation_model) do
       Models::Organisation.where(tenant_id: tenant_id).find_by!(id: organisation[:id])
     end
@@ -21,7 +19,7 @@ module Accountify
     let(:event_model) do
       Organisation::CreatedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: event_id)
+        .find_by!(id: organisation[:events].last[:id])
     end
 
     describe '.create' do
@@ -37,7 +35,7 @@ module Accountify
       end
 
       it 'associates event with model' do
-        expect(organisation_model.events.last.id).to eq(event_id)
+        expect(organisation_model.events.last.id).to eq(organisation[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -47,7 +45,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => organisation[:events].last[:id],
                 'type' => 'Accountify::Organisation::CreatedEvent')])])
       end
     end
