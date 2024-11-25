@@ -30,10 +30,7 @@ module Accountify
         'type' => event.type,
         'organisation_id' => event['body']['organisation']['id'] })
 
-      {
-        id: organisation.id,
-        events: [{ id: event.id, type: event.type }]
-      }
+      { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
@@ -86,10 +83,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      {
-        id: organisation.id,
-        events: [{ id: event.id, type: event.type }]
-      }
+      { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
 
     class DeletedEvent < Event; end
@@ -121,10 +115,7 @@ module Accountify
         'id' => event.id,
         'type' => event.type })
 
-      {
-        id: organisation.id,
-        events: [{ id: event.id, type: event.type }]
-      }
+      { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
   end
 end

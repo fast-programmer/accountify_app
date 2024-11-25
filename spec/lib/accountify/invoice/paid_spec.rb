@@ -41,37 +41,37 @@ module Accountify
       ).id
     end
 
-    let!(:event_id) do
+    let!(:invoice) do
       Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
-    let(:invoice) do
+    let(:invoice_model) do
       Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
-    let(:event) do
-      Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: event_id)
+    let(:event_model) do
+      Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.paid' do
       it "updates model status to PAID" do
-        expect(invoice.status).to eq(Invoice::Status::PAID)
+        expect(invoice_model.status).to eq(Invoice::Status::PAID)
       end
 
       it "sets model paid_at" do
-        expect(invoice.paid_at).to be_present
+        expect(invoice_model.paid_at).to be_present
       end
 
       it 'creates paid event' do
-        expect(event.body).to include(
+        expect(event_model.body).to include(
           'invoice' => a_hash_including(
-            'id' => id,
+            'id' => invoice[:id],
             'status' => Invoice::Status::PAID,
             'paid_at' => be_present ) )
       end
 
       it 'associates event with model' do
-        expect(invoice.events.last.id).to eq(event_id)
+        expect(invoice_model.events.last.id).to eq(invoice[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -81,7 +81,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => invoice[:events].last[:id],
                 'type' => 'Accountify::Invoice::PaidEvent')])])
       end
     end

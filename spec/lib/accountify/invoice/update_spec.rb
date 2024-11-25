@@ -59,7 +59,7 @@ module Accountify
 
     let!(:line_items) { [line_item_1, line_item_2] }
 
-    let!(:event_id) do
+    let!(:invoice) do
       Invoice.update(
         user_id: user_id,
         tenant_id: tenant_id,
@@ -81,19 +81,19 @@ module Accountify
           quantity: 4 }])
     end
 
-    let(:invoice) do
-      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
+    let(:invoice_model) do
+      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: invoice[:id])
     end
 
-    let(:event) do
+    let(:event_model) do
       Invoice::UpdatedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: event_id)
+        .find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.update' do
       it 'updates model' do
-        expect(invoice).to have_attributes(
+        expect(invoice_model).to have_attributes(
           organisation_id: organisation_2.id,
           contact_id: contact_2.id,
           status: Invoice::Status::DRAFT,
@@ -115,7 +115,7 @@ module Accountify
       end
 
       it 'creates updated event' do
-        expect(event.body).to eq({
+        expect(event_model.body).to eq({
           'invoice' => {
             'id' => id,
             'contact_id' => contact_2.id,
@@ -139,7 +139,7 @@ module Accountify
       end
 
       it 'associates event with model' do
-        expect(invoice.events.last.id).to eq(event_id)
+        expect(invoice_model.events.last.id).to eq(invoice[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -149,7 +149,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => invoice[:events].last[:id],
                 'type' => 'Accountify::Invoice::UpdatedEvent')])])
       end
     end

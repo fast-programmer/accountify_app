@@ -85,11 +85,14 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      [invoice.id, event.id]
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
-      invoice = Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
+      invoice = Models::Invoice
+        .includes(:events)
+        .where(tenant_id: tenant_id)
+        .find_by!(id: id)
 
       {
         id: invoice.id,
@@ -109,7 +112,17 @@ module Accountify
         end,
         sub_total: {
           amount: invoice.sub_total_amount,
-          currency_code: invoice.sub_total_currency_code }
+          currency_code: invoice.sub_total_currency_code },
+        events: invoice.events.map do |event|
+          {
+            id: event.id,
+            type: event.type,
+            eventable_type: event.eventable_type,
+            eventable_id: event.eventable_id,
+            body: event.body,
+            created_at: event.created_at
+          }
+        end
       }
     end
 
@@ -191,12 +204,13 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      event.id
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
     class DeletedEvent < Event; end
 
     def delete(user_id:, tenant_id:, id:, time: ::Time)
+      invoice = nil
       event = nil
 
       current_utc_time = time.now.utc
@@ -226,12 +240,13 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      event.id
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
     class IssuedEvent < Event; end
 
     def issue(user_id:, tenant_id:, id:, time: ::Time)
+      invoice = nil
       event = nil
 
       current_utc_time = time.now.utc
@@ -265,12 +280,13 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      event.id
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
     class PaidEvent < Event; end
 
     def paid(user_id:, tenant_id:, id:, time: ::Time)
+      invoice = nil
       event = nil
 
       current_utc_time = time.now.utc
@@ -305,12 +321,13 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      event.id
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
     class VoidedEvent < Event; end
 
     def void(user_id:, tenant_id:, id:, time: ::Time)
+      invoice = nil
       event = nil
 
       ActiveRecord::Base.transaction do
@@ -337,7 +354,7 @@ module Accountify
         'occurred_at' => event.created_at.utc.iso8601,
         'organisation_id' => event.body['invoice']['organisation_id'] })
 
-      event.id
+      { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
   end
 end

@@ -77,7 +77,8 @@ module Accountify
             quantity: 3 }],
           sub_total: {
             amount: BigDecimal("1800.00"),
-            currency_code: "AUD" } })
+            currency_code: "AUD" },
+          events: []})
       end
     end
   end

@@ -42,7 +42,10 @@ module Accountify
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
-      contact = Models::Contact.where(tenant_id: tenant_id).find_by!(id: id)
+      contact = Models::Contact
+        .includes(:events)
+        .where(tenant_id: tenant_id)
+        .find_by!(id: id)
 
       {
         id: contact.id,
