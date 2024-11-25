@@ -10,41 +10,36 @@ module Accountify
       create(:accountify_organisation, tenant_id: tenant_id).id
     end
 
-    let!(:event_id) do
+    let!(:organisation) do
       Organisation.update(
         user_id: user_id, tenant_id: tenant_id,
         id: id, name: 'Big Bin Corp updated')
     end
 
-    let(:organisation) do
-      Models::Organisation
-        .where(tenant_id: tenant_id)
-        .find_by!(id: id)
+    let(:organisation_model) do
+      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
-    let(:event) do
+    let(:event_model) do
       Organisation::UpdatedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: event_id)
+        .find_by!(id: organisation[:events].last[:id])
     end
 
     describe '.update' do
       it 'updates model' do
-        expect(organisation.name).to eq('Big Bin Corp updated')
+        expect(organisation_model.name).to eq('Big Bin Corp updated')
       end
 
       it 'creates updated event' do
-        expect(event.body).to eq({
+        expect(event_model.body).to eq({
           'organisation' => {
-            'id' => id,
+            'id' => organisation[:id],
             'name' => 'Big Bin Corp updated' } })
       end
 
       it 'associates event with model' do
-        event_id = Organisation.update(
-          user_id: user_id, tenant_id: tenant_id, id: id, name: 'Big Bin Corp updated')
-
-        expect(organisation.events.last.id).to eq event_id
+        expect(event_model.id).to eq organisation[:events].last[:id]
       end
 
       it 'queues event created job' do
@@ -54,7 +49,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => organisation[:events].last[:id],
                 'type' => 'Accountify::Organisation::UpdatedEvent')])])
       end
     end

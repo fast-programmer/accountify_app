@@ -18,7 +18,7 @@ module Accountify
 
     describe '.find_by_id' do
       it 'returns attributes' do
-        expect(organisation).to eq({ id: id, name: name })
+        expect(organisation).to eq({ id: id, name: name, events: [] })
       end
     end
   end

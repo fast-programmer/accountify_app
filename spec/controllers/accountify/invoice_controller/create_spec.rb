@@ -50,13 +50,16 @@ module Accountify
     let(:event) do
       Invoice::DraftedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: response_body_json['event_id'])
+        .find_by!(id: response_body_json['events'].last['id'])
     end
 
     describe 'POST #create' do
       it 'returns 201 status with id and event_id in body' do
         expect(response).to have_http_status(:created)
-        expect(response_body_json).to eq({ 'id' => invoice.id, 'event_id' => event.id })
+        expect(response_body_json).to eq({
+          'id' => invoice.id,
+          'events' => [{ 'id' => event.id, 'type' => event.type }]
+        })
       end
 
       it 'creates invoice' do

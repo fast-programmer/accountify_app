@@ -20,8 +20,8 @@ module Accountify
         post :create, params: { name: 'New Organisation' }
 
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to have_key('organisation_id')
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
       end
     end
 
@@ -39,7 +39,8 @@ module Accountify
         put :update, params: { id: organisation.id, name: 'Updated Organisation' }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
         organisation.reload
         expect(organisation.name).to eq('Updated Organisation')
       end
@@ -50,7 +51,10 @@ module Accountify
         delete :destroy, params: { id: organisation.id }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to have_key('event_id')
+
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
+
         expect(
           Models::Organisation.find_by(deleted_at: nil, id: organisation.id)
         ).to be_nil

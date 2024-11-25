@@ -1,13 +1,12 @@
 module Accountify
   class OrganisationController < AccountifyController
     def create
-      organisation_id, event_id = Organisation.create(
+      organisation = Organisation.create(
         user_id: user_id,
         tenant_id: tenant_id,
         name: params[:name])
 
-      render json: { organisation_id: organisation_id, event_id: event_id },
-        status: :created
+      render json: organisation, status: :created
     end
 
     def show
@@ -20,22 +19,22 @@ module Accountify
     end
 
     def update
-      event_id = Organisation.update(
+      organisation = Organisation.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
         name: params[:name])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: organisation, status: :ok
     end
 
     def destroy
-      event_id = Organisation.delete(
+      organisation = Organisation.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: organisation, status: :ok
     end
   end
 end

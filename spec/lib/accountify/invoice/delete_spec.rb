@@ -50,30 +50,30 @@ module Accountify
 
     let!(:line_items) { [line_item_1, line_item_2] }
 
-    let(:invoice) { Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id) }
-
-    let(:event) do
-      Invoice::DeletedEvent.where(tenant_id: tenant_id).find_by!(id: event_id)
+    let!(:invoice) do
+      Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
-    let!(:event_id) do
-      Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: id)
+    let(:invoice_model) { Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id) }
+
+    let(:event_model) do
+      Invoice::DeletedEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.delete' do
       it "updates model deleted at" do
-        expect(invoice.deleted_at).not_to be_nil
+        expect(invoice_model.deleted_at).not_to be_nil
       end
 
       it 'creates deleted event' do
-        expect(event.body).to include(
+        expect(event_model.body).to include(
           'invoice' => a_hash_including(
-            'id' => id,
+            'id' => invoice[:id],
             'deleted_at' => be_present))
       end
 
       it 'associates event with model' do
-        expect(invoice.events.last.id).to eq(event_id)
+        expect(invoice_model.events.last.id).to eq(invoice[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -83,7 +83,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => invoice[:events].last[:id],
                 'type' => 'Accountify::Invoice::DeletedEvent')])])
       end
     end

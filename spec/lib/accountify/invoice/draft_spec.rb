@@ -17,7 +17,7 @@ module Accountify
         tenant_id: tenant_id, organisation_id: organisation.id)
     end
 
-    let(:result) do
+    let(:invoice) do
       Invoice.draft(
         user_id: user_id,
         tenant_id: tenant_id,
@@ -39,21 +39,17 @@ module Accountify
           quantity: 3 } ])
     end
 
-    let(:id) { result[0] }
-
-    let(:event_id) { result[1] }
-
-    let(:invoice) do
-      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
+    let(:invoice_model) do
+      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: invoice[:id])
     end
 
-    let(:event) do
-      Invoice::DraftedEvent.where(tenant_id: tenant_id).find_by!(id: event_id)
+    let(:event_model) do
+      Invoice::DraftedEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.draft' do
       it 'creates invoice' do
-        expect(invoice).to have_attributes(
+        expect(invoice_model).to have_attributes(
           organisation_id: organisation.id,
           contact_id: contact.id,
           status: Invoice::Status::DRAFT,
@@ -75,9 +71,9 @@ module Accountify
       end
 
       it 'creates drafted event' do
-        expect(event.body).to eq({
+        expect(event_model.body).to eq({
           'invoice' => {
-            'id' => id,
+            'id' => invoice[:id],
             'organisation_id' => organisation.id,
             'contact_id' => contact.id,
             'status' => Invoice::Status::DRAFT,
@@ -99,7 +95,7 @@ module Accountify
       end
 
       it 'associates event with model' do
-        expect(invoice.events.last.id).to eq(event_id)
+        expect(invoice_model.events.last.id).to eq(invoice[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -109,7 +105,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => invoice[:events].last[:id],
                 'type' => 'Accountify::Invoice::DraftedEvent')])])
       end
     end
