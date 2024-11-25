@@ -11,7 +11,7 @@ module Accountify
     let(:last_name) { 'Doe' }
     let(:email) { 'john.doe@example.com' }
 
-    let!(:result) do
+    let!(:contact) do
       Contact.create(
         user_id: user_id,
         tenant_id: tenant_id,
@@ -21,38 +21,34 @@ module Accountify
         email: email)
     end
 
-    let(:id) { result[0] }
-
-    let(:event_id) { result[1] }
-
-    let(:contact) do
-      Models::Contact.where(tenant_id: tenant_id).find_by!(id: id)
+    let(:contact_model) do
+      Models::Contact.where(tenant_id: tenant_id).find_by!(id: contact[:id])
     end
 
-    let(:event) do
+    let(:event_model) do
       Contact::CreatedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: event_id)
+        .find_by!(id: contact[:events].last[:id])
     end
 
     describe '.create' do
       it 'creates model' do
-        expect(contact.first_name).to eq(first_name)
-        expect(contact.last_name).to eq(last_name)
-        expect(contact.email).to eq(email)
+        expect(contact_model.first_name).to eq(first_name)
+        expect(contact_model.last_name).to eq(last_name)
+        expect(contact_model.email).to eq(email)
       end
 
       it 'creates created event' do
-        expect(event.body).to eq({
+        expect(event_model.body).to eq({
           'contact' => {
-            'id' => id,
+            'id' => contact[:id],
             'first_name' => first_name,
             'last_name' => last_name,
             'email' => email } })
       end
 
       it 'associates event with model' do
-        expect(contact.events.last.id).to eq(event_id)
+        expect(contact_model.events.last.id).to eq(contact[:events].last[:id])
       end
 
       it 'queues event created job' do
@@ -62,7 +58,7 @@ module Accountify
               hash_including(
                 'user_id' => user_id,
                 'tenant_id' => tenant_id,
-                'id' => event_id,
+                'id' => contact[:events].last[:id],
                 'type' => 'Accountify::Contact::CreatedEvent')])])
       end
     end
