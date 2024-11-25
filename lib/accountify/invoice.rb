@@ -3,7 +3,7 @@ module Accountify
     extend self
 
     module Status
-      DRAFT = 'draft'
+      DRAFTED = 'drafted'
       ISSUED = 'issued'
       PAID = 'paid'
       VOIDED = 'voided'
@@ -33,7 +33,7 @@ module Accountify
           tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact_id,
-          status: Status::DRAFT,
+          status: Status::DRAFTED,
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
@@ -156,7 +156,7 @@ module Accountify
           organisation_id: organisation.id,
           updated_at: current_utc_time,
           contact_id: contact.id,
-          status: Status::DRAFT,
+          status: Status::DRAFTED,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
             BigDecimal(line_item[:unit_amount][:amount]) * line_item[:quantity].to_i

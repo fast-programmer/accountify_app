@@ -6,8 +6,8 @@ FactoryBot.define do
     sub_total_amount { BigDecimal("100.00") }
     sub_total_currency_code { "AUD" }
 
-    trait :draft do
-      status { "draft" }
+    trait :drafted do
+      status { "drafted" }
     end
 
     trait :approved do

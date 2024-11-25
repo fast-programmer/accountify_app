@@ -32,7 +32,7 @@ module Accountify
         organisation_id: organisation_1.id,
         contact_id: contact_1.id,
         currency_code: "AUD",
-        status: Invoice::Status::DRAFT,
+        status: Invoice::Status::DRAFTED,
         due_date: current_date + 30.days,
         sub_total_amount: BigDecimal("600.00"),
         sub_total_currency_code: "AUD"
@@ -96,7 +96,7 @@ module Accountify
         expect(invoice_model).to have_attributes(
           organisation_id: organisation_2.id,
           contact_id: contact_2.id,
-          status: Invoice::Status::DRAFT,
+          status: Invoice::Status::DRAFTED,
           currency_code: "AUD",
           due_date: current_date + 14.days,
           line_items: match_array([
@@ -120,7 +120,7 @@ module Accountify
             'id' => id,
             'contact_id' => contact_2.id,
             'organisation_id' => organisation_2.id,
-            'status' => Invoice::Status::DRAFT,
+            'status' => Invoice::Status::DRAFTED,
             'currency_code' => "AUD",
             'due_date' => (current_date + 14.days).to_s,
             'line_items' => [{

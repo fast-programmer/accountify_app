@@ -52,7 +52,7 @@ module Accountify
         expect(invoice_model).to have_attributes(
           organisation_id: organisation.id,
           contact_id: contact.id,
-          status: Invoice::Status::DRAFT,
+          status: Invoice::Status::DRAFTED,
           currency_code: "AUD",
           due_date: current_date + 30.days,
           line_items: match_array([
@@ -76,7 +76,7 @@ module Accountify
             'id' => invoice[:id],
             'organisation_id' => organisation.id,
             'contact_id' => contact.id,
-            'status' => Invoice::Status::DRAFT,
+            'status' => Invoice::Status::DRAFTED,
             'currency_code' => "AUD",
             'due_date' => (current_date + 30.days ).to_s,
             'line_items' => [{
