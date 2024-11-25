@@ -32,7 +32,7 @@ module Accountify
         organisation_id: organisation_1.id,
         contact_id: contact_1.id,
         currency_code: "AUD",
-        status: Invoice::Status::DRAFT,
+        status: Invoice::Status::DRAFTED,
         due_date: current_date + 30.days,
         sub_total_amount: BigDecimal("600.00"),
         sub_total_currency_code: "AUD",

@@ -21,7 +21,7 @@ module Accountify
           tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact.id,
-          status: Invoice::Status::DRAFT)
+          status: Invoice::Status::DRAFTED)
       end
 
       let!(:issued_invoice) do
