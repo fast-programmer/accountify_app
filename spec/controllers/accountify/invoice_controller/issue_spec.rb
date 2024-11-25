@@ -54,7 +54,7 @@ module Accountify
     let(:event) do
       Invoice::IssuedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: response_body_json['event_id'])
+        .find_by!(id: response_body_json['events'].last['id'])
     end
 
     let(:invoice) do
@@ -65,7 +65,7 @@ module Accountify
       it 'returns 200 with deleted event id in body' do
         expect(response).to have_http_status(:ok)
 
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('events')
       end
 
       it 'updates invoice status to issued' do

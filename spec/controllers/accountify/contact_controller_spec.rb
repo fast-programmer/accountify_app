@@ -29,8 +29,8 @@ module Accountify
         }
 
         expect(response).to have_http_status(:created)
-        expect(JSON.parse(response.body)).to have_key('contact_id')
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
       end
     end
 
@@ -53,7 +53,8 @@ module Accountify
         }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
         contact.reload
         expect(contact.first_name).to eq('Jane')
         expect(contact.last_name).to eq('Doe')
@@ -66,7 +67,8 @@ module Accountify
         delete :destroy, params: { id: contact.id }
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to have_key('event_id')
+        expect(JSON.parse(response.body)).to have_key('id')
+        expect(JSON.parse(response.body)).to have_key('events')
         expect(Models::Contact.find_by(deleted_at: nil, id: contact.id)).to be_nil
       end
     end

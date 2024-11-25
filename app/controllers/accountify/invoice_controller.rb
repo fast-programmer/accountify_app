@@ -1,7 +1,7 @@
 module Accountify
   class InvoiceController < AccountifyController
     def create
-      id, event_id = Invoice.draft(
+      invoice = Invoice.draft(
         user_id: user_id,
         tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
@@ -10,7 +10,7 @@ module Accountify
         due_date: params[:due_date],
         line_items: params[:line_items])
 
-      render json: { id: id, event_id: event_id }, status: :created
+      render json: invoice, status: :created
     end
 
     def show
@@ -23,7 +23,7 @@ module Accountify
     end
 
     def update
-      event_id = Invoice.update(
+      invoice = Invoice.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
@@ -32,43 +32,43 @@ module Accountify
         due_date: params[:due_date],
         line_items: params[:line_items])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: invoice, status: :ok
     end
 
     def destroy
-      event_id = Invoice.delete(
+      invoice = Invoice.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: invoice, status: :ok
     end
 
     def issue
-      event_id = Invoice.issue(
+      invoice = Invoice.issue(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: invoice, status: :ok
     end
 
     def paid
-      event_id = Invoice.paid(
+      invoice = Invoice.paid(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: invoice, status: :ok
     end
 
     def void
-      event_id = Invoice.void(
+      invoice = Invoice.void(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: invoice, status: :ok
     end
   end
 end

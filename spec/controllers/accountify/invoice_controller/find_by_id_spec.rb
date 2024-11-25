@@ -75,7 +75,8 @@ module Accountify
           "status" => "draft",
           "sub_total" => {
             "amount" => "600.0",
-            "currency_code" => "AUD" } })
+            "currency_code" => "AUD" },
+          "events" => []})
       end
     end
   end

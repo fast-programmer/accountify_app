@@ -77,13 +77,16 @@ module Accountify
     let(:event) do
       Invoice::UpdatedEvent
         .where(tenant_id: tenant_id)
-        .find_by!(id: response_body_json['event_id'])
+        .find_by!(id: response_body_json['events'].last['id'])
     end
 
     describe 'PUT #update' do
       it 'returns 200 status with event_id in body' do
         expect(response).to have_http_status(:ok)
-        expect(response_body_json).to eq({ 'event_id' => event.id })
+        expect(response_body_json).to eq({
+          'id' => id,
+          'events' => [{ 'id' => event.id, 'type' => event.type }]
+        })
       end
 
       it 'updates model' do

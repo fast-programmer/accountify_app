@@ -1,7 +1,7 @@
 module Accountify
   class ContactController < AccountifyController
     def create
-      contact_id, event_id = Contact.create(
+      contact = Contact.create(
         user_id: user_id,
         tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
@@ -9,7 +9,7 @@ module Accountify
         last_name: params[:last_name],
         email: params[:email])
 
-      render json: { contact_id: contact_id, event_id: event_id }, status: :created
+      render json: contact, status: :created
     end
 
     def show
@@ -22,7 +22,7 @@ module Accountify
     end
 
     def update
-      event_id = Contact.update(
+      contact = Contact.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
@@ -30,16 +30,16 @@ module Accountify
         last_name: params[:last_name],
         email: params[:email])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: contact, status: :ok
     end
 
     def destroy
-      event_id = Contact.delete(
+      contact = Contact.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
 
-      render json: { event_id: event_id }, status: :ok
+      render json: contact, status: :ok
     end
   end
 end
