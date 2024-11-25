@@ -72,7 +72,7 @@ module Accountify
               "amount" => "400.0",
               "currency_code" => "AUD" } } ],
           "organisation_id" => organisation.id,
-          "status" => "draft",
+          "status" => "drafted",
           "sub_total" => {
             "amount" => "600.0",
             "currency_code" => "AUD" },
