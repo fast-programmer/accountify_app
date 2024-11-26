@@ -3,11 +3,9 @@ module Accountify
     class VoidedJob
       include Sidekiq::Job
 
-      sidekiq_options queue: 'event_handlers', backtrace: true
+      sidekiq_options queue: 'events', retry: false, backtrace: true
 
       def perform(args)
-        InvoiceStatusSummary.generate(
-          tenant_id: args['tenant_id'], organisation_id: args['organisation_id'])
       end
     end
   end
