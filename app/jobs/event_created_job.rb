@@ -10,13 +10,19 @@ class EventCreatedJob
         'tenant_id' => args['tenant_id'],
         'organisation_id' => args['organisation_id'] })
 
-    when 'Accountify::Invoice::IssuedEvent'
+    when 'Accountify::Invoice::DraftedEvent'
       Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
         'tenant_id' => args['tenant_id'],
         'organisation_id' => args['organisation_id'],
         'invoice_updated_at' => args['occurred_at'] })
 
     when 'Accountify::Invoice::UpdatedEvent'
+      Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
+        'tenant_id' => args['tenant_id'],
+        'organisation_id' => args['organisation_id'],
+        'invoice_updated_at' => args['occurred_at'] })
+
+    when 'Accountify::Invoice::IssuedEvent'
       Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
         'tenant_id' => args['tenant_id'],
         'organisation_id' => args['organisation_id'],
