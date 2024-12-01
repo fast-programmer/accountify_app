@@ -1,6 +1,5 @@
 require_relative '../../../config/environment'
 
-# require 'time'
 require 'open3'
 
 user_id = 123
