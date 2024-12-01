@@ -1,6 +1,5 @@
 require_relative '../../../config/environment'
 
-# require 'time'
 require 'open3'
 
 user_id = 123
@@ -13,8 +12,6 @@ organisation = Accountify::Organisation.create(
   user_id: user_id,
   tenant_id: tenant_id,
   name: 'Debbies Debts Ltd')
-
-sleep 1
 
 contact = Accountify::Contact.create(
   user_id: user_id,
