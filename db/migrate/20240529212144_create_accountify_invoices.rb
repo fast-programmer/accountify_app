@@ -1,4 +1,4 @@
-class CreateAccountifyInvoices < ActiveRecord::Migration[7.1]
+class CreateAccountifyInvoices < ActiveRecord::Migration[7.0]
   def change
     create_table :accountify_invoices do |t|
       t.bigint :tenant_id, null: false, index: true
