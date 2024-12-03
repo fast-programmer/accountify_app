@@ -1,4 +1,4 @@
-class CreateAccountifyInvoiceLineItems < ActiveRecord::Migration[7.1]
+class CreateAccountifyInvoiceLineItems < ActiveRecord::Migration[7.0]
   def change
     create_table :accountify_invoice_line_items do |t|
       t.references :invoice,
