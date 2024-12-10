@@ -41,17 +41,6 @@ module Accountify
       it 'associates event with model' do
         expect(event_model.id).to eq organisation[:events].last[:id]
       end
-
-      it 'queues event created job' do
-        expect(EventCreatedJob.jobs).to match([
-          hash_including(
-            'args' => [
-              hash_including(
-                'user_id' => user_id,
-                'tenant_id' => tenant_id,
-                'id' => organisation[:events].last[:id],
-                'type' => 'Accountify::Organisation::UpdatedEvent')])])
-      end
     end
   end
 end

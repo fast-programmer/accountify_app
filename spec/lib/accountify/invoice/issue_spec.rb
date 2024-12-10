@@ -80,17 +80,6 @@ module Accountify
       it 'associates event with model' do
         expect(invoice_model.events.last.id).to eq(invoice[:events].last[:id])
       end
-
-      it 'queues event created job' do
-        expect(EventCreatedJob.jobs).to match([
-          hash_including(
-            'args' => [
-              hash_including(
-                'user_id' => user_id,
-                'tenant_id' => tenant_id,
-                'id' => invoice[:events].last[:id],
-                'type' => 'Accountify::Invoice::IssuedEvent')])])
-      end
     end
   end
 end
