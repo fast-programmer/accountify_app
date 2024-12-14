@@ -6,7 +6,7 @@ module OutboxerIntegration
       sidekiq_options queue: 'events', retry: false, backtrace: true
 
       def perform(args)
-        case args['type']
+        case args['messageable_type']
         when 'Accountify::Organisation::CreatedEvent'
           Accountify::InvoiceStatusSummary::GenerateJob.perform_async({
             'tenant_id' => args['tenant_id'],

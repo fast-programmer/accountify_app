@@ -9,7 +9,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Organisation::CreatedEvent' })
+            'messageable_type' => 'Accountify::Organisation::CreatedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::GenerateJob async' do
@@ -25,7 +25,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::DraftedEvent' })
+            'messageable_type' => 'Accountify::Invoice::DraftedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -41,7 +41,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::UpdatedEvent' })
+            'messageable_type' => 'Accountify::Invoice::UpdatedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -57,7 +57,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::IssuedEvent' })
+            'messageable_type' => 'Accountify::Invoice::IssuedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -73,7 +73,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::PaidEvent' })
+            'messageable_type' => 'Accountify::Invoice::PaidEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -88,7 +88,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::VoidedEvent' })
+            'messageable_type' => 'Accountify::Invoice::VoidedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -104,7 +104,7 @@ module OutboxerIntegration
         before do
           PublishJob.new.perform({
             'tenant_id' => tenant_id,
-            'type' => 'Accountify::Invoice::DeletedEvent' })
+            'messageable_type' => 'Accountify::Invoice::DeletedEvent' })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
