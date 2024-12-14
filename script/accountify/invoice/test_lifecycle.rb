@@ -74,7 +74,8 @@ sidekiq_server_cmd = "bundle exec sidekiq -r ./config/sidekiq.rb"
 sidekiq_server_process = IO.popen(sidekiq_server_cmd)
 
 puts "Starting outboxer publisher..."
-outboxer_publisher_cmd = "bin/outboxer_publisher"
+outboxer_publisher_env = ENV['RAILS_ENV'] || 'development'
+outboxer_publisher_cmd = "OUTBOXER_ENV=#{outboxer_publisher_env} bin/outboxer_publisher"
 outboxer_publisher_process = IO.popen(outboxer_publisher_cmd)
 
 begin
