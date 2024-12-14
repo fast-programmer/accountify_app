@@ -101,7 +101,7 @@ begin
   end
 ensure
   puts "stopping outboxer publisher..."
-  Process.kill("TERM", outboxer_pubisher_process.pid)
+  Process.kill("TERM", outboxer_publisher_process.pid)
   Process.wait(outboxer_publisher_process.pid)
 
   puts "stopping sidekiq server..."
