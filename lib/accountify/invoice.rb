@@ -77,14 +77,6 @@ module Accountify
                 'currency_code' => invoice.sub_total_currency_code } } })
       end
 
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
-
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
@@ -196,14 +188,6 @@ module Accountify
                 'currency_code' => invoice.sub_total_currency_code } } })
       end
 
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
-
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
@@ -231,14 +215,6 @@ module Accountify
               'organisation_id' => invoice.organisation_id,
               'deleted_at' => invoice.deleted_at } } )
       end
-
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
 
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
@@ -271,14 +247,6 @@ module Accountify
               'issued_at' => invoice.issued_at,
               'organisation_id' => invoice.organisation_id } })
       end
-
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
 
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
@@ -313,14 +281,6 @@ module Accountify
               'organisation_id' => invoice.organisation_id } } )
       end
 
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
-
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
@@ -345,14 +305,6 @@ module Accountify
               'status' => invoice.status,
               'organisation_id' => invoice.organisation_id } } )
       end
-
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'occurred_at' => event.created_at.utc.iso8601,
-        'organisation_id' => event.body['invoice']['organisation_id'] })
 
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end

@@ -23,13 +23,6 @@ module Accountify
                 'name' => organisation.name } } )
       end
 
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type,
-        'organisation_id' => event['body']['organisation']['id'] })
-
       { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
 
@@ -77,12 +70,6 @@ module Accountify
                 'name' => organisation.name } })
       end
 
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type })
-
       { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
 
@@ -108,12 +95,6 @@ module Accountify
                 'name' => organisation.name,
                 'deleted_at' => organisation.deleted_at } })
       end
-
-      EventCreatedJob.perform_async({
-        'user_id' => user_id,
-        'tenant_id' => tenant_id,
-        'id' => event.id,
-        'type' => event.type })
 
       { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
