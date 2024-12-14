@@ -1,6 +1,6 @@
-require_relative '../../../config/environment'
-
 require 'open3'
+
+require_relative '../../../config/environment'
 
 user_id = 123
 
@@ -69,11 +69,11 @@ Accountify::Invoice.void(user_id: user_id, tenant_id: tenant_id, id: invoice[:id
 
 Accountify::Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-puts "starting sidekiq server..."
+puts "Starting sidekiq server..."
 sidekiq_server_cmd = "bundle exec sidekiq -r ./config/sidekiq.rb"
 sidekiq_server_process = IO.popen(sidekiq_server_cmd)
 
-puts "starting outboxer publisher..."
+puts "Starting outboxer publisher..."
 outboxer_publisher_cmd = "bin/outboxer_publisher"
 outboxer_publisher_process = IO.popen(outboxer_publisher_cmd)
 
@@ -92,19 +92,19 @@ begin
     rescue Accountify::NotFound
       sleep 1
 
-      puts "invoice status summary not found. Retrying (Attempt #{attempts}/#{max_attempts})..."
+      puts "Invoice status summary not found. Retrying (Attempt #{attempts}/#{max_attempts})..."
     end
   end
 
   if invoice_status_summary.nil?
-    raise Accountify::NotFound, "invoice status summary not found after #{max_attempts} attempts"
+    raise Accountify::NotFound, "Invoice status summary not found after #{max_attempts} attempts"
   end
 ensure
-  puts "stopping outboxer publisher..."
+  puts "Stopping outboxer publisher..."
   Process.kill("TERM", outboxer_publisher_process.pid)
   Process.wait(outboxer_publisher_process.pid)
 
-  puts "stopping sidekiq server..."
+  puts "Stopping sidekiq server..."
   Process.kill("TERM", sidekiq_server_process.pid)
   Process.wait(sidekiq_server_process.pid)
 end
