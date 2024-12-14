@@ -9,7 +9,7 @@ module Accountify
       VOIDED = 'voided'
     end
 
-    class DraftedEvent < Models::Event; end
+    class DraftedEvent < Event; end
 
     def draft(user_id:, tenant_id:,
               organisation_id:, contact_id:,

@@ -4,7 +4,7 @@ require 'bundler/setup'
 require 'sidekiq'
 require 'outboxer'
 
-require_relative '../app/jobs/event_created_job'
+require_relative '../app/jobs/outboxer_integration/message/publish_job'
 
 options = {
   env: ENV.fetch('OUTBOXER_ENV', 'development'),
