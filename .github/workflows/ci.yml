@@ -67,7 +67,7 @@ jobs:
 
       - name: add Outboxer
         run: |
-          echo "gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'master'" >> Gemfile
+          echo "gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'feature/add_outboxer_integration_message_publish_job'" >> Gemfile
           bundle install
           bin/rails g outboxer:schema
           bin/rake db:migrate
