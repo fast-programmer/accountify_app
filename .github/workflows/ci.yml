@@ -65,5 +65,15 @@ jobs:
           bundle exec rails db:create
           bundle exec rails db:schema:load
 
+      # - name: add Outboxer
+      #   run: |
+      #     echo "gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'master'" >> Gemfile
+      #     bundle install
+      #     bin/rails g outboxer:schema
+      #     bin/rake db:migrate
+      #     bin/rake outboxer:db:seed
+      #     bin/rails g outboxer:sidekiq_publisher
+      #     echo "$(sed '$d' lib/event.rb)\n\n  # callbacks\n\n  after_create do |event|\n    Outboxer::Message.queue(messageable: event)\n  end\nend" > lib/event.rb
+
       - name: Run tests
         run: bundle exec rspec

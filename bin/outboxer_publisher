@@ -33,6 +33,6 @@ Outboxer::Publisher.publish(
   logger: logger
 ) do |message|
   OutboxerIntegration::Message::PublishJob.perform_async({
-    'messageable_id' => message[:messageable_id],
-    'messageable_type' => message[:messageable_type] })
+    'messageable_id' => message[:messageable_id], 'messageable_type' => message[:messageable_type]
+  })
 end

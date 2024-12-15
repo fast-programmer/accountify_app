@@ -71,12 +71,12 @@ Accountify::Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: invoice[:
 
 outboxer_env = ENV['OUTBOXER_ENV'] || ENV['RAILS_ENV'] || 'development'
 
-puts "Starting sidekiq server..."
-sidekiq_server_cmd = "OUTBOXER_ENV=#{outboxer_env} bundle exec sidekiq -r ./config/sidekiq.rb"
+sidekiq_server_cmd = "RAILS_ENV=#{outboxer_env} bundle exec sidekiq -r ./config/sidekiq.rb"
+puts sidekiq_server_cmd
 sidekiq_server_process = IO.popen(sidekiq_server_cmd)
 
-puts "Starting outboxer publisher..."
 outboxer_publisher_cmd = "OUTBOXER_ENV=#{outboxer_env} bin/outboxer_publisher"
+puts outboxer_publisher_cmd
 outboxer_publisher_process = IO.popen(outboxer_publisher_cmd)
 
 begin
