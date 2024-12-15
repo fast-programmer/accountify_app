@@ -73,7 +73,7 @@ jobs:
           bin/rake db:migrate
           bin/rake outboxer:db:seed
           bin/rails g outboxer:sidekiq_publisher
-          echo "$(sed '$d' lib/event.rb)\n\n  # callbacks\n\n  after_create do |event|\n    Outboxer::Message.queue(messageable: event)\n  end\nend" > lib/event.rb
+          { sed '$d' lib/event.rb; printf "\n  # callbacks\n\n  after_create do |event|\n    Outboxer::Message.queue(messageable: event)\n  end\nend\n"; } > lib/event.tmp && mv lib/event.tmp lib/event.rb
 
       - name: Run tests
         run: bundle exec rspec
