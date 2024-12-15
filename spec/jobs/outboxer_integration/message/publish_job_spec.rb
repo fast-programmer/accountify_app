@@ -57,7 +57,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
@@ -86,7 +86,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
@@ -115,7 +115,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
@@ -144,7 +144,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
@@ -173,7 +173,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
@@ -202,7 +202,7 @@ module OutboxerIntegration
             eventable: accountify_organisation,
             created_at: current_time.utc,
             body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
+              'invoice' => { 'organisation_id' => accountify_organisation.id } })
         end
 
         before do
