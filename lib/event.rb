@@ -9,4 +9,10 @@ class Event < ActiveRecord::Base
   # associations
 
   belongs_to :eventable, polymorphic: true
+
+  # callbacks
+
+  after_create do |event|
+    Outboxer::Message.queue(messageable: event)
+  end
 end
