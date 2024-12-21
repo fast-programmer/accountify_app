@@ -12,6 +12,8 @@ class Event < ActiveRecord::Base
 
   validates :type, presence: true, length: { maximum: 255 }
 
-  validates :eventable_type, presence: true, length: { maximum: 255 }, if: -> { eventable_id.present? }
+  validates :eventable_type, presence: true, length: { maximum: 255 },
+    if: -> { eventable_id.present? }
+
   validates :eventable_id, presence: true, if: -> { eventable_type.present? }
 end
