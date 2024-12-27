@@ -3,55 +3,21 @@ module OutboxerIntegration
     class PublishJob
       include Sidekiq::Job
 
-      sidekiq_options queue: 'events', retry: false, backtrace: true
+      sidekiq_options retry: false, backtrace: true
+
+      MESSAGEABLE_TYPE_REGEX = /\A([A-Za-z]+)::Models::([A-Za-z]+)::([A-Za-z]+)Event\z/
 
       def perform(args)
-        messageable = ActiveRecord::Base.connection_pool.with_connection do
-          args['messageable_type'].constantize.find(args['messageable_id'])
+        messageable_type = args['messageable_type']
+
+        if !messageable_type.match(MESSAGEABLE_TYPE_REGEX)
+          raise StandardError, "Unexpected class name format: #{messageable_type}"
         end
 
-        case args['messageable_type']
-        when 'Accountify::Models::Organisation::CreatedEvent'
-          Accountify::InvoiceStatusSummary::GenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'] })
-
-        when 'Accountify::Models::Invoice::DraftedEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-
-        when 'Accountify::Models::Invoice::UpdatedEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-
-        when 'Accountify::Models::Invoice::IssuedEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-
-        when 'Accountify::Models::Invoice::PaidEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-
-        when 'Accountify::Models::Invoice::VoidedEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-
-        when 'Accountify::Models::Invoice::DeletedEvent'
-          Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
-            'tenant_id' => messageable.tenant_id,
-            'organisation_id' => messageable.body['organisation']['id'],
-            'invoice_updated_at' => messageable.created_at.utc.iso8601 })
-        end
+        namespace, model, event = messageable_type.match(MESSAGEABLE_TYPE_REGEX).captures
+        job_class_name = "#{namespace}::#{model}::#{event}Job"
+        job_class = job_class_name.constantize
+        job_class.perform_async({ 'id' => args['messageable_id'] })
       end
     end
   end
