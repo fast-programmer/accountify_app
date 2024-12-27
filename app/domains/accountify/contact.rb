@@ -2,8 +2,6 @@ module Accountify
   module Contact
     extend self
 
-    class CreatedEvent < Event; end
-
     def create(user_id:, tenant_id:,
               organisation_id:, first_name:, last_name:, email:)
       contact = nil
@@ -18,7 +16,7 @@ module Accountify
             last_name: last_name,
             email: email)
 
-        event = CreatedEvent
+        event = Models::Contact::CreatedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,
@@ -58,8 +56,6 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < Event; end
-
     def update(user_id:, tenant_id:, id:,
                first_name:, last_name:, email:)
       contact = nil
@@ -74,7 +70,7 @@ module Accountify
           last_name: last_name,
           email: email)
 
-        event = UpdatedEvent
+        event = Models::Contact::UpdatedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,
@@ -90,8 +86,6 @@ module Accountify
       { id: contact.id, events: [{ id: event.id, type: event.type }] }
     end
 
-    class DeletedEvent < Event; end
-
     def delete(user_id:, tenant_id:, id:, time: ::Time)
       contact = nil
       event = nil
@@ -102,7 +96,7 @@ module Accountify
 
         contact.update!(deleted_at: time.now.utc)
 
-        event = DeletedEvent
+        event = Models::Contact::DeletedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,

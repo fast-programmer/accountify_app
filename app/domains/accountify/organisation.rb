@@ -2,8 +2,6 @@ module Accountify
   module Organisation
     extend self
 
-    class CreatedEvent < Event; end
-
     def create(user_id:, tenant_id:, name:)
       organisation = nil
       event = nil
@@ -13,7 +11,7 @@ module Accountify
           .where(tenant_id: tenant_id)
           .create!(name: name)
 
-        event = CreatedEvent
+        event = Models::Organisation::CreatedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,
@@ -48,8 +46,6 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < Event; end
-
     def update(user_id:, tenant_id:, id:, name:)
       organisation = nil
       event = nil
@@ -60,7 +56,7 @@ module Accountify
 
         organisation.update!(name: name)
 
-        event = UpdatedEvent
+        event = Models::Organisation::UpdatedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,
@@ -73,8 +69,6 @@ module Accountify
       { id: organisation.id, events: [{ id: event.id, type: event.type }] }
     end
 
-    class DeletedEvent < Event; end
-
     def delete(user_id:, tenant_id:, id:, time: ::Time)
       organisation = nil
       event = nil
@@ -85,7 +79,7 @@ module Accountify
 
         organisation.update!(deleted_at: time.now.utc)
 
-        event = DeletedEvent
+        event = Models::Organisation::DeletedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,

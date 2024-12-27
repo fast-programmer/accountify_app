@@ -7,8 +7,7 @@ module Accountify
 
       has_many :line_items, -> { order(id: :asc) }
 
-      has_many :events, -> { order(created_at: :asc) },
-        as: :eventable
+      has_many :events, -> { order(created_at: :asc) }, as: :eventable
 
       has_one :invoice_status_summary
 

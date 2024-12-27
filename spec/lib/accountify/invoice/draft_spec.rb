@@ -44,7 +44,8 @@ module Accountify
     end
 
     let(:event_model) do
-      Invoice::DraftedEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
+      Models::Invoice::DraftedEvent
+        .where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.draft' do
