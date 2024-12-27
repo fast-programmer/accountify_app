@@ -86,7 +86,7 @@ module Accountify
     end
 
     let(:event_model) do
-      Invoice::UpdatedEvent
+      Models::Invoice::UpdatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: invoice[:events].last[:id])
     end

@@ -22,7 +22,7 @@ module OutboxerIntegration
           tenant_id: tenant_id, organisation_id: organisation.id, contact_id: contact.id)
       end
 
-      describe 'when Accountify::Organisation::CreatedEvent' do
+      describe 'when Accountify::Models::Organisation::CreatedEvent' do
         let(:event) do
           create(
             :accountify_organisation_created_event,
@@ -34,7 +34,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Organisation::CreatedEvent',
+            'messageable_type' => 'Accountify::Models::Organisation::CreatedEvent',
             'messageable_id' => event.id })
         end
 
@@ -48,7 +48,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::DraftedEvent' do
+      describe 'when Accountify::Models::Invoice::DraftedEvent' do
         let(:event) do
           create(
             :accountify_invoice_drafted_event,
@@ -62,7 +62,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::DraftedEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::DraftedEvent',
             'messageable_id' => event.id })
         end
 
@@ -77,7 +77,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::UpdatedEvent' do
+      describe 'when Accountify::Models::Invoice::UpdatedEvent' do
         let(:event) do
           create(
             :accountify_invoice_updated_event,
@@ -91,7 +91,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::UpdatedEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::UpdatedEvent',
             'messageable_id' => event.id })
         end
 
@@ -106,7 +106,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::IssuedEvent' do
+      describe 'when Accountify::Models::Invoice::IssuedEvent' do
         let(:event) do
           create(
             :accountify_invoice_issued_event,
@@ -120,7 +120,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::IssuedEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::IssuedEvent',
             'messageable_id' => event.id })
         end
 
@@ -135,7 +135,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::PaidEvent' do
+      describe 'when Accountify::Models::Invoice::PaidEvent' do
         let(:event) do
           create(
             :accountify_invoice_paid_event,
@@ -149,7 +149,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::PaidEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::PaidEvent',
             'messageable_id' => event.id })
         end
 
@@ -164,7 +164,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::VoidedEvent' do
+      describe 'when Accountify::Models::Invoice::VoidedEvent' do
         let(:event) do
           create(
             :accountify_invoice_voided_event,
@@ -178,7 +178,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::VoidedEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::VoidedEvent',
             'messageable_id' => event.id })
         end
 
@@ -193,7 +193,7 @@ module OutboxerIntegration
         end
       end
 
-      describe 'when Accountify::Invoice::DeletedEvent' do
+      describe 'when Accountify::Models::Invoice::DeletedEvent' do
         let(:event) do
           create(
             :accountify_invoice_deleted_event,
@@ -207,7 +207,7 @@ module OutboxerIntegration
 
         before do
           PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Invoice::DeletedEvent',
+            'messageable_type' => 'Accountify::Models::Invoice::DeletedEvent',
             'messageable_id' => event.id })
         end
 

@@ -48,7 +48,7 @@ module Accountify
     end
 
     let(:event) do
-      Invoice::DraftedEvent
+      Models::Invoice::DraftedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['events'].last['id'])
     end

@@ -11,42 +11,42 @@ module OutboxerIntegration
         end
 
         case args['messageable_type']
-        when 'Accountify::Organisation::CreatedEvent'
+        when 'Accountify::Models::Organisation::CreatedEvent'
           Accountify::InvoiceStatusSummary::GenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'] })
 
-        when 'Accountify::Invoice::DraftedEvent'
+        when 'Accountify::Models::Invoice::DraftedEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],
             'invoice_updated_at' => messageable.created_at.utc.iso8601 })
 
-        when 'Accountify::Invoice::UpdatedEvent'
+        when 'Accountify::Models::Invoice::UpdatedEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],
             'invoice_updated_at' => messageable.created_at.utc.iso8601 })
 
-        when 'Accountify::Invoice::IssuedEvent'
+        when 'Accountify::Models::Invoice::IssuedEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],
             'invoice_updated_at' => messageable.created_at.utc.iso8601 })
 
-        when 'Accountify::Invoice::PaidEvent'
+        when 'Accountify::Models::Invoice::PaidEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],
             'invoice_updated_at' => messageable.created_at.utc.iso8601 })
 
-        when 'Accountify::Invoice::VoidedEvent'
+        when 'Accountify::Models::Invoice::VoidedEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],
             'invoice_updated_at' => messageable.created_at.utc.iso8601 })
 
-        when 'Accountify::Invoice::DeletedEvent'
+        when 'Accountify::Models::Invoice::DeletedEvent'
           Accountify::InvoiceStatusSummary::RegenerateJob.perform_async({
             'tenant_id' => messageable.tenant_id,
             'organisation_id' => messageable.body['organisation']['id'],

@@ -50,7 +50,7 @@ module Accountify
     end
 
     let(:event_model) do
-      Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
+      Models::Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.paid' do

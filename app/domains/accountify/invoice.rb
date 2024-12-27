@@ -9,8 +9,6 @@ module Accountify
       VOIDED = 'voided'
     end
 
-    class DraftedEvent < Event; end
-
     def draft(user_id:, tenant_id:,
               organisation_id:, contact_id:,
               currency_code:, due_date:, line_items:,
@@ -51,7 +49,7 @@ module Accountify
             quantity: line_item[:quantity])
         end
 
-        event = DraftedEvent.create!(
+        event = Models::Invoice::DraftedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -118,8 +116,6 @@ module Accountify
       }
     end
 
-    class UpdatedEvent < Event; end
-
     def update(user_id:, tenant_id:, id:,
                organisation_id:, contact_id:,
                due_date:, line_items:,
@@ -162,7 +158,7 @@ module Accountify
             quantity: line_item[:quantity])
         end
 
-        event = UpdatedEvent.create!(
+        event = Models::Invoice::UpdatedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -191,8 +187,6 @@ module Accountify
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
-    class DeletedEvent < Event; end
-
     def delete(user_id:, tenant_id:, id:, time: ::Time)
       invoice = nil
       event = nil
@@ -204,7 +198,7 @@ module Accountify
 
         invoice.update!(updated_at: current_utc_time, deleted_at: current_utc_time)
 
-        event = DeletedEvent.create!(
+        event = Models::Invoice::DeletedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -218,8 +212,6 @@ module Accountify
 
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
-
-    class IssuedEvent < Event; end
 
     def issue(user_id:, tenant_id:, id:, time: ::Time)
       invoice = nil
@@ -235,7 +227,7 @@ module Accountify
           issued_at: current_utc_time,
           updated_at: current_utc_time)
 
-        event = IssuedEvent.create!(
+        event = Models::Invoice::IssuedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -250,8 +242,6 @@ module Accountify
 
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
-
-    class PaidEvent < Event; end
 
     def paid(user_id:, tenant_id:, id:, time: ::Time)
       invoice = nil
@@ -268,7 +258,7 @@ module Accountify
 
         invoice.update!(status: Invoice::Status::PAID, paid_at: Time.current)
 
-        event = PaidEvent.create!(
+        event = Models::Invoice::PaidEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           eventable: invoice,
@@ -284,8 +274,6 @@ module Accountify
       { id: invoice.id, events: [{ id: event.id, type: event.type }] }
     end
 
-    class VoidedEvent < Event; end
-
     def void(user_id:, tenant_id:, id:, time: ::Time)
       invoice = nil
       event = nil
@@ -295,7 +283,7 @@ module Accountify
 
         invoice.update!(status: Invoice::Status::VOIDED)
 
-        event = VoidedEvent.create!(
+        event = Models::Invoice::VoidedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           eventable: invoice,

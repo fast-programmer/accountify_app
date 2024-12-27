@@ -26,7 +26,7 @@ module Accountify
     end
 
     let(:event_model) do
-      Contact::CreatedEvent
+      Models::Contact::CreatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: contact[:events].last[:id])
     end

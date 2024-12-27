@@ -32,7 +32,7 @@ module Accountify
     end
 
     let(:event_model) do
-      Contact::DeletedEvent
+      Models::Contact::DeletedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: contact[:events].last[:id])
     end
