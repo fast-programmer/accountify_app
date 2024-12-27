@@ -3,222 +3,37 @@ require 'rails_helper'
 module OutboxerIntegration
   module Message
     RSpec.describe PublishJob, type: :job do
-      let(:user_id) { 123 }
-      let(:tenant_id) { 456 }
+      describe '#perform' do
+        context 'when Accountify::Models::Invoice::DraftedEvent' do
+          let(:args) do
+            {
+              'messageable_type' => 'Accountify::Models::Invoice::DraftedEvent',
+              'messageable_id' => '123'
+            }
+          end
 
-      let(:current_time) { Time.now }
+          it 'performs Accountify::Invoice::DraftedJob async' do
+            PublishJob.new.perform(args)
 
-      let(:accountify_organisation) do
-        create(:accountify_organisation, tenant_id: tenant_id)
-      end
-
-      let(:accountify_contact) do
-        create(:accountify_contact,
-          tenant_id: tenant_id, organisation_id: organisation.id)
-      end
-
-      let(:accountify_invoice) do
-        create(:accountify_invoice,
-          tenant_id: tenant_id, organisation_id: organisation.id, contact_id: contact.id)
-      end
-
-      describe 'when Accountify::Models::Organisation::CreatedEvent' do
-        let(:event) do
-          create(
-            :accountify_organisation_created_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            body: { 'organisation' =>  { 'id' => accountify_organisation.id } })
+            expect(Accountify::Invoice::DraftedJob.jobs).to match([
+              hash_including('args' => [include('id' => '123')])
+            ])
+          end
         end
 
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Organisation::CreatedEvent',
-            'messageable_id' => event.id })
-        end
+        context 'with invalid messageable_type' do
+          let(:args) do
+            {
+              'messageable_type' => 'Wrong::Format::Test',
+              'messageable_id' => '123'
+            }
+          end
 
-        it 'performs Accountify::InvoiceStatusSummary::GenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::GenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::DraftedEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_drafted_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::DraftedEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::UpdatedEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_updated_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::UpdatedEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::IssuedEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_issued_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::IssuedEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::PaidEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_paid_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::PaidEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::VoidedEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_voided_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::VoidedEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
-        end
-      end
-
-      describe 'when Accountify::Models::Invoice::DeletedEvent' do
-        let(:event) do
-          create(
-            :accountify_invoice_deleted_event,
-            user_id: user_id,
-            tenant_id: tenant_id,
-            eventable: accountify_organisation,
-            created_at: current_time.utc,
-            body: {
-              'organisation' =>  { 'id' => accountify_organisation.id } })
-        end
-
-        before do
-          PublishJob.new.perform({
-            'messageable_type' => 'Accountify::Models::Invoice::DeletedEvent',
-            'messageable_id' => event.id })
-        end
-
-        it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
-          expect(Accountify::InvoiceStatusSummary::RegenerateJob.jobs).to match([
-            hash_including(
-              'args' => [
-                hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
+          it 'raises an error for unexpected class name format' do
+            expect {
+              PublishJob.new.perform(args)
+            }.to raise_error(StandardError, "Unexpected class name format: Wrong::Format::Test")
+          end
         end
       end
     end
