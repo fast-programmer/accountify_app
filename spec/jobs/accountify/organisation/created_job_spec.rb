@@ -41,8 +41,7 @@ module Accountify
             hash_including(
               'args' => [
                 hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id )])])
+                  'event_id' => event.id )])])
         end
       end
     end
