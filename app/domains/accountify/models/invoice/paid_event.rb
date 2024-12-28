@@ -1,7 +1,7 @@
 module Accountify
   module Models
     class Invoice
-      class PaidEvent < Models::Event
+      class PaidEvent < ::Models::Event
 
       end
     end

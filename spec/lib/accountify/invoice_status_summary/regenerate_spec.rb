@@ -3,6 +3,7 @@ require 'rails_helper'
 module Accountify
   RSpec.describe InvoiceStatusSummary do
     describe '.regenerate' do
+      let(:user_id) { 1 }
       let(:tenant_id) { 1 }
       let(:organisation) { create(:accountify_organisation) }
       let(:organisation_id) { organisation.id }
@@ -48,6 +49,16 @@ module Accountify
           status: Invoice::Status::VOIDED)
       end
 
+      let(:event) do
+        create(
+          :accountify_invoice_voided_event,
+          user_id: user_id,
+          tenant_id: tenant_id,
+          eventable: organisation,
+          created_at: invoice_updated_at,
+          body: { 'organisation' =>  { 'id' => organisation_id } })
+      end
+
       let!(:invoice_status_summary) do
         create(:accountify_invoice_status_summary,
           tenant_id: tenant_id,
@@ -61,11 +72,7 @@ module Accountify
 
       it 'updates the existing invoice status summary' do
         expect do
-          InvoiceStatusSummary.regenerate(
-            tenant_id: tenant_id,
-            organisation_id: organisation_id,
-            invoice_updated_at: invoice_updated_at,
-            time: time)
+          InvoiceStatusSummary.regenerate(event_id: event.id, time: time)
         end.to change { Models::InvoiceStatusSummary.count }.by(0)
 
         summary = Models::InvoiceStatusSummary.find(invoice_status_summary.id)
@@ -78,8 +85,7 @@ module Accountify
 
       it 'returns the summary if not updated' do
         summary = InvoiceStatusSummary.regenerate(
-          tenant_id: tenant_id,
-          organisation_id: organisation_id,
+          event_id: event.id,
           invoice_updated_at: current_utc_time - 2.days,
           time: time)
 
@@ -92,8 +98,7 @@ module Accountify
 
         expect do
           InvoiceStatusSummary.regenerate(
-            tenant_id: tenant_id,
-            organisation_id: organisation_id,
+            event_id: event.id,
             invoice_updated_at: invoice_updated_at,
             time: time)
         end.to raise_error(Accountify::NotAvailable)
@@ -105,8 +110,7 @@ module Accountify
 
         expect do
           InvoiceStatusSummary.regenerate(
-            tenant_id: tenant_id,
-            organisation_id: organisation_id,
+            event_id: event.id,
             invoice_updated_at: invoice_updated_at,
             time: time)
         end.to raise_error(Accountify::NotFound)

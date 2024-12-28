@@ -1,7 +1,7 @@
 module Accountify
   module Models
     class Invoice
-      class DraftedEvent < Models::Event
+      class DraftedEvent < ::Models::Event
 
       end
     end

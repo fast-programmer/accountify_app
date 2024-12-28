@@ -2,11 +2,19 @@ module Accountify
   module InvoiceStatusSummary
     extend self
 
-    def generate(tenant_id:, organisation_id:, time: ::Time)
+    def generate(event_id:, time: ::Time)
+      tenant_id = nil
+      organisation_id = nil
+
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
+          event = ::Models::Event.find(event_id)
+
+          tenant_id = event.tenant_id
+          organisation_id = event.body['organisation']['id']
+
           grouped_invoices = Models::Invoice
             .where(tenant_id: tenant_id, organisation_id: organisation_id).group(:status)
             .count
@@ -25,12 +33,19 @@ module Accountify
       find_by_organisation_id(tenant_id: tenant_id, organisation_id: organisation_id)
     end
 
-    def regenerate(tenant_id:, organisation_id:,
-                   invoice_updated_at: ::Time.now.utc, time: ::Time)
+    def regenerate(event_id:, invoice_updated_at: ::Time.now.utc, time: ::Time)
+      tenant_id = nil
+      organisation_id = nil
+
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
+          event = ::Models::Event.find(event_id)
+
+          tenant_id = event.tenant_id
+          organisation_id = event.body['organisation']['id']
+
           summary = Models::InvoiceStatusSummary
             .where('generated_at <= ?', invoice_updated_at)
             .lock('FOR UPDATE NOWAIT')

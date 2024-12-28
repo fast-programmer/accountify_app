@@ -4,10 +4,10 @@ require 'rails_helper'
 module Accountify
   module Invoice
     RSpec.describe IssuedJob, type: :job do
+      let(:current_time) { Time.now }
+
       let(:user_id) { 123 }
       let(:tenant_id) { 456 }
-
-      let(:current_time) { Time.now }
 
       let(:accountify_organisation) do
         create(:accountify_organisation, tenant_id: tenant_id)
@@ -36,7 +36,7 @@ module Accountify
         end
 
         before do
-          IssuedJob.new.perform({ 'id' => event.id })
+          IssuedJob.new.perform({ 'event_id' => event.id })
         end
 
         it 'performs Accountify::InvoiceStatusSummary::RegenerateJob async' do
@@ -44,9 +44,7 @@ module Accountify
             hash_including(
               'args' => [
                 hash_including(
-                  'tenant_id' => tenant_id,
-                  'organisation_id' => accountify_organisation.id,
-                  'invoice_updated_at' => event.created_at.utc.iso8601 )])])
+                  'event_id' => event.id )])])
         end
       end
     end

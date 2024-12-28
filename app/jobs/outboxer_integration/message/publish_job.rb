@@ -16,8 +16,13 @@ module OutboxerIntegration
 
         namespace, model, event = messageable_type.match(MESSAGEABLE_TYPE_REGEX).captures
         job_class_name = "#{namespace}::#{model}::#{event}Job"
-        job_class = job_class_name.constantize
-        job_class.perform_async({ 'id' => args['messageable_id'] })
+
+        begin
+          job_class = job_class_name.constantize
+          job_class.perform_async({ 'id' => args['messageable_id'] })
+        rescue NameError
+          # no-op
+        end
       end
     end
   end

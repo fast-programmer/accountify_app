@@ -1,7 +1,7 @@
 module Accountify
   module Models
     class Organisation
-      class UpdatedEvent < Models::Event
+      class UpdatedEvent < ::Models::Event
 
       end
     end
