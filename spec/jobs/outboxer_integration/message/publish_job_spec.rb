@@ -35,6 +35,25 @@ module OutboxerIntegration
             }.to raise_error(StandardError, "Unexpected class name format: Wrong::Format::Test")
           end
         end
+
+        context 'when job class does not exist' do
+          let(:args) do
+            {
+              'messageable_type' => 'Accountify::Models::Invoice::NonexistentEvent',
+              'messageable_id' => '123'
+            }
+          end
+
+          it 'completes gracefully without raising an error' do
+            allow_any_instance_of(String)
+              .to receive(:constantize)
+              .and_raise(NameError.new("uninitialized constant"))
+
+            expect {
+              PublishJob.new.perform(args)
+            }.not_to raise_error
+          end
+        end
       end
     end
   end
