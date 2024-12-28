@@ -10,7 +10,7 @@ module Accountify
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
-          event = Models::Event.find(event_id)
+          event = ::Models::Event.find(event_id)
 
           tenant_id = event.tenant_id
           organisation_id = event.body['organisation']['id']
@@ -41,7 +41,7 @@ module Accountify
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
-          event = Models::Event.find(event_id)
+          event = ::Models::Event.find(event_id)
 
           tenant_id = event.tenant_id
           organisation_id = event.body['organisation']['id']

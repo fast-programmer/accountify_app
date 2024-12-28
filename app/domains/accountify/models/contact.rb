@@ -5,7 +5,7 @@ module Accountify
 
       validates :organisation_id, presence: true
 
-      has_many :events, -> { order(created_at: :asc) }, as: :eventable
+      has_many :events, -> { order(created_at: :asc) }, as: :eventable, class_name: '::Models::Event'
     end
   end
 end

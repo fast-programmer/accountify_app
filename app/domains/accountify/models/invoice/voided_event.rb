@@ -1,7 +1,7 @@
 module Accountify
   module Models
     class Invoice
-      class VoidedEvent < Models::Event
+      class VoidedEvent < ::Models::Event
 
       end
     end
