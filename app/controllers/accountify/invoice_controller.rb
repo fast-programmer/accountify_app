@@ -1,7 +1,7 @@
 module Accountify
   class InvoiceController < AccountifyController
     def create
-      invoice = Invoice.draft(
+      invoice = InvoiceService.draft(
         user_id: user_id,
         tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
@@ -14,7 +14,7 @@ module Accountify
     end
 
     def show
-      invoice = Invoice.find_by_id(
+      invoice = InvoiceService.find_by_id(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -23,7 +23,7 @@ module Accountify
     end
 
     def update
-      invoice = Invoice.update(
+      invoice = InvoiceService.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
@@ -36,7 +36,7 @@ module Accountify
     end
 
     def destroy
-      invoice = Invoice.delete(
+      invoice = InvoiceService.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -45,7 +45,7 @@ module Accountify
     end
 
     def issue
-      invoice = Invoice.issue(
+      invoice = InvoiceService.issue(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -54,7 +54,7 @@ module Accountify
     end
 
     def paid
-      invoice = Invoice.paid(
+      invoice = InvoiceService.paid(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -63,7 +63,7 @@ module Accountify
     end
 
     def void
-      invoice = Invoice.void(
+      invoice = InvoiceService.void(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])

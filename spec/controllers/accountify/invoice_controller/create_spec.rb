@@ -42,13 +42,13 @@ module Accountify
     let!(:response_body_json) { JSON.parse(response.body) }
 
     let(:invoice) do
-      Models::Invoice
+      Invoice
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['id'])
     end
 
     let(:event) do
-      Models::Invoice::DraftedEvent
+      InvoiceDraftedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['events'].last['id'])
     end

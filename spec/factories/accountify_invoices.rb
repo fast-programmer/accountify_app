@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :accountify_invoice, class: 'Accountify::Models::Invoice' do
+  factory :accountify_invoice, class: 'Accountify::Invoice' do
     tenant_id { 4 }
     currency_code { "AUD" }
     due_date { Date.today + 30.days }
