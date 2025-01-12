@@ -1,23 +1,23 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Organisation do
+  RSpec.describe OrganisationService do
     let(:user_id) { 12 }
     let(:tenant_id) { 4 }
 
     let(:name) { 'Big Bin Corp' }
 
     let(:organisation) do
-      Organisation.create(
+      OrganisationService.create(
         user_id: user_id, tenant_id: tenant_id, name: name)
     end
 
     let(:organisation_model) do
-      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: organisation[:id])
+      Organisation.where(tenant_id: tenant_id).find_by!(id: organisation[:id])
     end
 
     let(:event_model) do
-      Models::Organisation::CreatedEvent
+      OrganisationCreatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: organisation[:events].last[:id])
     end

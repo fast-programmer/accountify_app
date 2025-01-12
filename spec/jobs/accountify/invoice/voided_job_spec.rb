@@ -23,7 +23,7 @@ module Accountify
           tenant_id: tenant_id, organisation_id: organisation.id, contact_id: contact.id)
       end
 
-      describe 'when Accountify::Models::Invoice::VoidedEvent' do
+      describe 'when Accountify::Invoice::VoidedEvent' do
         let(:event) do
           create(
             :accountify_invoice_voided_event,

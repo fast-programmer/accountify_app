@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe InvoiceStatusSummary do
+  RSpec.describe InvoiceStatusSummaryService do
     describe '.generate' do
       let(:current_utc_time) { ::Time.now.utc }
       let(:time) { double('Time', now: double('Time', utc: current_utc_time)) }
@@ -21,12 +21,12 @@ module Accountify
 
       it 'creates a new invoice status summary' do
         expect do
-          InvoiceStatusSummary.generate(event_id: event.id)
-        end.to change { Models::InvoiceStatusSummary.count }.by(1)
+          InvoiceStatusSummaryService.generate(event_id: event.id)
+        end.to change { InvoiceStatusSummary.count }.by(1)
       end
 
       it 'creates a summary with the correct counts' do
-        summary = InvoiceStatusSummary.generate(event_id: event.id)
+        summary = InvoiceStatusSummaryService.generate(event_id: event.id)
 
         expect(summary[:drafted_count]).to eq(0)
         expect(summary[:issued_count]).to eq(0)
@@ -35,7 +35,7 @@ module Accountify
       end
 
       it 'uses the current time as the generated_at time' do
-        summary = InvoiceStatusSummary.generate(event_id: event.id, time: time)
+        summary = InvoiceStatusSummaryService.generate(event_id: event.id, time: time)
 
         expect(summary[:generated_at]).to be_within(1.second).of(current_utc_time)
       end

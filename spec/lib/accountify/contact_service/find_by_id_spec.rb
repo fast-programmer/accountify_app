@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Contact do
+  RSpec.describe ContactService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -23,7 +23,7 @@ module Accountify
     end
 
     let(:contact) do
-      Contact.find_by_id(user_id: user_id, tenant_id: tenant_id, id: id)
+      ContactService.find_by_id(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     describe '.find_by_id' do

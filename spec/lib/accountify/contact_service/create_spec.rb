@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Contact do
+  RSpec.describe ContactService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -12,7 +12,7 @@ module Accountify
     let(:email) { 'john.doe@example.com' }
 
     let!(:contact) do
-      Contact.create(
+      ContactService.create(
         user_id: user_id,
         tenant_id: tenant_id,
         organisation_id: organisation.id,
@@ -22,11 +22,11 @@ module Accountify
     end
 
     let(:contact_model) do
-      Models::Contact.where(tenant_id: tenant_id).find_by!(id: contact[:id])
+      Contact.where(tenant_id: tenant_id).find_by!(id: contact[:id])
     end
 
     let(:event_model) do
-      Models::Contact::CreatedEvent
+      ContactCreatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: contact[:events].last[:id])
     end

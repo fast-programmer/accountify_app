@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Organisation do
+  RSpec.describe OrganisationService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -13,7 +13,7 @@ module Accountify
     end
 
     let(:organisation) do
-      Organisation.find_by_id(user_id: user_id, tenant_id: tenant_id, id: id)
+      OrganisationService.find_by_id(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     describe '.find_by_id' do

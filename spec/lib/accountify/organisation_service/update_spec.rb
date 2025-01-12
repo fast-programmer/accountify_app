@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Organisation do
+  RSpec.describe OrganisationService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -11,17 +11,17 @@ module Accountify
     end
 
     let!(:organisation) do
-      Organisation.update(
+      OrganisationService.update(
         user_id: user_id, tenant_id: tenant_id,
         id: id, name: 'Big Bin Corp updated')
     end
 
     let(:organisation_model) do
-      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: id)
+      Organisation.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event_model) do
-      Models::Organisation::UpdatedEvent
+      OrganisationUpdatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: organisation[:events].last[:id])
     end

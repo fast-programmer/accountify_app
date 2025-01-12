@@ -12,7 +12,7 @@ module Accountify
         create(:accountify_organisation, tenant_id: tenant_id)
       end
 
-      describe 'when Accountify::Models::Organisation::CreatedEvent' do
+      describe 'when Accountify::Organisation::CreatedEvent' do
         let(:event) do
           create(
             :accountify_organisation_created_event,

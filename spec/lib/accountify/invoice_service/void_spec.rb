@@ -51,31 +51,26 @@ module Accountify
     let!(:line_items) { [line_item_1, line_item_2] }
 
     let!(:invoice) do
-      Invoice.issue(user_id: user_id, tenant_id: tenant_id, id: id)
+      InvoiceService.void(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
-    let(:invoice_model) { Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id) }
+    let(:invoice_model) { Invoice.where(tenant_id: tenant_id).find_by!(id: id) }
 
     let(:event_model) do
-      Models::Invoice::IssuedEvent
+      InvoiceVoidedEvent
         .where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
-    describe '.issue' do
+    describe '.void' do
       it "updates model status" do
-        expect(invoice_model.status).to eq(Invoice::Status::ISSUED)
+        expect(invoice_model.status).to eq(Invoice::Status::VOIDED)
       end
 
-      it "updates model issued_at" do
-        expect(invoice_model.issued_at).to be_present
-      end
-
-      it 'creates issued event' do
+      it 'creates voided event' do
         expect(event_model.body).to include(
           'invoice' => a_hash_including(
             'id' => invoice[:id],
-            'status' => Invoice::Status::ISSUED,
-            'issued_at' => be_present ) )
+            'status' => Invoice::Status::VOIDED))
       end
 
       it 'associates event with model' do

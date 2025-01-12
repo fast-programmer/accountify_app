@@ -23,7 +23,7 @@ module Accountify
           tenant_id: tenant_id, organisation_id: organisation.id, contact_id: contact.id)
       end
 
-      describe 'when Accountify::Models::Invoice::PaidEvent' do
+      describe 'when Accountify::Invoice::PaidEvent' do
         let(:event) do
           create(
             :accountify_invoice_paid_event,

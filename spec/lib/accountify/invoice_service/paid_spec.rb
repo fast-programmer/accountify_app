@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Invoice do
+  RSpec.describe InvoiceService do
     let(:current_date) { Date.today }
 
     let(:user_id) { 12 }
@@ -42,15 +42,15 @@ module Accountify
     end
 
     let!(:invoice) do
-      Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: id)
+      InvoiceService.paid(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     let(:invoice_model) do
-      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
+      Invoice.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event_model) do
-      Models::Invoice::PaidEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
+      InvoicePaidEvent.where(tenant_id: tenant_id).find_by!(id: invoice[:events].last[:id])
     end
 
     describe '.paid' do

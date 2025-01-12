@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Contact do
+  RSpec.describe ContactService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -22,7 +22,7 @@ module Accountify
     end
 
     let!(:contact) do
-      Contact.update(
+      ContactService.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: id,
@@ -32,11 +32,11 @@ module Accountify
     end
 
     let(:contact_model) do
-      Models::Contact.where(tenant_id: tenant_id).find_by!(id: contact[:id])
+      Contact.where(tenant_id: tenant_id).find_by!(id: contact[:id])
     end
 
     let(:event_model) do
-      Models::Contact::UpdatedEvent
+      ContactUpdatedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: contact[:events].last[:id])
     end

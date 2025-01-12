@@ -13,15 +13,15 @@ module Accountify
     end
 
     let!(:organisation) do
-      Organisation.delete(user_id: user_id, tenant_id: tenant_id, id: id)
+      OrganisationService.delete(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     let(:organisation_model) do
-      Models::Organisation.where(tenant_id: tenant_id).find_by!(id: id)
+      Organisation.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event_model) do
-      Models::Organisation::DeletedEvent
+      OrganisationDeletedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: organisation[:events].last[:id])
     end

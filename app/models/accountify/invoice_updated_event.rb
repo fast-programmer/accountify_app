@@ -1,7 +1,5 @@
 module Accountify
-  class Invoice
-    class UpdatedEvent < Event
+  class InvoiceUpdatedEvent < Event
 
-    end
   end
 end

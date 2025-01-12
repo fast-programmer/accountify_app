@@ -52,13 +52,13 @@ module Accountify
     let!(:response_body_json) { JSON.parse(response.body) }
 
     let(:event) do
-      Models::Invoice::PaidEvent
+      InvoicePaidEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['events'].last['id'])
     end
 
     let(:invoice) do
-      Models::Invoice.where(tenant_id: tenant_id).find_by!(id: id)
+      Invoice.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     describe 'PATCH #paid' do

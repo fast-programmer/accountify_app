@@ -1,5 +1,5 @@
 module Accountify
-  module Invoice
+  class Invoice
     class DeletedJob
       include Sidekiq::Job
 

@@ -51,7 +51,7 @@ module Accountify
     let!(:response_body_json) { JSON.parse(response.body) }
 
     let(:event) do
-      Models::Invoice::DeletedEvent
+      InvoiceDeletedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['events'].last['id'])
     end
@@ -65,7 +65,7 @@ module Accountify
 
       it 'deletes the invoice' do
         expect(
-          Models::Invoice
+          Invoice
             .where.not(deleted_at: nil)
             .where(tenant_id: tenant_id)
             .exists?(id: invoice.id)

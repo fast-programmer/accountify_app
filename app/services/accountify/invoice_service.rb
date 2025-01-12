@@ -2,13 +2,6 @@ module Accountify
   module InvoiceService
     extend self
 
-    module Status
-      DRAFTED = 'drafted'
-      ISSUED = 'issued'
-      PAID = 'paid'
-      VOIDED = 'voided'
-    end
-
     def draft(user_id:, tenant_id:,
               organisation_id:, contact_id:,
               currency_code:, due_date:, line_items:,
@@ -31,7 +24,7 @@ module Accountify
           tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact_id,
-          status: Status::DRAFTED,
+          status: Invoice::Status::DRAFTED,
           currency_code: currency_code,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
@@ -144,7 +137,7 @@ module Accountify
           organisation_id: organisation.id,
           updated_at: current_utc_time,
           contact_id: contact.id,
-          status: Status::DRAFTED,
+          status: Invoice::Status::DRAFTED,
           due_date: due_date,
           sub_total_amount: line_items.sum do |line_item|
             BigDecimal(line_item[:unit_amount][:amount]) * line_item[:quantity].to_i
@@ -227,7 +220,7 @@ module Accountify
           issued_at: current_utc_time,
           updated_at: current_utc_time)
 
-        event = Invoice::IssuedEvent.create!(
+        event = InvoiceIssuedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,

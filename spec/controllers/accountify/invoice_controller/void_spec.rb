@@ -52,7 +52,7 @@ module Accountify
     let!(:response_body_json) { JSON.parse(response.body) }
 
     let(:event) do
-      Models::Invoice::VoidedEvent
+      InvoiceVoidedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: response_body_json['events'].last['id'])
     end
@@ -66,7 +66,7 @@ module Accountify
 
       it 'updates the invoice status to voided' do
         expect(
-          Models::Invoice
+          Invoice
             .where(deleted_at: nil, tenant_id: tenant_id)
             .find_by!(id: invoice.id)
             .status

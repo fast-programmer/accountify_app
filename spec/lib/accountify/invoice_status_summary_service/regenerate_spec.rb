@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe InvoiceStatusSummary do
+  RSpec.describe InvoiceStatusSummaryService do
     describe '.regenerate' do
       let(:user_id) { 1 }
       let(:tenant_id) { 1 }
@@ -72,10 +72,10 @@ module Accountify
 
       it 'updates the existing invoice status summary' do
         expect do
-          InvoiceStatusSummary.regenerate(event_id: event.id, time: time)
-        end.to change { Models::InvoiceStatusSummary.count }.by(0)
+          InvoiceStatusSummaryService.regenerate(event_id: event.id, time: time)
+        end.to change { InvoiceStatusSummary.count }.by(0)
 
-        summary = Models::InvoiceStatusSummary.find(invoice_status_summary.id)
+        summary = InvoiceStatusSummary.find(invoice_status_summary.id)
         expect(summary.generated_at).to be_within(1.second).of(current_utc_time)
         expect(summary.drafted_count).to eq(1)
         expect(summary.issued_count).to eq(1)
@@ -84,7 +84,7 @@ module Accountify
       end
 
       it 'returns the summary if not updated' do
-        summary = InvoiceStatusSummary.regenerate(
+        summary = InvoiceStatusSummaryService.regenerate(
           event_id: event.id,
           invoice_updated_at: current_utc_time - 2.days,
           time: time)
@@ -93,11 +93,11 @@ module Accountify
       end
 
       it 'raises Accountify::NotAvailable error on lock wait timeout' do
-        allow(Models::InvoiceStatusSummary).to receive(:find_by!)
+        allow(InvoiceStatusSummary).to receive(:find_by!)
           .and_raise(ActiveRecord::LockWaitTimeout)
 
         expect do
-          InvoiceStatusSummary.regenerate(
+          InvoiceStatusSummaryService.regenerate(
             event_id: event.id,
             invoice_updated_at: invoice_updated_at,
             time: time)
@@ -105,11 +105,11 @@ module Accountify
       end
 
       it 'raises ActiveRecord::RecordNotFound error when summary is not found' do
-        allow(Models::InvoiceStatusSummary).to receive(:find_by!)
+        allow(InvoiceStatusSummary).to receive(:find_by!)
           .and_raise(ActiveRecord::RecordNotFound)
 
         expect do
-          InvoiceStatusSummary.regenerate(
+          InvoiceStatusSummaryService.regenerate(
             event_id: event.id,
             invoice_updated_at: invoice_updated_at,
             time: time)

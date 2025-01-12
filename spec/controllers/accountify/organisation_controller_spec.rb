@@ -56,7 +56,7 @@ module Accountify
         expect(JSON.parse(response.body)).to have_key('events')
 
         expect(
-          Models::Organisation.find_by(deleted_at: nil, id: organisation.id)
+          Organisation.find_by(deleted_at: nil, id: organisation.id)
         ).to be_nil
       end
     end

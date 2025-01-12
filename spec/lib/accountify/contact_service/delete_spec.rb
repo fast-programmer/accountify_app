@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Contact do
+  RSpec.describe ContactService do
     let(:user_id) { 12 }
 
     let(:tenant_id) { 4 }
@@ -24,15 +24,15 @@ module Accountify
     end
 
     let!(:contact) do
-      Contact.delete(user_id: user_id, tenant_id: tenant_id, id: id)
+      ContactService.delete(user_id: user_id, tenant_id: tenant_id, id: id)
     end
 
     let(:contact_model) do
-      Models::Contact.where(tenant_id: tenant_id).find_by!(id: id)
+      Contact.where(tenant_id: tenant_id).find_by!(id: id)
     end
 
     let(:event_model) do
-      Models::Contact::DeletedEvent
+      ContactDeletedEvent
         .where(tenant_id: tenant_id)
         .find_by!(id: contact[:events].last[:id])
     end
