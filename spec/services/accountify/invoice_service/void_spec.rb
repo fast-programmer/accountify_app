@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Invoice do
+  RSpec.describe InvoiceService do
     let(:current_date) { Date.today }
 
     let(:user_id) { 12 }

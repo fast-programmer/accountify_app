@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 module Accountify
-  RSpec.describe Organisation do
+  RSpec.describe OrganisationService do
     let(:user_id) { 12 }
     let(:tenant_id) { 4 }
 
