@@ -1,9 +1,5 @@
 module Accountify
-  module Models
-    class Invoice
-      class DeletedEvent < ::Models::Event
+  class InvoiceDeletedEvent < Event
 
-      end
-    end
   end
 end

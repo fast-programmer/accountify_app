@@ -1,5 +1,5 @@
 module Accountify
-  module Invoice
+  module InvoiceService
     extend self
 
     module Status
@@ -19,15 +19,15 @@ module Accountify
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
-        organisation = Models::Organisation
+        organisation = Organisation
           .where(tenant_id: tenant_id)
           .find_by!(id: organisation_id)
 
-        contact = Models::Contact
+        contact = Contact
           .where(tenant_id: tenant_id)
           .find_by!(organisation_id: organisation.id, id: contact_id)
 
-        invoice = Models::Invoice.create!(
+        invoice = Invoice.create!(
           tenant_id: tenant_id,
           organisation_id: organisation_id,
           contact_id: contact_id,
@@ -49,7 +49,7 @@ module Accountify
             quantity: line_item[:quantity])
         end
 
-        event = Models::Invoice::DraftedEvent.create!(
+        event = InvoiceDraftedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -79,7 +79,7 @@ module Accountify
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
-      invoice = Models::Invoice
+      invoice = Invoice
         .includes(:events)
         .where(tenant_id: tenant_id)
         .find_by!(id: id)
@@ -126,15 +126,15 @@ module Accountify
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
-        organisation = Models::Organisation
+        organisation = Organisation
           .where(tenant_id: tenant_id)
           .find_by!(id: organisation_id)
 
-        contact = Models::Contact
+        contact = Contact
           .where(tenant_id: tenant_id)
           .find_by!(organisation_id: organisation.id, id: contact_id)
 
-        invoice = Models::Invoice
+        invoice = Invoice
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         invoice.line_items.destroy_all
@@ -158,7 +158,7 @@ module Accountify
             quantity: line_item[:quantity])
         end
 
-        event = Models::Invoice::UpdatedEvent.create!(
+        event = InvoiceUpdatedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -194,11 +194,11 @@ module Accountify
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
-        invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
+        invoice = Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         invoice.update!(updated_at: current_utc_time, deleted_at: current_utc_time)
 
-        event = Models::Invoice::DeletedEvent.create!(
+        event = InvoiceDeletedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -220,14 +220,14 @@ module Accountify
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
-        invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
+        invoice = Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         invoice.update!(
           status: Invoice::Status::ISSUED,
           issued_at: current_utc_time,
           updated_at: current_utc_time)
 
-        event = Models::Invoice::IssuedEvent.create!(
+        event = Invoice::IssuedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           created_at: current_utc_time,
@@ -250,7 +250,7 @@ module Accountify
       current_utc_time = time.now.utc
 
       ActiveRecord::Base.transaction do
-        invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
+        invoice = Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         if invoice.status != Invoice::Status::ISSUED
           raise "Accountify::Invoice #{id} must be issued, not #{invoice.status}"
@@ -258,7 +258,7 @@ module Accountify
 
         invoice.update!(status: Invoice::Status::PAID, paid_at: Time.current)
 
-        event = Models::Invoice::PaidEvent.create!(
+        event = InvoicePaidEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           eventable: invoice,
@@ -279,11 +279,11 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        invoice = Models::Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
+        invoice = Invoice.where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         invoice.update!(status: Invoice::Status::VOIDED)
 
-        event = Models::Invoice::VoidedEvent.create!(
+        event = InvoiceVoidedEvent.create!(
           user_id: user_id,
           tenant_id: tenant_id,
           eventable: invoice,

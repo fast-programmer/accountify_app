@@ -1,9 +1,5 @@
 module Accountify
-  module Models
-    class Invoice
-      class IssuedEvent < ::Models::Event
+  class InvoiceIssuedEvent < Event
 
-      end
-    end
   end
 end

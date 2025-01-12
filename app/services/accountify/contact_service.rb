@@ -1,5 +1,5 @@
 module Accountify
-  module Contact
+  module ContactService
     extend self
 
     def create(user_id:, tenant_id:,
@@ -8,7 +8,7 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        contact = Models::Contact
+        contact = Contact
           .create!(
             tenant_id: tenant_id,
             organisation_id: organisation_id,
@@ -16,7 +16,7 @@ module Accountify
             last_name: last_name,
             email: email)
 
-        event = Models::Contact::CreatedEvent
+        event = ContactCreatedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,
@@ -33,7 +33,7 @@ module Accountify
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
-      contact = Models::Contact
+      contact = Contact
         .includes(:events)
         .where(tenant_id: tenant_id)
         .find_by!(id: id)
@@ -62,7 +62,7 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        contact = Models::Contact
+        contact = Contact
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         contact.update!(
@@ -70,7 +70,7 @@ module Accountify
           last_name: last_name,
           email: email)
 
-        event = Models::Contact::UpdatedEvent
+        event = ContactUpdatedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,
@@ -91,12 +91,12 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        contact = Models::Contact
+        contact = Contact
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         contact.update!(deleted_at: time.now.utc)
 
-        event = Models::Contact::DeletedEvent
+        event = ContactDeletedEvent
           .create!(
             user_id: user_id,
             tenant_id: tenant_id,

@@ -1,5 +1,5 @@
 module Accountify
-  module InvoiceStatusSummary
+  module InvoiceStatusSummaryService
     extend self
 
     def generate(event_id:, time: ::Time)
@@ -10,16 +10,16 @@ module Accountify
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
-          event = ::Models::Event.find(event_id)
+          event = Event.find(event_id)
 
           tenant_id = event.tenant_id
           organisation_id = event.body['organisation']['id']
 
-          grouped_invoices = Models::Invoice
+          grouped_invoices = Invoice
             .where(tenant_id: tenant_id, organisation_id: organisation_id).group(:status)
             .count
 
-          Models::InvoiceStatusSummary.create!(
+          InvoiceStatusSummary.create!(
             tenant_id: tenant_id,
             organisation_id: organisation_id,
             generated_at: current_utc_time,
@@ -41,17 +41,17 @@ module Accountify
 
       ActiveRecord::Base.connection_pool.with_connection do
         ActiveRecord::Base.transaction(isolation: :repeatable_read) do
-          event = ::Models::Event.find(event_id)
+          event = Event.find(event_id)
 
           tenant_id = event.tenant_id
           organisation_id = event.body['organisation']['id']
 
-          summary = Models::InvoiceStatusSummary
+          summary = InvoiceStatusSummary
             .where('generated_at <= ?', invoice_updated_at)
             .lock('FOR UPDATE NOWAIT')
             .find_by!(tenant_id: tenant_id, organisation_id: organisation_id)
 
-          grouped_invoices = Models::Invoice
+          grouped_invoices = Invoice
             .where(tenant_id: tenant_id, organisation_id: organisation_id).group(:status)
             .count
 
@@ -74,7 +74,7 @@ module Accountify
 
     def find_by_organisation_id(tenant_id:, organisation_id:)
       ActiveRecord::Base.connection_pool.with_connection do
-        summary = Models::InvoiceStatusSummary
+        summary = InvoiceStatusSummary
           .find_by!(tenant_id: tenant_id, organisation_id: organisation_id)
 
         {

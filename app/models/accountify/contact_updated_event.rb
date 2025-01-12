@@ -1,9 +1,5 @@
 module Accountify
-  module Models
-    class Contact
-      class UpdatedEvent < ::Models::Event
+  class ContactUpdatedEvent < Event
 
-      end
-    end
   end
 end

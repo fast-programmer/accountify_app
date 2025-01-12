@@ -1,5 +1,5 @@
 module Accountify
-  module Organisation
+  module OrganisationService
     extend self
 
     def create(user_id:, tenant_id:, name:)
@@ -7,11 +7,11 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        organisation = Models::Organisation
+        organisation = Organisation
           .where(tenant_id: tenant_id)
           .create!(name: name)
 
-        event = Models::Organisation::CreatedEvent
+        event = OrganisationCreatedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,
@@ -25,7 +25,7 @@ module Accountify
     end
 
     def find_by_id(user_id:, tenant_id:, id:)
-      organisation = Models::Organisation
+      organisation = Organisation
         .includes(:events)
         .where(tenant_id: tenant_id)
         .find_by!(id: id)
@@ -51,12 +51,12 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        organisation = Models::Organisation
+        organisation = Organisation
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         organisation.update!(name: name)
 
-        event = Models::Organisation::UpdatedEvent
+        event = OrganisationUpdatedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,
@@ -74,12 +74,12 @@ module Accountify
       event = nil
 
       ActiveRecord::Base.transaction do
-        organisation = Models::Organisation
+        organisation = Organisation
           .where(tenant_id: tenant_id).lock.find_by!(id: id)
 
         organisation.update!(deleted_at: time.now.utc)
 
-        event = Models::Organisation::DeletedEvent
+        event = OrganisationDeletedEvent
           .where(user_id: user_id, tenant_id: tenant_id)
           .create!(
             eventable: organisation,
