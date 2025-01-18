@@ -1,5 +1,5 @@
 module Accountify
-  class InvoiceStatusSummary < ActiveRecord::Base
+  class InvoiceStatusSummary < ApplicationRecord
     self.table_name = 'accountify_invoice_status_summaries'
 
     validates :organisation_id, presence: true

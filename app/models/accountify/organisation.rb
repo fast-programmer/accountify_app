@@ -1,5 +1,5 @@
 module Accountify
-  class Organisation < ActiveRecord::Base
+  class Organisation < ApplicationRecord
     self.table_name = 'accountify_organisations'
 
     has_many :events, -> { order(created_at: :asc) }, as: :eventable

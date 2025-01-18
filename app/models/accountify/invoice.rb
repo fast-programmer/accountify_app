@@ -1,5 +1,5 @@
 module Accountify
-  class Invoice < ActiveRecord::Base
+  class Invoice < ApplicationRecord
     self.table_name = 'accountify_invoices'
 
     module Status
