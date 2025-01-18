@@ -1,5 +1,5 @@
 module Accountify
-  class Contact < ActiveRecord::Base
+  class Contact < ApplicationRecord
     self.table_name = 'accountify_contacts'
 
     validates :organisation_id, presence: true
