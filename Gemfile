@@ -14,6 +14,8 @@ gem "activerecord"
 
 gem "sidekiq"
 
+gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'fix/install_generator'
+
 group :development do
 end
 
