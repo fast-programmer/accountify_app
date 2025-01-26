@@ -18,6 +18,8 @@ class CreateAccountifyInvoiceStatusSummary < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :accountify_invoice_status_summaries, [:tenant_id, :organisation_id], unique: true
+    add_index :accountify_invoice_status_summaries, [:tenant_id, :organisation_id],
+      unique: true,
+      name: 'index_accountify_invoice_status_summaries_on_tenant_id_org_id'
   end
 end

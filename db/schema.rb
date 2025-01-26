@@ -50,7 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["organisation_id"], name: "index_accountify_invoice_status_summaries_on_organisation_id"
-    t.index ["tenant_id", "organisation_id"], name: "idx_on_tenant_id_organisation_id_33a11db97a", unique: true
+    t.index ["tenant_id", "organisation_id"], name: "index_accountify_invoice_status_summaries_on_tenant_id_org_id", unique: true
   end
 
   create_table "accountify_invoices", force: :cascade do |t|
@@ -84,11 +84,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "tenant_id", null: false
-    t.text "type", null: false
-    t.text "eventable_type", null: false
-    t.bigint "eventable_id", null: false
+    t.bigint "user_id"
+    t.bigint "tenant_id"
+    t.string "eventable_type", limit: 255
+    t.bigint "eventable_id"
+    t.string "type", limit: 255, null: false
     t.jsonb "body"
     t.datetime "created_at", null: false
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable_type_and_eventable_id"

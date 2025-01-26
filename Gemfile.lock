@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/fast-programmer/outboxer.git
+  revision: 0d75e4d763ea0b215e53c0ff355385978dcb5918
+  branch: fix/install_generator
+  specs:
+    outboxer (1.0.0.pre.beta)
+      activerecord (>= 7.0.8.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -212,6 +220,7 @@ DEPENDENCIES
   activerecord
   database_cleaner-active_record
   factory_bot_rails
+  outboxer!
   pg
   pry-byebug
   puma
