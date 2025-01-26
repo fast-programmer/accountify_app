@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/fast-programmer/outboxer.git
-  revision: 0d75e4d763ea0b215e53c0ff355385978dcb5918
+  revision: 6747897f69802499acfcbcc485b0a3774d92cdfe
   branch: fix/install_generator
   specs:
     outboxer (1.0.0.pre.beta)
@@ -78,7 +78,7 @@ GEM
     builder (3.2.4)
     byebug (11.1.3)
     coderay (1.1.3)
-    concurrent-ruby (1.2.3)
+    concurrent-ruby (1.3.5)
     connection_pool (2.4.1)
     crass (1.0.6)
     database_cleaner-active_record (2.2.0)
@@ -95,7 +95,7 @@ GEM
       railties (>= 5.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    i18n (1.14.4)
+    i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     loofah (2.22.0)
       crass (~> 1.0.2)
@@ -109,7 +109,7 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.5)
     mini_portile2 (2.8.5)
-    minitest (5.22.3)
+    minitest (5.25.4)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
     net-imap (0.5.1)
