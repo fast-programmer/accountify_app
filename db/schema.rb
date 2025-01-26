@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_26_124848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,7 +50,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["organisation_id"], name: "index_accountify_invoice_status_summaries_on_organisation_id"
-    t.index ["tenant_id", "organisation_id"], name: "idx_on_tenant_id_organisation_id_33a11db97a", unique: true
+    t.index ["tenant_id", "organisation_id"], name: "index_accountify_invoice_status_summaries_on_tenant_id_org_id", unique: true
   end
 
   create_table "accountify_invoices", force: :cascade do |t|
@@ -84,14 +84,76 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
   end
 
   create_table "events", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "tenant_id", null: false
-    t.text "type", null: false
-    t.text "eventable_type", null: false
-    t.bigint "eventable_id", null: false
+    t.bigint "user_id"
+    t.bigint "tenant_id"
+    t.string "eventable_type", limit: 255
+    t.bigint "eventable_id"
+    t.string "type", limit: 255, null: false
     t.jsonb "body"
     t.datetime "created_at", null: false
     t.index ["eventable_type", "eventable_id"], name: "index_events_on_eventable_type_and_eventable_id"
+  end
+
+  create_table "outboxer_exceptions", force: :cascade do |t|
+    t.bigint "message_id", null: false
+    t.string "class_name", limit: 255, null: false
+    t.text "message_text", null: false
+    t.datetime "created_at", null: false
+    t.index ["message_id"], name: "index_outboxer_exceptions_on_message_id"
+  end
+
+  create_table "outboxer_frames", force: :cascade do |t|
+    t.bigint "exception_id", null: false
+    t.integer "index", null: false
+    t.text "text", null: false
+    t.index ["exception_id", "index"], name: "index_outboxer_frames_on_exception_id_and_index", unique: true
+    t.index ["exception_id"], name: "index_outboxer_frames_on_exception_id"
+  end
+
+  create_table "outboxer_integration_tests", force: :cascade do |t|
+    t.integer "lock_version", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "outboxer_messages", force: :cascade do |t|
+    t.string "status", limit: 255, null: false
+    t.string "messageable_id", limit: 255, null: false
+    t.string "messageable_type", limit: 255, null: false
+    t.datetime "queued_at", null: false
+    t.datetime "buffered_at"
+    t.datetime "publishing_at"
+    t.datetime "updated_at", null: false
+    t.bigint "publisher_id"
+    t.string "publisher_name", limit: 263
+    t.index ["publisher_id", "updated_at"], name: "idx_outboxer_pub_id_updated_at"
+    t.index ["status", "publisher_id", "updated_at"], name: "idx_outboxer_status_pub_id_updated_at"
+    t.index ["status", "updated_at"], name: "idx_outboxer_status_updated_at"
+    t.index ["status"], name: "idx_outboxer_status"
+  end
+
+  create_table "outboxer_publishers", force: :cascade do |t|
+    t.string "name", limit: 263, null: false
+    t.string "status", limit: 255, null: false
+    t.json "settings", null: false
+    t.json "metrics", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "outboxer_settings", force: :cascade do |t|
+    t.string "name", limit: 255, null: false
+    t.string "value", limit: 255, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_outboxer_settings_on_name", unique: true
+  end
+
+  create_table "outboxer_signals", force: :cascade do |t|
+    t.string "name", limit: 9, null: false
+    t.bigint "publisher_id", null: false
+    t.datetime "created_at", precision: nil, null: false
+    t.index ["publisher_id"], name: "index_outboxer_signals_on_publisher_id"
   end
 
   add_foreign_key "accountify_contacts", "accountify_organisations", column: "organisation_id"
@@ -99,4 +161,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_07_06_053510) do
   add_foreign_key "accountify_invoice_status_summaries", "accountify_organisations", column: "organisation_id"
   add_foreign_key "accountify_invoices", "accountify_contacts", column: "contact_id"
   add_foreign_key "accountify_invoices", "accountify_organisations", column: "organisation_id"
+  add_foreign_key "outboxer_exceptions", "outboxer_messages", column: "message_id"
+  add_foreign_key "outboxer_frames", "outboxer_exceptions", column: "exception_id"
+  add_foreign_key "outboxer_signals", "outboxer_publishers", column: "publisher_id"
 end

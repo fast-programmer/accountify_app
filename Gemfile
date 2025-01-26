@@ -3,6 +3,8 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "3.1.6"
 
+gem "concurrent-ruby", "1.3.4"
+
 gem "rails", "7.0.8.6"
 
 gem "sinatra"
@@ -13,6 +15,8 @@ gem "pg"
 gem "activerecord"
 
 gem "sidekiq"
+
+gem "outboxer", git: 'https://github.com/fast-programmer/outboxer.git', branch: "master"
 
 group :development do
 end

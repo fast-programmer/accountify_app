@@ -1,5 +1,5 @@
 class Event < ApplicationRecord
-  self.table_name = 'events'
+  self.table_name = "events"
 
   # associations
 
@@ -7,13 +7,11 @@ class Event < ApplicationRecord
 
   # validations
 
-  validates :user_id, presence: true
-  validates :tenant_id, presence: true
-
   validates :type, presence: true, length: { maximum: 255 }
 
-  validates :eventable_type, presence: true, length: { maximum: 255 },
-    if: -> { eventable_id.present? }
+  # callbacks
 
-  validates :eventable_id, presence: true, if: -> { eventable_type.present? }
+  after_create do |event|
+    Outboxer::Message.queue(messageable: event)
+  end
 end
