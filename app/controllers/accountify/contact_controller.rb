@@ -1,7 +1,7 @@
 module Accountify
   class ContactController < AccountifyController
     def create
-      contact = Contact.create(
+      contact = ContactService.create(
         user_id: user_id,
         tenant_id: tenant_id,
         organisation_id: params[:organisation_id],
@@ -13,7 +13,7 @@ module Accountify
     end
 
     def show
-      contact = Contact.find_by_id(
+      contact = ContactService.find_by_id(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -22,7 +22,7 @@ module Accountify
     end
 
     def update
-      contact = Contact.update(
+      contact = ContactService.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
@@ -34,7 +34,7 @@ module Accountify
     end
 
     def destroy
-      contact = Contact.delete(
+      contact = ContactService.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])

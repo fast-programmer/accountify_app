@@ -1,7 +1,7 @@
 module Accountify
   class OrganisationController < AccountifyController
     def create
-      organisation = Organisation.create(
+      organisation = OrganisationService.create(
         user_id: user_id,
         tenant_id: tenant_id,
         name: params[:name])
@@ -10,7 +10,7 @@ module Accountify
     end
 
     def show
-      organisation = Organisation.find_by_id(
+      organisation = OrganisationService.find_by_id(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])
@@ -19,7 +19,7 @@ module Accountify
     end
 
     def update
-      organisation = Organisation.update(
+      organisation = OrganisationService.update(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id],
@@ -29,7 +29,7 @@ module Accountify
     end
 
     def destroy
-      organisation = Organisation.delete(
+      organisation = OrganisationService.delete(
         user_id: user_id,
         tenant_id: tenant_id,
         id: params[:id])

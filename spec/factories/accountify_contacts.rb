@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :accountify_contact, class: 'Accountify::Models::Contact' do
+  factory :accountify_contact, class: 'Accountify::Contact' do
     tenant_id { 4 }
     first_name { "John" }
     last_name { "Smith" }

@@ -7,9 +7,9 @@ RSpec.describe 'Invoice Lifecycle', type: :integration do
     begin
       load Rails.root.join('script/accountify/invoice/test_lifecycle.rb')
 
-      expect(Accountify::Models::Organisation.count).to eq(1)
-      expect(Accountify::Models::Contact.count).to eq(1)
-      expect(Accountify::Models::Invoice.count).to eq(1)
+      expect(Accountify::Organisation.count).to eq(1)
+      expect(Accountify::Contact.count).to eq(1)
+      expect(Accountify::Invoice.count).to eq(1)
     ensure
       Sidekiq::Testing.fake!
     end

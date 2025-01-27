@@ -6,7 +6,7 @@ Sidekiq.configure_server do |config|
 
   config.concurrency = 10
 
-  config.queues = ['events', 'reporting']
+  config.queues = ['default', 'events', 'reporting']
 end
 
 Sidekiq.configure_client do |config|

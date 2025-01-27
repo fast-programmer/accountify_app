@@ -69,7 +69,7 @@ module Accountify
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to have_key('id')
         expect(JSON.parse(response.body)).to have_key('events')
-        expect(Models::Contact.find_by(deleted_at: nil, id: contact.id)).to be_nil
+        expect(Contact.find_by(deleted_at: nil, id: contact.id)).to be_nil
       end
     end
   end

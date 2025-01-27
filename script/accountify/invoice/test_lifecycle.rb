@@ -8,12 +8,12 @@ tenant_id = 456
 
 current_date = ::Time.now.to_date
 
-organisation = Accountify::Organisation.create(
+organisation = Accountify::OrganisationService.create(
   user_id: user_id,
   tenant_id: tenant_id,
   name: 'Debbies Debts Ltd')
 
-contact = Accountify::Contact.create(
+contact = Accountify::ContactService.create(
   user_id: user_id,
   tenant_id: tenant_id,
   organisation_id: organisation[:id],
@@ -21,7 +21,7 @@ contact = Accountify::Contact.create(
   last_name: 'Elliot',
   email: 'john.elliot@tradies.com')
 
-invoice = Accountify::Invoice.draft(
+invoice = Accountify::InvoiceService.draft(
   user_id: user_id,
   tenant_id: tenant_id,
   organisation_id: organisation[:id],
@@ -41,7 +41,7 @@ invoice = Accountify::Invoice.draft(
       currency_code: "AUD" },
     quantity: 3 } ])
 
-Accountify::Invoice.update(
+Accountify::InvoiceService.update(
   user_id: user_id,
   tenant_id: tenant_id,
   id: invoice[:id],
@@ -61,13 +61,13 @@ Accountify::Invoice.update(
       currency_code: "AUD" },
     quantity: 4 }])
 
-Accountify::Invoice.issue(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
+Accountify::InvoiceService.issue(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.paid(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
+Accountify::InvoiceService.paid(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.void(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
+Accountify::InvoiceService.void(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
-Accountify::Invoice.delete(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
+Accountify::InvoiceService.delete(user_id: user_id, tenant_id: tenant_id, id: invoice[:id])
 
 outboxer_env = ENV['OUTBOXER_ENV'] || ENV['RAILS_ENV'] || 'development'
 
@@ -88,7 +88,7 @@ begin
     begin
       attempts += 1
 
-      invoice_status_summary = Accountify::InvoiceStatusSummary.find_by_organisation_id(
+      invoice_status_summary = Accountify::InvoiceStatusSummaryService.find_by_organisation_id(
         tenant_id: tenant_id,
         organisation_id: organisation[:id])
     rescue Accountify::NotFound
