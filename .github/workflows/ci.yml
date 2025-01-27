@@ -69,7 +69,7 @@ jobs:
         run: |
           echo "gem 'outboxer', git: 'https://github.com/fast-programmer/outboxer.git', branch: 'master'" >> Gemfile
           bundle install
-          bin/rails g outboxer:schema
+          bin/rails g outboxer:install
           bin/rake db:migrate
           bin/rake outboxer:db:seed
           bin/rails g outboxer:sidekiq_publisher
