@@ -5,7 +5,7 @@ module Accountify
     sidekiq_options queue: 'reporting', backtrace: true
 
     def perform(args)
-      InvoiceStatusSummary.generate(event_id: args['event_id'])
+      InvoiceStatusSummaryService.generate(event_id: args['event_id'])
     end
   end
 end

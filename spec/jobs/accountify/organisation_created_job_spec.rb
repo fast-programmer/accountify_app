@@ -25,7 +25,7 @@ module Accountify
         OrganisationCreatedJob.new.perform({ 'event_id' => event.id })
       end
 
-      it 'performs Accountify::InvoiceStatusSummary::GenerateJob async' do
+      it 'performs Accountify::GenerateInvoiceStatusSummaryJob async' do
         expect(Accountify::GenerateInvoiceStatusSummaryJob.jobs).to match([
           hash_including(
             'args' => [

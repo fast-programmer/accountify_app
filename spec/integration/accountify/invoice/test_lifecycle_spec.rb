@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Invoice Lifecycle', type: :integration do
-  xit 'transitions as expected' do
+  it 'transitions as expected' do
     Sidekiq::Testing.disable!
 
     begin
