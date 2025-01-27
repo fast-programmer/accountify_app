@@ -71,6 +71,7 @@ jobs:
           bundle install
           bin/rails g outboxer:install
           bin/rake db:migrate
+          mkdir lib
           { sed '$d' lib/event.rb; printf "\n  # callbacks\n\n  after_create do |event|\n    Outboxer::Message.queue(messageable: event)\n  end\nend\n"; } > lib/event.tmp && mv lib/event.tmp lib/event.rb
 
       - name: Run tests
